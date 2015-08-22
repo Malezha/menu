@@ -1,0 +1,12 @@
+{
+  "name": "malezha/laravel-menu",
+  "license": "MIT",
+  "require": {
+    "laravel/framework": "^5.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Malezha\\Menu\\": "src/"
+    }
+  }
+}
