@@ -2,6 +2,6 @@
 
 return [
 
-    'view' => 'vendor.menu.view',
+    'view' => 'menu::view',
 
 ];
