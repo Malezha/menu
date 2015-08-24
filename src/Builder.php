@@ -102,11 +102,7 @@ class Builder
      */
     public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
-        $item = new Item($this, $name, $attributes, $title, $url, $linkAttributes);
-
-        if (is_callable($callback)) {
-            call_user_func($callback, $item);
-        }
+        $item = $this->newItem($name, $title, $url, $attributes, $linkAttributes, $callback);
 
         $this->items->put($name, $item);
 
@@ -114,11 +110,27 @@ class Builder
     }
 
     /**
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     public function items()
     {
-       return $this->items->values();
+       return $this->items;
+    }
+
+    /**
+     * @return array
+     */
+    public function values()
+    {
+        return $this->items->values();
+    }
+
+    /**
+     * @param string $name
+     */
+    public function has($name)
+    {
+        $this->items->has($name);
     }
 
     /**
@@ -139,11 +151,30 @@ class Builder
     }
 
     /**
+     * @param string $name
+     */
+    public function forget($name)
+    {
+        $this->items->forget($name);
+    }
+
+    /**
      * @return string
      */
     public function getType()
     {
         return $this->type;
+    }
+    
+    /**
+     * @param string $type
+     * @return \Malezha\Menu\Builder
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+        
+        return $this;
     }
 
     /**
@@ -168,13 +199,32 @@ class Builder
     }
 
     /**
-     * @param $attributes
+     * @param array $attributes
      * @return \Malezha\Menu\Builder
      */
-    public function setActiveAttributes($attributes)
+    public function setActiveAttributes(array $attributes)
     {
         $this->active = $attributes;
 
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes->toArray();
+    }
+    
+    /**
+     * @param array $attributes
+     * @return \Malezha\Menu\Builder
+     */
+    public function setAttributes(array $attributes)
+    {
+        $this->attributes = new Collection($attributes);
+        
         return $this;
     }
 
@@ -185,5 +235,25 @@ class Builder
     public function buildAttributes($attributes = [])
     {
         return build_html_attributes(array_merge($this->attributes->toArray(), $attributes));
+    }
+
+    /**
+     * @param $name
+     * @param $title
+     * @param $url
+     * @param array $attributes
+     * @param array $linkAttributes
+     * @param null $callback
+     * @return \Malezha\Menu\Item
+     */
+    protected function newItem($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
+    {
+        $item = new Item($this, $name, $attributes, $title, $url, $linkAttributes);
+
+        if (is_callable($callback)) {
+            call_user_func($callback, $item);
+        }
+
+        return $item;
     }
 }

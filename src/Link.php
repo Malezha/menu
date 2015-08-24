@@ -39,7 +39,7 @@ class Link
 
     /**
      * @param string $title
-     * @return \Malezha\Menu\Item
+     * @return \Malezha\Menu\Link
      */
     public function setTitle($title)
     {
@@ -58,7 +58,7 @@ class Link
 
     /**
      * @param $url
-     * @return \Malezha\Menu\Item
+     * @return \Malezha\Menu\Link
      */
     public function setUrl($url)
     {
@@ -68,16 +68,16 @@ class Link
     }
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     public function getAttributes()
     {
-        return $this->attributes;
+        return $this->attributes->toArray();
     }
 
     /**
      * @param array $attributes
-     * @return \Malezha\Menu\Item
+     * @return \Malezha\Menu\Link
      */
     public function setAttributes(array $attributes)
     {

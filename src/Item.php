@@ -37,11 +37,11 @@ class Item
     }
 
     /**
-     * @return \Illuminate\Support\Collection
+     * @return array
      */
     public function getAttributes()
     {
-        return $this->attributes;
+        return $this->attributes->toArray();
     }
 
     /**
@@ -64,7 +64,7 @@ class Item
     }
 
     /**
-     * @param Link $link
+     * @param \Malezha\Menu\Link $link
      * @return \Malezha\Menu\Item
      */
     public function setLink(Link $link)

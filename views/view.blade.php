@@ -1,6 +1,6 @@
 @if ($menu)
     <{{ $menu->getType() }}{!! $menu->buildAttributes() !!}>
-        @foreach ($menu->items() as $item)
+        @foreach ($menu->values() as $item)
             @if ($item instanceof \Malezha\Menu\Item)
                 <li{!! $item->buildAttributes() !!}><a href="{{ $item->getLink()->getUrl() }}"{!! $item->getLink()->buildAttributes() !!}>{!! $item->getLink()->getTitle() !!}</a></li>
             @elseif ($item instanceof \Malezha\Menu\Group)
