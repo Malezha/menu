@@ -7,73 +7,91 @@ use Illuminate\Support\Collection;
 class Item
 {
     /**
-     * @var string
+     * @var \Malezha\Menu\Link
      */
-    protected $name;
+    protected $link;
 
     /**
-     * @var Collection
+     * @var \Illuminate\Support\Collection
      */
     protected $attributes;
 
     /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var Builder
+     * @var \Malezha\Menu\Builder
      */
     protected $builder;
 
     /**
      * @param Builder $builder
      * @param string $name
+     * @param array $attributes
      * @param string $title
      * @param string $url
-     * @param array $attributes
+     * @param array $linkAttributes
      */
-    function __construct(Builder $builder, $name, $title, $url, $attributes = [])
+    function __construct(Builder $builder, $name, $attributes = [], $title = '', $url = '#', $linkAttributes = [])
     {
-        $this->name = $name;
-        $this->title = $title;
-        $this->url = $url;
-        $this->attributes = new Collection($attributes);
         $this->builder = $builder;
+        $this->attributes = new Collection($attributes);
+        $this->link = new Link($title, $url, $linkAttributes);
     }
 
-    public function getTitle()
+    /**
+     * @return \Illuminate\Support\Collection
+     */
+    public function getAttributes()
     {
-        return $this->title;
+        return $this->attributes;
     }
 
-    public function getUrl()
+    /**
+     * @param array $attributes
+     * @return \Malezha\Menu\Item
+     */
+    public function setAttributes(array $attributes)
     {
-        return $this->url;
+        $this->attributes = new Collection($attributes);
+
+        return $this;
     }
 
-    public function buildAttributes()
+    /**
+     * @return \Malezha\Menu\Link
+     */
+    public function getLink()
     {
-        $result = '';
+        return $this->link;
+    }
 
+    /**
+     * @param Link $link
+     * @return \Malezha\Menu\Item
+     */
+    public function setLink(Link $link)
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    /**
+     * @param array $attributes
+     * @return string
+     */
+    public function buildAttributes($attributes = [])
+    {
         $attributes = ($this->isActive()) ?
-            $this->attributes->merge($this->builder->getActiveAttributes())->all() :
-            $this->attributes->all();
+            array_merge($this->attributes->toArray(), $this->builder->getActiveAttributes(), $attributes) :
+            array_merge($this->attributes->all(), $attributes);
 
-        foreach ($attributes as $key => $value) {
-            $result .= $key . '="' . $value . '" ';
-        }
-
-        return $result;
+        return build_html_attributes($attributes);
     }
 
-    public function isActive()
+    /**
+     * @return bool
+     */
+    protected function isActive()
     {
-        return ($this->url == \Request::url());
+        return ($this->getLink()->getUrl() == app('request')->url());
     }
 }

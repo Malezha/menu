@@ -7,19 +7,38 @@ use Symfony\Component\Process\Exception\InvalidArgumentException;
 
 class Builder
 {
+    /**
+     * @var \Illuminate\Support\Collection
+     */
     protected $items;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var \Illuminate\Support\Collection
+     */
     protected $attributes;
 
+    /**
+     * @var string
+     */
     protected $type;
 
+    /**
+     * @var array
+     */
     protected $active;
 
-    protected $group = null;
-
-    function __construct($name, $type, $attributes = [], $active = ['class' => 'active'])
+    /**
+     * @param string $name
+     * @param string $type
+     * @param array $attributes
+     * @param array $active
+     */
+    function __construct($name, $type = 'ul', $attributes = [], $active = ['class' => 'active'])
     {
         $this->name = $name;
         $this->type = $type;
@@ -28,93 +47,143 @@ class Builder
         $this->active = $active;
     }
 
-    public function group($name, $type, $attributes = [], $callback)
+    /**
+     * @param string $name
+     * @param string $type
+     * @param array $attributes
+     * @param array $active
+     * @param callable|null $callback
+     * @return \Malezha\Menu\Builder
+     */
+    public static function make($name, $type = 'ul', $attributes = [], $active = ['class' => 'active'], $callback = null)
     {
-        if(is_callable($callback)) {
-            $group = new Builder($name, $type, $attributes, $this->active);
+        $menu = new Builder($name, $type, $attributes, $active);
 
-            call_user_func($callback, $group);
+        if (is_callable($callback)) {
+            call_user_func($callback, $menu);
+        }
 
-            $this->items->push($group);
+        return $menu;
+    }
+
+    /**
+     * @param string $name
+     * @param callable $itemCallable
+     * @param callable $menuCallable
+     * @return \Malezha\Menu\Group
+     */
+    public function group($name, $itemCallable, $menuCallable)
+    {
+        if (is_callable($itemCallable) && is_callable($menuCallable)) {
+            $item = new Item($this, $name);
+            call_user_func($itemCallable, $item);
+
+            $menu = new Builder($name);
+            call_user_func($menuCallable, $menu);
+
+            $group = new Group($menu, $item);
+
+            $this->items->put($name, $group);
 
             return $group;
         } else {
-            throw new InvalidArgumentException('Argument must be callable');
+            throw new InvalidArgumentException('Arguments must be callable');
         }
     }
 
-    public function add($name, $title, $url, $attributes = [])
+    /**
+     * @param string $name
+     * @param string $title
+     * @param string $url
+     * @param array $attributes
+     * @param array $linkAttributes
+     * @param callable|null $callback
+     * @return Item
+     */
+    public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
-        $item = new Item($this, $name, $title, $url, $attributes);
-        $this->items->push($item);
+        $item = new Item($this, $name, $attributes, $title, $url, $linkAttributes);
+
+        if (is_callable($callback)) {
+            call_user_func($callback, $item);
+        }
+
+        $this->items->put($name, $item);
 
         return $item;
     }
 
+    /**
+     * @return array
+     */
     public function items()
     {
-       return $this->items;
+       return $this->items->values();
     }
 
+    /**
+     * @param string $name
+     * @return \Malezha\Menu\Item|\Malezha\Menu\Group
+     */
     public function get($name)
     {
         return $this->items->get($name);
     }
 
-    public function toArray()
+    /**
+     * @return array
+     */
+    public function all()
     {
         return $this->items->all();
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         return $this->type;
     }
 
-    public function render()
+    /**
+     * @param string|null $view
+     * @return string
+     */
+    public function render($view = null)
     {
-        return view(config('menu.view'), [
+        $view = (empty($view)) ? config('menu.view') : $view;
+
+        return view($view, [
             'menu' => $this,
         ])->render();
     }
 
+    /**
+     * @return array
+     */
     public function getActiveAttributes()
     {
         return $this->active;
     }
 
+    /**
+     * @param $attributes
+     * @return \Malezha\Menu\Builder
+     */
     public function setActiveAttributes($attributes)
     {
         $this->active = $attributes;
+
+        return $this;
     }
 
+    /**
+     * @param array $attributes
+     * @return string
+     */
     public function buildAttributes($attributes = [])
     {
-        if(empty($attributes)) {
-            $attributes = $this->attributes->all();
-        }
-
-        $result = '';
-
-        foreach ($attributes as $key => $value) {
-            $result .= $key . '="' . $value . '" ';
-        }
-
-        return $result;
-    }
-
-    public function thisGroup($title, $url, $attributes = [])
-    {
-        $group = new \stdClass();
-        $group->title = $title;
-        $group->url = $url;
-        $group->attributes = $attributes;
-
-        $this->group = $group;
-    }
-
-    public function getGroup()
-    {
-        return $this->group;
+        return build_html_attributes(array_merge($this->attributes->toArray(), $attributes));
     }
 }
