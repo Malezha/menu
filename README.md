@@ -5,7 +5,8 @@ Menu::make('main', 'ul', null, function (\Malezha\Menu\Builder $menu) {
     $index = $menu->add('index', 'Index Page', '/');
     $index->getLink()->attributes()->push(['class' => 'menu-link']);
     $orders = $menu->group('orders', function (\Malezha\Menu\Item $item) {
-        $item->attributes()->push(['class' => 'child-menu'])->getLink()->setTitle('Orders')->setUrl('javascript:;');
+        $item->attributes()->push(['class' => 'child-menu']);
+        $item->getLink()->setTitle('Orders')->setUrl('javascript:;');
     }, function (\Malezha\Menu\Builder $menu) {
         $menu->add('all', 'All', '/orders/all');
         $menu->add('type_1', 'Type 1', '/orders/1', null, ['class' => 'text-color-red']);
