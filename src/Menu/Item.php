@@ -2,19 +2,14 @@
 
 namespace Malezha\Menu;
 
-use Illuminate\Support\Collection;
-
 class Item
 {
+    use HasAttributes;
+
     /**
      * @var \Malezha\Menu\Link
      */
     protected $link;
-
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    protected $attributes;
 
     /**
      * @var \Malezha\Menu\Builder
@@ -32,27 +27,8 @@ class Item
     function __construct(Builder $builder, $name, $attributes = [], $title = '', $url = '#', $linkAttributes = [])
     {
         $this->builder = $builder;
-        $this->attributes = new Collection($attributes);
+        $this->attributes = new Attributes($attributes);
         $this->link = new Link($title, $url, $linkAttributes);
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attributes->toArray();
-    }
-
-    /**
-     * @param array $attributes
-     * @return \Malezha\Menu\Item
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->attributes = new Collection($attributes);
-
-        return $this;
     }
 
     /**
@@ -80,11 +56,11 @@ class Item
      */
     public function buildAttributes($attributes = [])
     {
-        $attributes = ($this->isActive()) ?
-            array_merge($this->attributes->toArray(), $this->builder->getActiveAttributes(), $attributes) :
-            array_merge($this->attributes->all(), $attributes);
+        $attributes = $this->isActive() ?
+            Attributes::mergeArrayValues($this->builder->getActiveAttributes(), $attributes) :
+            $attributes;
 
-        return build_html_attributes($attributes);
+        return $this->attributes->build($attributes);
     }
 
     /**

@@ -2,14 +2,9 @@
 
 namespace Malezha\Menu;
 
-use Illuminate\Support\Collection;
-
 class Link
 {
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    protected $attributes;
+    use HasAttributes;
 
     /**
      * @var string
@@ -26,7 +21,7 @@ class Link
     {
         $this->title = $title;
         $this->url = $url;
-        $this->attributes = new Collection($attributes);
+        $this->attributes = new Attributes($attributes);
     }
 
     /**
@@ -65,33 +60,5 @@ class Link
         $this->url = $url;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attributes->toArray();
-    }
-
-    /**
-     * @param array $attributes
-     * @return \Malezha\Menu\Link
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->attributes = new Collection($attributes);
-
-        return $this;
-    }
-
-    /**
-     * @param array $attributes
-     * @return string
-     */
-    public function buildAttributes($attributes = [])
-    {
-        return build_html_attributes(array_merge($this->attributes->toArray(), $attributes));
     }
 }

@@ -3,7 +3,6 @@
 namespace Malezha\Menu;
 
 use Illuminate\Support\Collection;
-use Symfony\Component\Process\Exception\InvalidArgumentException;
 
 class Menu
 {
@@ -34,7 +33,7 @@ class Menu
 
             return $menu;
         } else {
-            throw new InvalidArgumentException('Argument must be callable');
+            throw new \InvalidArgumentException('Argument must be callable');
         }
     }
 

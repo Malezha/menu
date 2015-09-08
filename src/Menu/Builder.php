@@ -3,10 +3,11 @@
 namespace Malezha\Menu;
 
 use Illuminate\Support\Collection;
-use Symfony\Component\Process\Exception\InvalidArgumentException;
 
 class Builder
 {
+    use HasAttributes;
+
     /**
      * @var \Illuminate\Support\Collection
      */
@@ -16,11 +17,6 @@ class Builder
      * @var string
      */
     protected $name;
-
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    protected $attributes;
 
     /**
      * @var string
@@ -42,7 +38,7 @@ class Builder
     {
         $this->name = $name;
         $this->type = $type;
-        $this->attributes = new Collection($attributes);
+        $this->attributes = new Attributes($attributes);
         $this->items = new Collection();
         $this->active = $active;
     }
@@ -78,7 +74,7 @@ class Builder
             $item = new Item($this, $name);
             call_user_func($itemCallable, $item);
 
-            $menu = new Builder($name);
+            $menu = (new Builder($name))->setActiveAttributes($this->getActiveAttributes());
             call_user_func($menuCallable, $menu);
 
             $group = new Group($menu, $item);
@@ -87,7 +83,7 @@ class Builder
 
             return $group;
         } else {
-            throw new InvalidArgumentException('Arguments must be callable');
+            throw new \InvalidArgumentException('Arguments must be callable');
         }
     }
 
@@ -207,34 +203,6 @@ class Builder
         $this->active = $attributes;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attributes->toArray();
-    }
-    
-    /**
-     * @param array $attributes
-     * @return \Malezha\Menu\Builder
-     */
-    public function setAttributes(array $attributes)
-    {
-        $this->attributes = new Collection($attributes);
-        
-        return $this;
-    }
-
-    /**
-     * @param array $attributes
-     * @return string
-     */
-    public function buildAttributes($attributes = [])
-    {
-        return build_html_attributes(array_merge($this->attributes->toArray(), $attributes));
     }
 
     /**
