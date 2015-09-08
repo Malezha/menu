@@ -16,4 +16,13 @@ trait HasAttributes
     {
         return $this->attributes;
     }
+
+    /**
+     * @param array $attributes
+     * @return string
+     */
+    public function buildAttributes($attributes = [])
+    {
+        return $this->attributes->build($attributes);
+    }
 }
