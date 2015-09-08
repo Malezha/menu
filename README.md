@@ -1,7 +1,7 @@
 # Example
 
 ```php
-Menu::make('main', 'ul', null, function (\Malezha\Menu\Builder $menu) {
+Menu::make('main', 'ul', [], function (\Malezha\Menu\Builder $menu) {
     $index = $menu->add('index', 'Index Page', '/');
     $index->getLink()->attributes()->push(['class' => 'menu-link']);
     $orders = $menu->group('orders', function (\Malezha\Menu\Item $item) {
@@ -9,8 +9,8 @@ Menu::make('main', 'ul', null, function (\Malezha\Menu\Builder $menu) {
         $item->getLink()->setTitle('Orders')->setUrl('javascript:;');
     }, function (\Malezha\Menu\Builder $menu) {
         $menu->add('all', 'All', '/orders/all');
-        $menu->add('type_1', 'Type 1', '/orders/1', null, ['class' => 'text-color-red']);
-        $menu->add('type_2', 'Type 2', '/orders/2', null, null, function (\Malezha\Menu\Item $item) {
+        $menu->add('type_1', 'Type 1', '/orders/1', [], ['class' => 'text-color-red']);
+        $menu->add('type_2', 'Type 2', '/orders/2', [], [], function (\Malezha\Menu\Item $item) {
             $item->getLink()->attributes()->push(['data-attribute' => 'value']);
         });
     });
