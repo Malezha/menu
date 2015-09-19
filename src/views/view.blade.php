@@ -1,5 +1,5 @@
 @if ($menu)
-    <{{ $menu->getType() }}{!! $menu->buildAttributes() !!}>
+    <{{ $menu->type() }}{!! $menu->buildAttributes() !!}>
         @foreach ($menu->values() as $item)
             @if ($item instanceof \Malezha\Menu\Item)
                 <li{!! $item->buildAttributes() !!}><a href="{{ $item->link()->url() }}"{!! $item->link()->buildAttributes() !!}>{!! $item->link()->title() !!}</a></li>
@@ -10,5 +10,5 @@
                 </li>
             @endif
         @endforeach
-    </{{ $menu->getType() }}>
+    </{{ $menu->type() }}>
 @endif
