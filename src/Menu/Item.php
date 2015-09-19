@@ -32,22 +32,18 @@ class Item
     }
 
     /**
-     * @return \Malezha\Menu\Link
+     * @param null|\Malezha\Menu\Link $link
+     * @return \Malezha\Menu\Link|\Malezha\Menu\Item
      */
-    public function getLink()
+    public function link($link = null)
     {
+        if ($link instanceof Link) {
+            $this->link = $link;
+
+            return $this;
+        }
+
         return $this->link;
-    }
-
-    /**
-     * @param \Malezha\Menu\Link $link
-     * @return \Malezha\Menu\Item
-     */
-    public function setLink(Link $link)
-    {
-        $this->link = $link;
-
-        return $this;
     }
 
     /**

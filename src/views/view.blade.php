@@ -2,11 +2,11 @@
     <{{ $menu->getType() }}{!! $menu->buildAttributes() !!}>
         @foreach ($menu->values() as $item)
             @if ($item instanceof \Malezha\Menu\Item)
-                <li{!! $item->buildAttributes() !!}><a href="{{ $item->getLink()->getUrl() }}"{!! $item->getLink()->buildAttributes() !!}>{!! $item->getLink()->getTitle() !!}</a></li>
+                <li{!! $item->buildAttributes() !!}><a href="{{ $item->link()->url() }}"{!! $item->link()->buildAttributes() !!}>{!! $item->link()->title() !!}</a></li>
             @elseif ($item instanceof \Malezha\Menu\Group)
                 <li{!! $item->getItem()->buildAttributes() !!}>
-                    <a href="{{ $item->getItem()->getLink()->getUrl() }}{!! $item->getItem()->getLink()->buildAttributes() !!}">{!! $item->getItem()->getLink()->getTitle() !!}</a>
-                    @include(config('menu.view'), ['menu' => $item->getMenu()])
+                    <a href="{{ $item->item()->link()->url() }}{!! $item->item()->link()->buildAttributes() !!}">{!! $item->item()->link()->title() !!}</a>
+                    @include(config('menu.view'), ['menu' => $item->menu()])
                 </li>
             @endif
         @endforeach

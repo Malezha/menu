@@ -25,40 +25,32 @@ class Link
     }
 
     /**
-     * @return string
+     * @param null|string $title
+     * @return \Malezha\Menu\Link|string
      */
-    public function getTitle()
+    public function title($title = null)
     {
+        if (!empty($title)) {
+            $this->title = (string) $title;
+
+            return $this;
+        }
+
         return $this->title;
     }
 
     /**
-     * @param string $title
-     * @return \Malezha\Menu\Link
+     * @param null|string $url
+     * @return \Malezha\Menu\Link|string
      */
-    public function setTitle($title)
+    public function url($url = null)
     {
-        $this->title = $title;
+        if (!empty($url)) {
+            $this->url = (string) $url;
 
-        return $this;
-    }
+            return $this;
+        }
 
-    /**
-     * @return string
-     */
-    public function getUrl()
-    {
         return $this->url;
-    }
-
-    /**
-     * @param $url
-     * @return \Malezha\Menu\Link
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-
-        return $this;
     }
 }

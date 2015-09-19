@@ -27,7 +27,7 @@ class Group
     /**
      * @return \Malezha\Menu\Builder
      */
-    public function getMenu()
+    public function menu()
     {
         return $this->menu;
     }
@@ -35,7 +35,7 @@ class Group
     /**
      * @return \Malezha\Menu\Item
      */
-    public function getItem()
+    public function item()
     {
         return $this->item;
     }

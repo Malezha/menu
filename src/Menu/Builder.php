@@ -74,7 +74,7 @@ class Builder
             $item = new Item($this, $name);
             call_user_func($itemCallable, $item);
 
-            $menu = (new Builder($name))->setActiveAttributes($this->getActiveAttributes());
+            $menu = (new Builder($name))->activeAttributes($this->activeAttributes());
             call_user_func($menuCallable, $menu);
 
             $group = new Group($menu, $item);
@@ -155,22 +155,18 @@ class Builder
     }
 
     /**
-     * @return string
+     * @param null|string $type
+     * @return string|\Malezha\Menu\Builder
      */
-    public function getType()
+    public function type($type = null)
     {
+        if (!empty($type)) {
+            $this->type = (string) $type;
+
+            return $this;
+        }
+
         return $this->type;
-    }
-    
-    /**
-     * @param string $type
-     * @return \Malezha\Menu\Builder
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-        
-        return $this;
     }
 
     /**
@@ -187,22 +183,18 @@ class Builder
     }
 
     /**
-     * @return array
-     */
-    public function getActiveAttributes()
-    {
-        return $this->active;
-    }
-
-    /**
      * @param array $attributes
-     * @return \Malezha\Menu\Builder
+     * @return array|\Malezha\Menu\Builder
      */
-    public function setActiveAttributes(array $attributes)
+    public function activeAttributes($attributes = [])
     {
-        $this->active = $attributes;
+        if (!empty($attributes)) {
+            $this->attributes = $attributes;
 
-        return $this;
+            return $this;
+        }
+
+        return $this->active;
     }
 
     /**
