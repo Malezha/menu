@@ -189,7 +189,7 @@ class Builder
     public function activeAttributes($attributes = [])
     {
         if (!empty($attributes)) {
-            $this->attributes = $attributes;
+            $this->active = $attributes;
 
             return $this;
         }
