@@ -53,7 +53,7 @@ class Item
     public function buildAttributes($attributes = [])
     {
         $attributes = $this->isActive() ?
-            Attributes::mergeArrayValues($this->builder->getActiveAttributes(), $attributes) :
+            Attributes::mergeArrayValues($this->builder->activeAttributes(), $attributes) :
             $attributes;
 
         return $this->attributes->build($attributes);
@@ -64,6 +64,6 @@ class Item
      */
     protected function isActive()
     {
-        return ($this->getLink()->getUrl() == app('request')->url());
+        return ($this->link()->url() == app('request')->url());
     }
 }
