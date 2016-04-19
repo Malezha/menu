@@ -102,7 +102,7 @@ class Attributes
     public static function mergeArrayValues()
     {
         if (func_num_args() <= 1) {
-            return false;
+            throw new \RuntimeException("Must has min two parameters.");
         }
 
         $arrays = func_get_args();

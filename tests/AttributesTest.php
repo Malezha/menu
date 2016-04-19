@@ -6,7 +6,7 @@ use Malezha\Menu\Entity\Attributes;
 
 class AttributesTest extends TestCase
 {
-    public function testGetSetAllForgetPutPush()
+    public function testGetSetAllForgetPutPushHas()
     {
         $attributes = new Attributes([
             'class' => 'some-style',
@@ -28,8 +28,10 @@ class AttributesTest extends TestCase
         $push = ['data-value' => 'some'];
         $attributes->push($push);
         $this->assertArraySubset(array_merge($subset, $push), $attributes->all());
+
+        $this->assertTrue($attributes->has('class'));
     }
-    
+
     public function testMerge()
     {
         $attributes = new Attributes([
@@ -53,9 +55,17 @@ class AttributesTest extends TestCase
             'class' => 'some-style another-style',
             'id' => 'test',
         ]);
-
-        $build = $attributes->build();
+        $expected = ' class="some-style another-style" id="test"';
         
-        $this->assertEquals(' class="some-style another-style" id="test"', $build);
+        $this->assertEquals($expected, $attributes->build());
+        $this->assertEquals($expected, (string) $attributes);
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testMergeArrayValuesException()
+    {
+        Attributes::mergeArrayValues();
     }
 }
