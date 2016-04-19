@@ -1,22 +1,27 @@
 <?php
 
-namespace Malezha\Menu;
+namespace Malezha\Menu\Entity;
+
+use Malezha\Menu\Contracts\Builder;
+use Malezha\Menu\Traits\DisplayRule;
 
 class Group
 {
+    use DisplayRule;
+
     /**
-     * @var \Malezha\Menu\Item
+     * @var Item
      */
     protected $item;
 
     /**
-     * @var \Malezha\Menu\Builder
+     * @var Builder
      */
     protected $menu;
 
     /**
-     * @param \Malezha\Menu\Builder $menu
-     * @param \Malezha\Menu\Item $item
+     * @param Builder $menu
+     * @param Item $item
      */
     function __construct(Builder $menu, Item $item)
     {
@@ -25,7 +30,7 @@ class Group
     }
 
     /**
-     * @return \Malezha\Menu\Builder
+     * @return Builder
      */
     public function menu()
     {
@@ -33,7 +38,7 @@ class Group
     }
 
     /**
-     * @return \Malezha\Menu\Item
+     * @return Item
      */
     public function item()
     {

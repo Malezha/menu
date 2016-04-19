@@ -2,7 +2,9 @@
 
 namespace Malezha\Menu;
 
-class Facade extends \Illuminate\Support\Facades\Facade
+use Illuminate\Support\Facades\Facade;
+
+class MenuFacade extends Facade
 {
     /**
      * Get the registered name of the component.

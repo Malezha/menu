@@ -10,14 +10,27 @@
         }
     ],
     "require": {
-        "laravel/framework": "^5.1"
+        "illuminate/view": "^5.1",
+        "illuminate/support": "^5.1",
+        "illuminate/container": "^5.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.7"
+        "phpunit/phpunit": "~4.7",
+        "orchestra/testbench": "~3.0"
     },
     "autoload": {
         "psr-4": {
-            "Malezha\\Menu\\": "src/Menu/"
+            "Malezha\\Menu\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Malezha\\Menu\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
         }
     }
 }

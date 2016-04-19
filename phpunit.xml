@@ -1,0 +1,13 @@
+<phpunit
+        bootstrap="vendor/autoload.php"
+        colors="true"
+        verbose="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true">
+    <testsuites>
+        <testsuite name="menu">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

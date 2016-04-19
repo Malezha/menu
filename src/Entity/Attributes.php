@@ -1,6 +1,6 @@
 <?php
 
-namespace Malezha\Menu;
+namespace Malezha\Menu\Entity;
 
 use Illuminate\Support\Collection;
 
@@ -91,7 +91,7 @@ class Attributes
      */
     public function merge(array $attributes)
     {
-        $this->list = $this->mergeArrayValues($this->list->toArray(), $attributes);
+        $this->set(self::mergeArrayValues($this->list->toArray(), $attributes));
 
         return $this;
     }
@@ -124,7 +124,7 @@ class Attributes
             }
         }
 
-        return array_merge(call_user_func_array('array_merge', $arrays), $merged);
+        return $merged;
     }
 
     /**
@@ -134,6 +134,10 @@ class Attributes
      */
     protected static function mergeValues($valueOne, $valueTwo)
     {
+        if (is_null($valueOne)) {
+            return $valueTwo;
+        }
+        
         $valueOne = explode(' ', $valueOne);
         $valueTwo = explode(' ', $valueTwo);
 

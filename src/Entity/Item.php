@@ -1,18 +1,21 @@
 <?php
 
-namespace Malezha\Menu;
+namespace Malezha\Menu\Entity;
+
+use Malezha\Menu\Traits\DisplayRule;
+use Malezha\Menu\Traits\HasAttributes;
 
 class Item
 {
-    use HasAttributes;
+    use HasAttributes, DisplayRule;
 
     /**
-     * @var \Malezha\Menu\Link
+     * @var Link
      */
     protected $link;
 
     /**
-     * @var \Malezha\Menu\Builder
+     * @var Builder
      */
     protected $builder;
 
@@ -26,23 +29,17 @@ class Item
      */
     function __construct(Builder $builder, $name, $attributes = [], $title = '', $url = '#', $linkAttributes = [])
     {
+        $title = empty($title) ? $name : $title;
         $this->builder = $builder;
         $this->attributes = new Attributes($attributes);
         $this->link = new Link($title, $url, $linkAttributes);
     }
 
     /**
-     * @param null|\Malezha\Menu\Link $link
-     * @return \Malezha\Menu\Link|\Malezha\Menu\Item
+     * @return Link
      */
-    public function link($link = null)
+    public function getLink()
     {
-        if ($link instanceof Link) {
-            $this->link = $link;
-
-            return $this;
-        }
-
         return $this->link;
     }
 

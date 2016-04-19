@@ -1,12 +1,18 @@
 <?php
 
-namespace Malezha\Menu;
+namespace Malezha\Menu\Entity;
 
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Collection;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Malezha\Menu\Contracts\Builder as BuilderContract;
+use Malezha\Menu\Traits\HasAttributes;
 
-class Builder
+class Builder implements BuilderContract
 {
     use HasAttributes;
+
+    protected $container;
 
     /**
      * @var \Illuminate\Support\Collection
@@ -26,47 +32,30 @@ class Builder
     /**
      * @var array
      */
-    protected $active;
+    protected $activeAttributes;
 
     /**
+     * @param Container $container
      * @param string $name
      * @param string $type
      * @param array $attributes
-     * @param array $active
+     * @param array $activeAttributes
      */
-    function __construct($name, $type = 'ul', $attributes = [], $active = ['class' => 'active'])
+    function __construct(Container $container, $name, $type = self::UL, $attributes = [], $activeAttributes = [])
     {
+        $this->container = $container;
         $this->name = $name;
         $this->type = $type;
         $this->attributes = new Attributes($attributes);
         $this->items = new Collection();
-        $this->active = $active;
-    }
-
-    /**
-     * @param string $name
-     * @param string $type
-     * @param array $attributes
-     * @param array $active
-     * @param callable|null $callback
-     * @return \Malezha\Menu\Builder
-     */
-    public static function make($name, $type = 'ul', $attributes = [], $active = ['class' => 'active'], $callback = null)
-    {
-        $menu = new Builder($name, $type, $attributes, $active);
-
-        if (is_callable($callback)) {
-            call_user_func($callback, $menu);
-        }
-
-        return $menu;
+        $this->activeAttributes = new Attributes($activeAttributes);
     }
 
     /**
      * @param string $name
      * @param callable $itemCallable
      * @param callable $menuCallable
-     * @return \Malezha\Menu\Group
+     * @return Group
      */
     public function group($name, $itemCallable, $menuCallable)
     {
@@ -74,7 +63,10 @@ class Builder
             $item = new Item($this, $name);
             call_user_func($itemCallable, $item);
 
-            $menu = (new Builder($name))->activeAttributes($this->activeAttributes());
+            $menu = $this->container->make(BuilderContract::class, [$this->container, $name])
+                ->activeAttributes(function ($attributes) {
+                    $attributes->set($this->activeAttributes()->all());
+                });
             call_user_func($menuCallable, $menu);
 
             $group = new Group($menu, $item);
@@ -98,7 +90,11 @@ class Builder
      */
     public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
-        $item = $this->newItem($name, $title, $url, $attributes, $linkAttributes, $callback);
+        $item = new Item($this, $name, $attributes, $title, $url, $linkAttributes);
+
+        if (is_callable($callback)) {
+            call_user_func($callback, $item);
+        }
 
         $this->items->put($name, $item);
 
@@ -110,7 +106,7 @@ class Builder
      */
     public function items()
     {
-       return $this->items;
+        return $this->items;
     }
 
     /**
@@ -131,7 +127,7 @@ class Builder
 
     /**
      * @param string $name
-     * @return \Malezha\Menu\Item|\Malezha\Menu\Group
+     * @return Item|Group
      */
     public function get($name)
     {
@@ -155,18 +151,19 @@ class Builder
     }
 
     /**
-     * @param null|string $type
-     * @return string|\Malezha\Menu\Builder
+     * @return string
      */
-    public function type($type = null)
+    public function getType()
     {
-        if (!empty($type)) {
-            $this->type = (string) $type;
-
-            return $this;
-        }
-
         return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = (string)$type;
     }
 
     /**
@@ -176,44 +173,26 @@ class Builder
     public function render($view = null)
     {
         $view = (empty($view)) ? config('menu.view') : $view;
+        
+        /* @var ViewFactory $viewFactory */
+        $viewFactory = $this->container->make(ViewFactory::class);
 
-        return view($view, [
+        return $viewFactory->make($view, [
             'menu' => $this,
+            'renderView' => $view,
         ])->render();
     }
 
     /**
-     * @param array $attributes
-     * @return array|\Malezha\Menu\Builder
+     * @param callable|null $callback
+     * @return Attributes|mixed
      */
-    public function activeAttributes($attributes = [])
+    public function activeAttributes($callback = null)
     {
-        if (!empty($attributes)) {
-            $this->active = $attributes;
-
-            return $this;
-        }
-
-        return $this->active;
-    }
-
-    /**
-     * @param $name
-     * @param $title
-     * @param $url
-     * @param array $attributes
-     * @param array $linkAttributes
-     * @param null $callback
-     * @return \Malezha\Menu\Item
-     */
-    protected function newItem($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
-    {
-        $item = new Item($this, $name, $attributes, $title, $url, $linkAttributes);
-
         if (is_callable($callback)) {
-            call_user_func($callback, $item);
+            return call_user_func($callback, $this->activeAttributes);
         }
 
-        return $item;
+        return $this->activeAttributes;
     }
 }

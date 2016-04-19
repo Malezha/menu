@@ -1,6 +1,8 @@
 <?php
 
-namespace Malezha\Menu;
+namespace Malezha\Menu\Entity;
+
+use Malezha\Menu\Traits\HasAttributes;
 
 class Link
 {
@@ -25,32 +27,38 @@ class Link
     }
 
     /**
-     * @param null|string $title
-     * @return \Malezha\Menu\Link|string
+     * @return string
      */
-    public function title($title = null)
+    public function getTitle()
     {
-        if (!empty($title)) {
-            $this->title = (string) $title;
-
-            return $this;
-        }
-
         return $this->title;
     }
 
     /**
-     * @param null|string $url
-     * @return \Malezha\Menu\Link|string
+     * @param string $title
      */
-    public function url($url = null)
+    public function setTitle($title)
+    {
+        if (!empty($title)) {
+            $this->title = (string) $title;
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     */
+    public function setUrl($url)
     {
         if (!empty($url)) {
             $this->url = (string) $url;
-
-            return $this;
         }
-
-        return $this->url;
     }
 }
