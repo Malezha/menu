@@ -106,4 +106,46 @@ class BuilderTest extends TestCase
         
         $this->assertEquals('active', $result);
     }
+    
+    public function testGroup()
+    {
+        $builder = $this->builderFactory();
+        
+        $group = $builder->group('test', function (Item $item) use ($builder) {
+            $this->assertAttributeEquals($builder, 'builder', $item);
+        }, function (Builder $menu) use ($builder) {
+            $this->assertEquals($builder->activeAttributes()->all(), $menu->activeAttributes()->all());
+        });
+
+        $this->assertEquals($group, $builder->get('test'));
+    }
+
+    public function testRender()
+    {
+        $builder = $this->builderFactory();
+
+        $index = $builder->add('index', 'Index Page', '/');
+        $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
+
+        $builder->group('orders', function ($item) {
+            $item->getAttributes()->push(['class' => 'child-menu']);
+            
+            $link = $item->getLink();
+            $link->setTitle('Orders');
+            $link->setUrl('javascript:;');
+
+        }, function ($menu) {
+            $menu->add('all', 'All', '/orders/all');
+            $menu->add('type_1', 'Type 1', '/orders/1', [], ['class' => 'text-color-red']);
+
+            $menu->add('type_2', 'Type 2', '/orders/2', [], [], function ($item) {
+                $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
+            });
+        });
+        
+        $html = $builder->render();
+        $file = file_get_contents(__DIR__ . '/stub/menu.html');
+        
+        $this->assertEquals($file, $html);
+    }
 }

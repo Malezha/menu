@@ -66,10 +66,11 @@ class Builder implements BuilderContract
             $item = new Item($this, $name);
             call_user_func($itemCallable, $item);
 
-            $menu = $this->container->make(BuilderContract::class, [$this->container, $name])
-                ->activeAttributes(function (Attributes $attributes) {
-                    $attributes->set($this->activeAttributes()->all());
-                });
+            $menu = $this->container->make(BuilderContract::class, [
+                'container' => $this->container, 
+                'name' => $name,
+                'activeAttributes' => $this->activeAttributes()->all(),
+            ]);
             call_user_func($menuCallable, $menu);
 
             $group = new Group($menu, $item);
@@ -77,9 +78,9 @@ class Builder implements BuilderContract
             $this->items->put($name, $group);
 
             return $group;
-        } else {
-            throw new \InvalidArgumentException('Arguments must be callable');
         }
+
+        throw new \InvalidArgumentException('Arguments must be callable');
     }
 
     /**
