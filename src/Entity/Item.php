@@ -1,18 +1,22 @@
 <?php
 
-namespace Malezha\Menu;
+namespace Malezha\Menu\Entity;
+
+use Malezha\Menu\Traits\DisplayRule;
+use Malezha\Menu\Traits\HasAttributes;
+use Malezha\Menu\Traits\IsUrlEqual;
 
 class Item
 {
-    use HasAttributes;
+    use HasAttributes, DisplayRule, IsUrlEqual;
 
     /**
-     * @var \Malezha\Menu\Link
+     * @var Link
      */
     protected $link;
 
     /**
-     * @var \Malezha\Menu\Builder
+     * @var Builder
      */
     protected $builder;
 
@@ -26,23 +30,17 @@ class Item
      */
     function __construct(Builder $builder, $name, $attributes = [], $title = '', $url = '#', $linkAttributes = [])
     {
+        $title = empty($title) ? $name : $title;
         $this->builder = $builder;
         $this->attributes = new Attributes($attributes);
         $this->link = new Link($title, $url, $linkAttributes);
     }
 
     /**
-     * @param null|\Malezha\Menu\Link $link
-     * @return \Malezha\Menu\Link|\Malezha\Menu\Item
+     * @return Link
      */
-    public function link($link = null)
+    public function getLink()
     {
-        if ($link instanceof Link) {
-            $this->link = $link;
-
-            return $this;
-        }
-
         return $this->link;
     }
 
@@ -53,7 +51,7 @@ class Item
     public function buildAttributes($attributes = [])
     {
         $attributes = $this->isActive() ?
-            Attributes::mergeArrayValues($this->builder->activeAttributes(), $attributes) :
+            Attributes::mergeArrayValues($this->builder->activeAttributes()->all(), $attributes) :
             $attributes;
 
         return $this->attributes->build($attributes);
@@ -62,8 +60,11 @@ class Item
     /**
      * @return bool
      */
-    protected function isActive()
+    public function isActive()
     {
-        return ($this->link()->url() == app('request')->url());
+        $currentUrl = app('request')->url();
+        $url = url($this->getLink()->getUrl());
+        
+        return $this->isUrlEqual($url, $currentUrl);
     }
 }

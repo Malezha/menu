@@ -1,19 +1,26 @@
 <?php
 
-namespace Malezha\Menu;
+namespace Malezha\Menu\Traits;
+
+use Malezha\Menu\Entity\Attributes;
 
 trait HasAttributes
 {
     /**
-     * @var \Malezha\Menu\Attributes
+     * @var Attributes
      */
     protected $attributes;
 
     /**
-     * @return \Malezha\Menu\Attributes
+     * @param callable|null $callback
+     * @return Attributes|mixed
      */
-    public function attributes()
+    public function getAttributes($callback = null)
     {
+        if (is_callable($callback)) {
+            return call_user_func($callback, $this->attributes);
+        }
+
         return $this->attributes;
     }
 

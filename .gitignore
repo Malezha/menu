@@ -1,5 +1,4 @@
 /.idea
-.directory
 composer.phar
 composer.lock
 vendor/
