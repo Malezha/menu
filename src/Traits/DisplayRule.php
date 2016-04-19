@@ -4,25 +4,25 @@ namespace Malezha\Menu\Traits;
 
 trait DisplayRule
 {
-    /**
-     * @var bool
-     */
-    protected $displayElement = true;
+    protected $rule = true;
 
     /**
      * @param mixed $rule
      */
     public function setDisplayRule($rule)
     {
-        if (is_callable($rule)) {
-            $rule = call_user_func($rule);
-        }
-
-        $this->displayElement = (bool) $rule;
+        $this->rule = $rule;
     }
 
+    /**
+     * @return bool
+     */
     public function canDisplay()
     {
-        return $this->displayElement;
+        if (is_callable($this->rule)) {
+            return (bool)call_user_func($this->rule);
+        }
+        
+        return (bool)$this->rule;
     }
 }

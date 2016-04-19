@@ -148,4 +148,21 @@ class BuilderTest extends TestCase
         
         $this->assertEquals($file, $html);
     }
+    
+    public function testDisplayRules()
+    {
+        $builder = $this->builderFactory();
+
+        $builder->add('index', 'Index Page', '/');
+        $builder->add('login', 'Login', '/login')->setDisplayRule(function () {
+            return true;
+        });
+        $builder->add('admin', 'Admin', '/admin')->setDisplayRule(false);
+        $builder->add('logout', 'Logout', '/logout')->setDisplayRule(null);
+
+        $html = $builder->render();
+        $file = file_get_contents(__DIR__ . '/stub/display_rules.html');
+
+        $this->assertEquals($file, $html);
+    }
 }
