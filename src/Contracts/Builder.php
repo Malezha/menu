@@ -3,8 +3,6 @@
 namespace Malezha\Menu\Contracts;
 
 use Illuminate\Contracts\Container\Container;
-use Malezha\Menu\Attributes;
-use Malezha\Menu\Item;
 
 interface Builder
 {
@@ -19,13 +17,13 @@ interface Builder
      * @param array $attributes
      * @param array $activeAttributes
      */
-    function __construct(Container $container, $name, $type = \Malezha\Menu\Builder::UL, $attributes = [], $activeAttributes = []);
+    function __construct(Container $container, $name, $type = self::UL, $attributes = [], $activeAttributes = []);
 
     /**
      * @param string $name
      * @param callable $itemCallable
      * @param callable $menuCallable
-     * @return \Malezha\Menu\Group
+     * @return mixed
      */
     public function group($name, $itemCallable, $menuCallable);
 
@@ -36,19 +34,9 @@ interface Builder
      * @param array $attributes
      * @param array $linkAttributes
      * @param callable|null $callback
-     * @return Item
+     * @return mixed
      */
     public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null);
-
-    /**
-     * @return \Illuminate\Support\Collection
-     */
-    public function items();
-
-    /**
-     * @return array
-     */
-    public function values();
 
     /**
      * @param string $name
@@ -57,7 +45,7 @@ interface Builder
 
     /**
      * @param string $name
-     * @return \Malezha\Menu\Item|\Malezha\Menu\Group
+     * @return mixed
      */
     public function get($name);
 
@@ -89,19 +77,13 @@ interface Builder
 
     /**
      * @param callable|null $callback
-     * @return Attributes|mixed
+     * @return mixed
      */
     public function activeAttributes($callback = null);
 
     /**
      * @param callable|null $callback
-     * @return Attributes|mixed
+     * @return mixed
      */
-    public function attributes($callback = null);
-
-    /**
-     * @param array $attributes
-     * @return string
-     */
-    public function buildAttributes($attributes = []);
+    public function getAttributes($callback = null);
 }

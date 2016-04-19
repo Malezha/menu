@@ -6,41 +6,74 @@ use Malezha\Menu\Entity\Attributes;
 
 class AttributesTest extends TestCase
 {
-    public function testGetSetAllForgetPutPushHas()
+    protected function attributeFactory()
     {
-        $attributes = new Attributes([
+        return new Attributes([
             'class' => 'some-style',
+            'id' => 'test',
         ]);
-        $this->assertEquals('some-style', $attributes->get('class'));
+    }
+    
+    public function testGet()
+    {
+        $attributes = $this->attributeFactory();
         
+        $this->assertEquals('some-style', $attributes->get('class'));
+    }
+    
+    public function testSet()
+    {
+        $attributes = $this->attributeFactory();
         $subset = ['class' => 'new-style', 'id' => 'link'];
+        
         $attributes->set($subset);
-        $this->assertEquals('new-style', $attributes->get('class'));
-        $this->assertEquals('link', $attributes->get('id'));
+        
         $this->assertArraySubset($subset, $attributes->all());
+    }
+    
+    public function testForget()
+    {
+        $attributes = $this->attributeFactory();
         
         $attributes->forget('id');
+        
         $this->assertEquals(null, $attributes->get('id'));
-        
-        $attributes->put('id', 'link');
-        $this->assertEquals('link', $attributes->get('id'));
-        
-        $push = ['data-value' => 'some'];
-        $attributes->push($push);
-        $this->assertArraySubset(array_merge($subset, $push), $attributes->all());
+    }
+    
+    public function testPut()
+    {
+        $attributes = $this->attributeFactory();
 
+        $attributes->put('data-test', 'value');
+
+        $this->assertEquals('value', $attributes->get('data-test'));
+    }
+    
+    public function testPush()
+    {
+        $attributes = $this->attributeFactory();
+
+        $subset = $attributes->all();
+        $push = ['data-value' => 'some'];
+        
+        $attributes->push($push);
+
+        $this->assertArraySubset(array_merge($subset, $push), $attributes->all());
+    }
+    
+    public function testHas()
+    {
+        $attributes = $this->attributeFactory();
+        
         $this->assertTrue($attributes->has('class'));
     }
 
     public function testMerge()
     {
-        $attributes = new Attributes([
-            'class' => 'some-style',
-        ]);
+        $attributes = $this->attributeFactory();
         
         $attributes->merge([
             'class' => 'another-style',
-            'id' => 'test',
         ]);
         
         $this->assertArraySubset([
@@ -51,14 +84,12 @@ class AttributesTest extends TestCase
 
     public function testBuild()
     {
-        $attributes = new Attributes([
-            'class' => 'some-style another-style',
-            'id' => 'test',
-        ]);
-        $expected = ' class="some-style another-style" id="test"';
+        $attributes = $this->attributeFactory();
+        $expected = ' class="some-style active" id="test"';
+        $expectedString = ' class="some-style" id="test"';
         
-        $this->assertEquals($expected, $attributes->build());
-        $this->assertEquals($expected, (string) $attributes);
+        $this->assertEquals($expected, $attributes->build(['class' => 'active']));
+        $this->assertEquals($expectedString, (string) $attributes);
     }
 
     /**

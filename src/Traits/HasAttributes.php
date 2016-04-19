@@ -2,7 +2,7 @@
 
 namespace Malezha\Menu\Traits;
 
-use Malezha\Menu\Attributes;
+use Malezha\Menu\Entity\Attributes;
 
 trait HasAttributes
 {
@@ -15,7 +15,7 @@ trait HasAttributes
      * @param callable|null $callback
      * @return Attributes|mixed
      */
-    public function attributes($callback = null)
+    public function getAttributes($callback = null)
     {
         if (is_callable($callback)) {
             return call_user_func($callback, $this->attributes);

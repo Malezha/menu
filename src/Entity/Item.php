@@ -4,10 +4,11 @@ namespace Malezha\Menu\Entity;
 
 use Malezha\Menu\Traits\DisplayRule;
 use Malezha\Menu\Traits\HasAttributes;
+use Malezha\Menu\Traits\IsUrlEqual;
 
 class Item
 {
-    use HasAttributes, DisplayRule;
+    use HasAttributes, DisplayRule, IsUrlEqual;
 
     /**
      * @var Link
@@ -50,7 +51,7 @@ class Item
     public function buildAttributes($attributes = [])
     {
         $attributes = $this->isActive() ?
-            Attributes::mergeArrayValues($this->builder->activeAttributes(), $attributes) :
+            Attributes::mergeArrayValues($this->builder->activeAttributes()->all(), $attributes) :
             $attributes;
 
         return $this->attributes->build($attributes);
@@ -59,8 +60,11 @@ class Item
     /**
      * @return bool
      */
-    protected function isActive()
+    public function isActive()
     {
-        return ($this->link()->url() == app('request')->url());
+        $currentUrl = app('request')->url();
+        $url = url($this->getLink()->getUrl());
+        
+        return $this->isUrlEqual($url, $currentUrl);
     }
 }

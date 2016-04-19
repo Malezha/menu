@@ -12,10 +12,13 @@ class Builder implements BuilderContract
 {
     use HasAttributes;
 
+    /**
+     * @var Container
+     */
     protected $container;
 
     /**
-     * @var \Illuminate\Support\Collection
+     * @var Collection
      */
     protected $items;
 
@@ -64,7 +67,7 @@ class Builder implements BuilderContract
             call_user_func($itemCallable, $item);
 
             $menu = $this->container->make(BuilderContract::class, [$this->container, $name])
-                ->activeAttributes(function ($attributes) {
+                ->activeAttributes(function (Attributes $attributes) {
                     $attributes->set($this->activeAttributes()->all());
                 });
             call_user_func($menuCallable, $menu);
@@ -102,27 +105,12 @@ class Builder implements BuilderContract
     }
 
     /**
-     * @return \Illuminate\Support\Collection
-     */
-    public function items()
-    {
-        return $this->items;
-    }
-
-    /**
-     * @return array
-     */
-    public function values()
-    {
-        return $this->items->values();
-    }
-
-    /**
      * @param string $name
+     * @return bool
      */
     public function has($name)
     {
-        $this->items->has($name);
+        return $this->items->has($name);
     }
 
     /**

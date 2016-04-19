@@ -15,7 +15,7 @@ class MenuServiceProvider extends ServiceProvider
      *
      * @var bool
      */
-    protected $defer = true;
+    protected $defer = false;
 
     /**
      * Bootstrap the application services.
@@ -47,7 +47,7 @@ class MenuServiceProvider extends ServiceProvider
 
     protected function registerSingleton()
     {
-        $this->app->singleton(MenuContract::class, function (Container $app) {
+        $this->app->singleton('menu', function (Container $app) {
             return new Menu($app);
         });
         $this->app->alias('menu', MenuContract::class);
@@ -55,7 +55,7 @@ class MenuServiceProvider extends ServiceProvider
 
     protected function registerBuilder()
     {
-        $this->app->bind(BuilderContract::class, Builder::class);
+        $this->app->bind('menu.builder', Builder::class);
         $this->app->alias('menu.builder', BuilderContract::class);
     }
 
@@ -66,6 +66,6 @@ class MenuServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return ['menu'];
+        return [];
     }
 }
