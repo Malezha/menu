@@ -162,14 +162,21 @@ class Builder implements BuilderContract
     public function render($view = null)
     {
         $view = (empty($view)) ? config('menu.view') : $view;
+        $minify = config('menu.minify', false);
         
         /* @var ViewFactory $viewFactory */
         $viewFactory = $this->container->make(ViewFactory::class);
 
-        return $viewFactory->make($view, [
+        $rendered = $viewFactory->make($view, [
             'menu' => $this,
             'renderView' => $view,
         ])->render();
+        
+        if ($minify) {
+            $rendered = $this->minifyHtmlOutput($rendered);
+        }
+        
+        return $rendered;
     }
 
     /**
@@ -183,5 +190,22 @@ class Builder implements BuilderContract
         }
 
         return $this->activeAttributes;
+    }
+
+    protected function minifyHtmlOutput($html)
+    {
+        $search = array(
+            '/\>[^\S]+/s',  // strip whitespaces after tags, except space
+            '/[^\S]+\</s',  // strip whitespaces before tags, except space
+            '/(\s)+/s'       // shorten multiple whitespace sequences
+        );
+
+        $replace = array(
+            '>',
+            '<',
+            '\\1'
+        );
+
+        return preg_replace($search, $replace, $html);
     }
 }

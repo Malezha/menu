@@ -7,4 +7,9 @@ return [
      */
     'view' => 'menu::view',
 
+    /**
+     * Minify html output
+     */
+    'minify' => true,
+
 ];
