@@ -1,25 +1,28 @@
+# Todo
+
+Write a comprehensive documentation.
+
 # Example
 
 ```php
-Menu::make('main', 'ul', [], function (\Malezha\Menu\Builder $menu) {
+Menu::make('main', 'ul', [], function (\Malezha\Menu\Entity\Builder $menu) {
 
     $index = $menu->add('index', 'Index Page', '/');
-    $index->link()->attributes()->push(['class' => 'menu-link']);
-    
-    $orders = $menu->group('orders', function (\Malezha\Menu\Item $item) {
-    
-        $item->attributes()->push(['class' => 'child-menu']);
-        $item->link()->title('Orders')->url('javascript:;');
-        
-    }, function (\Malezha\Menu\Builder $menu) {
-    
+    $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
+
+    $menu->group('orders', function (\Malezha\Menu\Entity\Item $item) {
+        $item->getAttributes()->push(['class' => 'child-menu']);
+
+        $link = $item->getLink();
+        $link->setTitle('Orders');
+        $link->setUrl('javascript:;');
+
+    }, function (\Malezha\Menu\Entity\Builder $menu) {
         $menu->add('all', 'All', '/orders/all');
-        $menu->add('type_1', 'Type 1', '/orders/1', [], ['class' => 'text-color-red']);
-        
-        $menu->add('type_2', 'Type 2', '/orders/2', [], [], function (\Malezha\Menu\Item $item) {
-            $item->link()->attributes()->push(['data-attribute' => 'value']);
+
+        $menu->add('type_2', 'Type 2', '/orders/2', [], [], function ($item) {
+            $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
         });
-        
     });
     
 });
