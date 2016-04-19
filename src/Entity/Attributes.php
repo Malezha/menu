@@ -11,7 +11,7 @@ class Attributes
     /**
      * @param array $attributes
      */
-    function __construct(array $attributes)
+    public function __construct(array $attributes)
     {
         $this->list = new Collection($attributes);
     }
@@ -166,7 +166,7 @@ class Attributes
     /**
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return $this->build();
     }

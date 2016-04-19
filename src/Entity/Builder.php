@@ -33,7 +33,7 @@ class Builder implements BuilderContract
     protected $type;
 
     /**
-     * @var array
+     * @var Attributes
      */
     protected $activeAttributes;
 
@@ -44,7 +44,7 @@ class Builder implements BuilderContract
      * @param array $attributes
      * @param array $activeAttributes
      */
-    function __construct(Container $container, $name, $type = self::UL, $attributes = [], $activeAttributes = [])
+    public function __construct(Container $container, $name, $type = self::UL, $attributes = [], $activeAttributes = [])
     {
         $this->container = $container;
         $this->name = $name;

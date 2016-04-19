@@ -19,10 +19,10 @@ class Link
     protected $title;
 
 
-    function __construct($title = '', $url = '#', $attributes = [])
+    public function __construct($title = '', $url = '#', $attributes = [])
     {
-        $this->title = $title;
-        $this->url = $url;
+        $this->setTitle($title);
+        $this->setUrl($url);
         $this->attributes = new Attributes($attributes);
     }
 
@@ -58,6 +58,10 @@ class Link
     public function setUrl($url)
     {
         if (!empty($url)) {
+            if ($url != '#') {
+                $url = url($url);
+            }
+
             $this->url = (string) $url;
         }
     }

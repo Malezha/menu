@@ -28,7 +28,7 @@ class Item
      * @param string $url
      * @param array $linkAttributes
      */
-    function __construct(Builder $builder, $name, $attributes = [], $title = '', $url = '#', $linkAttributes = [])
+    public function __construct(Builder $builder, $name, $attributes = [], $title = '', $url = '#', $linkAttributes = [])
     {
         $title = empty($title) ? $name : $title;
         $this->builder = $builder;

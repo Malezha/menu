@@ -23,7 +23,7 @@ class Group
      * @param BuilderContract $menu
      * @param Item $item
      */
-    function __construct(BuilderContract $menu, Item $item)
+    public function __construct(BuilderContract $menu, Item $item)
     {
         $this->menu = $menu;
         $this->item = $item;

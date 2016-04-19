@@ -14,7 +14,11 @@ class BuilderTest extends TestCase
      */
     protected function builderFactory()
     {
-        return $this->app->make(Builder::class, ['name' => 'test', 'activeAttributes' => ['class' => 'active']]);
+        return $this->app->make(Builder::class, [
+            'name' => 'test', 
+            'activeAttributes' => ['class' => 'active'],
+            'attributes' => ['class' => 'menu'],
+        ]);
     }
     
     public function testConstructor()
@@ -33,7 +37,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $item = $builder->add('index', 'Index', url('/'), ['class' => 'main-menu'], ['class' => 'link'],
+        $item = $builder->add('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link'],
             function (Item $item) {
                 $this->assertAttributeEquals('Index', 'title', $item->getLink());
                 $item->getLink()->setTitle('Home');

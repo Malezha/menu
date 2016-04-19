@@ -31,6 +31,6 @@ class LinkTest extends TestCase
         $this->assertEquals('http://localhost/index', $link->getUrl());
         
         $link->setUrl('/home');
-        $this->assertAttributeEquals('/home', 'url', $link);
+        $this->assertAttributeEquals(url('/home'), 'url', $link);
     }
 }
