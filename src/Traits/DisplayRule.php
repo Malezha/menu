@@ -1,5 +1,4 @@
 <?php
-
 namespace Malezha\Menu\Traits;
 
 trait DisplayRule

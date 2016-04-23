@@ -1,5 +1,4 @@
 <?php
-
 namespace Malezha\Menu\Entity;
 
 use Illuminate\Contracts\Container\Container;

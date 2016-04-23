@@ -1,5 +1,4 @@
 <?php
-
 namespace Malezha\Menu\Entity;
 
 use Malezha\Menu\Traits\HasAttributes;

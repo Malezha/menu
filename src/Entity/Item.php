@@ -1,10 +1,10 @@
 <?php
-
 namespace Malezha\Menu\Entity;
 
 use Malezha\Menu\Traits\DisplayRule;
 use Malezha\Menu\Traits\HasAttributes;
 use Malezha\Menu\Traits\IsUrlEqual;
+use Malezha\Menu\Support\MergeAttributes;
 
 class Item
 {
@@ -51,7 +51,7 @@ class Item
     public function buildAttributes($attributes = [])
     {
         $attributes = $this->isActive() ?
-            Attributes::mergeArrayValues($this->builder->activeAttributes()->all(), $attributes) :
+            (new MergeAttributes($this->builder->activeAttributes()->all(), $attributes))->merge() :
             $attributes;
 
         return $this->attributes->build($attributes);

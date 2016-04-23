@@ -3,6 +3,7 @@
 namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Entity\Attributes;
+use Malezha\Menu\Support\MergeAttributes;
 
 class AttributesTest extends TestCase
 {
@@ -97,6 +98,6 @@ class AttributesTest extends TestCase
      */
     public function testMergeArrayValuesException()
     {
-        Attributes::mergeArrayValues();
+        $merge = new MergeAttributes();
     }
 }

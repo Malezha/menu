@@ -1,8 +1,7 @@
 <?php
-
 namespace Malezha\Menu\Entity;
 
-use Illuminate\Support\Collection;
+use Malezha\Menu\Support\MergeAttributes;
 
 class Attributes
 {
@@ -96,59 +95,9 @@ class Attributes
      */
     public function merge(array $attributes)
     {
-        $this->set(self::mergeArrayValues($this->list, $attributes));
+        $this->set((new MergeAttributes($this->all(), $attributes))->merge());
 
         return $this;
-    }
-
-    /**
-     * @return array|bool
-     */
-    public static function mergeArrayValues()
-    {
-        if (func_num_args() <= 1) {
-            throw new \RuntimeException("Must has min two parameters.");
-        }
-
-        $arrays = func_get_args();
-        $keys = [];
-
-        foreach ($arrays as $array) {
-            $keys = array_merge($keys, array_keys($array));
-        }
-
-        $keys = array_unique($keys);
-
-        $merged = array_fill_keys($keys, null);
-
-        foreach ($arrays as $array) {
-            foreach ($keys as $key) {
-                if (array_key_exists($key, $array)) {
-                    $merged[$key] = self::mergeValues($merged[$key], $array[$key]);
-                }
-            }
-        }
-
-        return $merged;
-    }
-
-    /**
-     * @param string $valueOne
-     * @param string $valueTwo
-     * @return string
-     */
-    protected static function mergeValues($valueOne, $valueTwo)
-    {
-        if (is_null($valueOne)) {
-            return $valueTwo;
-        }
-        
-        $valueOne = explode(' ', $valueOne);
-        $valueTwo = explode(' ', $valueTwo);
-
-        $merged = array_merge($valueOne, $valueTwo);
-
-        return trim(implode(' ', $merged));
     }
 
     /**
@@ -157,7 +106,7 @@ class Attributes
      */
     public function build($attributes = [])
     {
-        $attributes = $this->mergeArrayValues($this->all(), $attributes);
+        $attributes = (new MergeAttributes($this->all(), $attributes))->merge();
 
         $html = (count($attributes) > 0) ? ' ' : '';
 
