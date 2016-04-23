@@ -57,10 +57,6 @@ class Link
     public function setUrl($url)
     {
         if (!empty($url)) {
-            if ($url != '#') {
-                $url = url($url);
-            }
-
             $this->url = (string) $url;
         }
     }

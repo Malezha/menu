@@ -48,7 +48,7 @@ class BuilderTest extends TestCase
 
         $link = $item->getLink();
         $this->assertAttributeEquals('Home', 'title', $link);
-        $this->assertAttributeEquals(url('/'), 'url', $link);
+        $this->assertAttributeEquals('/', 'url', $link);
     }
     
     public function testGet()
@@ -128,7 +128,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $index = $builder->add('index', 'Index Page', '/');
+        $index = $builder->add('index', 'Index Page', url('/'));
         $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
         $builder->group('orders', function ($item) {
@@ -139,10 +139,10 @@ class BuilderTest extends TestCase
             $link->setUrl('javascript:;');
 
         }, function ($menu) {
-            $menu->add('all', 'All', '/orders/all');
-            $menu->add('type_1', 'Type 1', '/orders/1', [], ['class' => 'text-color-red']);
+            $menu->add('all', 'All', url('/orders/all'));
+            $menu->add('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
 
-            $menu->add('type_2', 'Type 2', '/orders/2', [], [], function ($item) {
+            $menu->add('type_2', 'Type 2', url('/orders/2'), [], [], function ($item) {
                 $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
             });
         });
@@ -157,12 +157,12 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $builder->add('index', 'Index Page', '/');
-        $builder->add('login', 'Login', '/login')->setDisplayRule(function () {
+        $builder->add('index', 'Index Page', url('/'));
+        $builder->add('login', 'Login', url('/login'))->setDisplayRule(function () {
             return true;
         });
-        $builder->add('admin', 'Admin', '/admin')->setDisplayRule(false);
-        $builder->add('logout', 'Logout', '/logout')->setDisplayRule(null);
+        $builder->add('admin', 'Admin', url('/admin'))->setDisplayRule(false);
+        $builder->add('logout', 'Logout', url('/logout'))->setDisplayRule(null);
 
         $html = $builder->render();
         $file = file_get_contents(__DIR__ . '/stub/display_rules.html');

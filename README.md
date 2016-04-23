@@ -28,7 +28,7 @@ Menu::make('main', 'ul', [], function (\Malezha\Menu\Entity\Builder $menu) {
         $link->setTitle('Orders');
         $link->setUrl('javascript:;');
 
-    }, function (\Malezha\Menu\Entity\Builder $menu) {
+    }, function (\Malezha\Menu\Contracts\Builder $menu) {
         $menu->add('all', 'All', '/orders/all');
 
         $menu->add('type_2', 'Type 2', '/orders/2', [], [], function ($item) {

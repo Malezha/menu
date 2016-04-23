@@ -9,9 +9,7 @@ class LinkTest extends TestCase
 {
     protected function linkFactory()
     {
-        return new Link('Home',
-            $this->app->make(UrlGenerator::class)->to('/index'),
-            ['class' => 'link']);
+        return new Link('Home', url('/index'), ['class' => 'link']);
     }
 
     public function testTitle()
@@ -31,6 +29,6 @@ class LinkTest extends TestCase
         $this->assertEquals('http://localhost/index', $link->getUrl());
         
         $link->setUrl('/home');
-        $this->assertAttributeEquals(url('/home'), 'url', $link);
+        $this->assertAttributeEquals('/home', 'url', $link);
     }
 }
