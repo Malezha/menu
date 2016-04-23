@@ -21,11 +21,11 @@ interface Builder
 
     /**
      * @param string $name
-     * @param callable $itemCallable
-     * @param callable $menuCallable
+     * @param \Closure $itemCallable
+     * @param \Closure $menuCallable
      * @return mixed
      */
-    public function group($name, $itemCallable, $menuCallable);
+    public function group($name, \Closure $itemCallable, \Closure $menuCallable);
 
     /**
      * @param string $name
@@ -33,7 +33,7 @@ interface Builder
      * @param string $url
      * @param array $attributes
      * @param array $linkAttributes
-     * @param callable|null $callback
+     * @param \Closure|null $callback
      * @return mixed
      */
     public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null);
@@ -45,9 +45,10 @@ interface Builder
 
     /**
      * @param string $name
-     * @return mixed
+     * @param mixed|null $default
+     * @return Item|Group|null
      */
-    public function get($name);
+    public function get($name, $default = null);
 
     /**
      * @return array
@@ -76,13 +77,13 @@ interface Builder
     public function render($view = null);
 
     /**
-     * @param callable|null $callback
+     * @param \Closure|null $callback
      * @return mixed
      */
     public function activeAttributes($callback = null);
 
     /**
-     * @param callable|null $callback
+     * @param \Closure|null $callback
      * @return mixed
      */
     public function getAttributes($callback = null);

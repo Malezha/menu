@@ -13,7 +13,7 @@ class Attributes
      */
     public function __construct(array $attributes)
     {
-        $this->list = new Collection($attributes);
+        $this->list = $attributes;
     }
 
     /**
@@ -23,7 +23,10 @@ class Attributes
      */
     public function get($name, $default = null)
     {
-        return $this->list->get($name, $default);
+        if (array_key_exists($name, $this->list)) {
+            return $this->list[$name];
+        }
+        return $default;
     }
 
     /**
@@ -32,7 +35,7 @@ class Attributes
      */
     public function set(array $attributes)
     {
-        $this->list = new Collection($attributes);
+        $this->list = $attributes;
 
         return $this;
     }
@@ -42,7 +45,7 @@ class Attributes
      */
     public function all()
     {
-        return $this->list->all();
+        return $this->list;
     }
 
     /**
@@ -51,7 +54,7 @@ class Attributes
      */
     public function has($name)
     {
-        return $this->list->has($name);
+        return array_key_exists($name, $this->list);
     }
 
     /**
@@ -59,7 +62,9 @@ class Attributes
      */
     public function forget($name)
     {
-        $this->list->forget($name);
+        if ($this->has($name)) {
+            unset($this->list[$name]);
+        }
     }
 
     /**
@@ -68,7 +73,7 @@ class Attributes
      */
     public function push(array $attributes)
     {
-        $this->list = $this->list->merge($attributes);
+        $this->list = array_merge($this->list, $attributes);
 
         return $this;
     }
@@ -80,7 +85,7 @@ class Attributes
      */
     public function put($name, $value)
     {
-        $this->list->put($name, $value);
+        $this->list[$name] = $value;
 
         return $this;
     }
@@ -91,7 +96,7 @@ class Attributes
      */
     public function merge(array $attributes)
     {
-        $this->set(self::mergeArrayValues($this->list->toArray(), $attributes));
+        $this->set(self::mergeArrayValues($this->list, $attributes));
 
         return $this;
     }

@@ -29,7 +29,7 @@ class BuilderTest extends TestCase
         $this->assertAttributeEquals('test', 'name', $builder);
         $this->assertAttributeEquals(Builder::UL, 'type', $builder);
         $this->assertAttributeInstanceOf(Attributes::class, 'attributes', $builder);
-        $this->assertAttributeInstanceOf(Collection::class, 'items', $builder);
+        $this->assertAttributeInternalType('array', 'items', $builder);
         $this->assertAttributeInstanceOf(Attributes::class, 'activeAttributes', $builder);
     }
 

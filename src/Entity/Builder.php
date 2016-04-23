@@ -18,7 +18,7 @@ class Builder implements BuilderContract
     protected $container;
 
     /**
-     * @var Collection
+     * @var array
      */
     protected $items;
 
@@ -50,37 +50,32 @@ class Builder implements BuilderContract
         $this->name = $name;
         $this->type = $type;
         $this->attributes = new Attributes($attributes);
-        $this->items = new Collection();
+        $this->items = [];
         $this->activeAttributes = new Attributes($activeAttributes);
     }
 
     /**
      * @param string $name
-     * @param callable $itemCallable
-     * @param callable $menuCallable
+     * @param \Closure $itemCallable
+     * @param \Closure $menuCallable
      * @return Group
      */
-    public function group($name, $itemCallable, $menuCallable)
+    public function group($name, \Closure $itemCallable, \Closure $menuCallable)
     {
-        if (is_callable($itemCallable) && is_callable($menuCallable)) {
-            $item = new Item($this, $name);
-            call_user_func($itemCallable, $item);
+        $item = new Item($this, $name);
+        call_user_func($itemCallable, $item);
 
-            $menu = $this->container->make(BuilderContract::class, [
-                'container' => $this->container, 
-                'name' => $name,
-                'activeAttributes' => $this->activeAttributes()->all(),
-            ]);
-            call_user_func($menuCallable, $menu);
+        $menu = $this->container->make(BuilderContract::class, [
+            'container' => $this->container, 
+            'name' => $name,
+            'activeAttributes' => $this->activeAttributes()->all(),
+        ]);
+        call_user_func($menuCallable, $menu);
 
-            $group = new Group($menu, $item);
+        $group = new Group($menu, $item);
+        $this->items[$name] = $group;
 
-            $this->items->put($name, $group);
-
-            return $group;
-        }
-
-        throw new \InvalidArgumentException('Arguments must be callable');
+        return $group;
     }
 
     /**
@@ -89,7 +84,7 @@ class Builder implements BuilderContract
      * @param string $url
      * @param array $attributes
      * @param array $linkAttributes
-     * @param callable|null $callback
+     * @param \Closure|null $callback
      * @return Item
      */
     public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
@@ -100,7 +95,7 @@ class Builder implements BuilderContract
             call_user_func($callback, $item);
         }
 
-        $this->items->put($name, $item);
+        $this->items[$name] = $item;
 
         return $item;
     }
@@ -111,16 +106,20 @@ class Builder implements BuilderContract
      */
     public function has($name)
     {
-        return $this->items->has($name);
+        return array_key_exists($name, $this->items);
     }
 
     /**
      * @param string $name
-     * @return Item|Group
+     * @param mixed|null $default
+     * @return Item|Group|null
      */
-    public function get($name)
+    public function get($name, $default = null)
     {
-        return $this->items->get($name);
+        if ($this->has($name)) {
+            return $this->items[$name];
+        }
+        return $default;
     }
 
     /**
@@ -128,7 +127,7 @@ class Builder implements BuilderContract
      */
     public function all()
     {
-        return $this->items->all();
+        return $this->items;
     }
 
     /**
@@ -136,7 +135,9 @@ class Builder implements BuilderContract
      */
     public function forget($name)
     {
-        $this->items->forget($name);
+        if ($this->has($name)) {
+            unset($this->items[$name]);
+        }
     }
 
     /**
@@ -180,7 +181,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * @param callable|null $callback
+     * @param \Closure|null $callback
      * @return Attributes|mixed
      */
     public function activeAttributes($callback = null)
