@@ -7,7 +7,6 @@ use Illuminate\Contracts\View\Factory as ViewFactory;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
 use Malezha\Menu\Contracts\Group;
-use Malezha\Menu\Contracts\HasAttributes as HasAttributesContract;
 use Malezha\Menu\Contracts\Item;
 use Malezha\Menu\Contracts\Link;
 use Malezha\Menu\Traits\HasAttributes;
@@ -183,7 +182,7 @@ class Builder implements BuilderContract
      */
     public function setType($type)
     {
-        $this->type = (string)$type;
+        $this->type = (string) $type;
     }
 
     /**
@@ -227,14 +226,14 @@ class Builder implements BuilderContract
     }
 
     /**
-     * @param $html
+     * @param string $html
      * @return mixed
      */
     protected function minifyHtmlOutput($html)
     {
         $search = array(
-            '/\>[^\S]+/s',  // strip whitespaces after tags, except space
-            '/[^\S]+\</s',  // strip whitespaces before tags, except space
+            '/\>[^\S]+/s', // strip whitespaces after tags, except space
+            '/[^\S]+\</s', // strip whitespaces before tags, except space
             '/(\s)+/s'       // shorten multiple whitespace sequences
         );
 

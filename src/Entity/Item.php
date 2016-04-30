@@ -64,8 +64,7 @@ class Item implements ItemContract
     public function buildAttributes($attributes = [])
     {
         $attributes = $this->isActive() ?
-            (new MergeAttributes($this->builder->activeAttributes()->all(), $attributes))->merge() :
-            $attributes;
+            (new MergeAttributes($this->builder->activeAttributes()->all(), $attributes))->merge() : $attributes;
 
         return $this->attributes->build($attributes);
     }
