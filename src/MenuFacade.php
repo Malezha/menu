@@ -4,6 +4,10 @@ namespace Malezha\Menu;
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * Class MenuFacade
+ * @package Malezha\Menu
+ */
 class MenuFacade extends Facade
 {
     /**
@@ -13,6 +17,6 @@ class MenuFacade extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'menu';
+        return 'menu.instance';
     }
 }

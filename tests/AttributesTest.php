@@ -2,16 +2,21 @@
 
 namespace Malezha\Menu\Tests;
 
-use Malezha\Menu\Entity\Attributes;
+use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Support\MergeAttributes;
 
 class AttributesTest extends TestCase
 {
+    /**
+     * @return Attributes
+     */
     protected function attributeFactory()
     {
-        return new Attributes([
-            'class' => 'some-style',
-            'id' => 'test',
+        return $this->app->make(Attributes::class, [
+            'attributes' =>[
+                'class' => 'some-style',
+                'id' => 'test',
+            ]
         ]);
     }
     

@@ -1,97 +1,122 @@
 <?php
 namespace Malezha\Menu\Entity;
 
+use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Support\MergeAttributes;
 
-class Attributes
+/**
+ * Class Attributes
+ * @package Malezha\Menu\Entity
+ */
+class Attributes implements AttributesContract
 {
-    protected $list;
+    /**
+     * @var array
+     */
+    protected $attributes;
 
     /**
      * @param array $attributes
      */
     public function __construct(array $attributes)
     {
-        $this->list = $attributes;
+        $this->attributes = $attributes;
     }
 
     /**
+     * Get attribute by name
+     *
      * @param string $name
-     * @param mixed $default
-     * @return mixed
+     * @param string|null $default
+     * @return string|null
      */
     public function get($name, $default = null)
     {
-        if (array_key_exists($name, $this->list)) {
-            return $this->list[$name];
+        if (array_key_exists($name, $this->attributes)) {
+            return $this->attributes[$name];
         }
         return $default;
     }
 
     /**
+     * Set array attributes
+     *
      * @param array $attributes
-     * @return $this
+     * @return AttributesContract
      */
     public function set(array $attributes)
     {
-        $this->list = $attributes;
+        $this->attributes = $attributes;
 
         return $this;
     }
 
     /**
+     * Get all attributes
+     *
      * @return array
      */
     public function all()
     {
-        return $this->list;
+        return $this->attributes;
     }
 
     /**
+     * Check exits attribute by name
+     *
      * @param string $name
      * @return bool
      */
     public function has($name)
     {
-        return array_key_exists($name, $this->list);
+        return array_key_exists($name, $this->attributes);
     }
 
     /**
+     * Delete attribute by name
+     *
      * @param string $name
      */
     public function forget($name)
     {
         if ($this->has($name)) {
-            unset($this->list[$name]);
+            unset($this->attributes[$name]);
         }
     }
 
     /**
+     * Set attribute or attributes.
+     * No merge attributes value.
+     *
      * @param array $attributes
-     * @return $this
+     * @return AttributesContract
      */
     public function push(array $attributes)
     {
-        $this->list = array_merge($this->list, $attributes);
+        $this->attributes = array_merge($this->attributes, $attributes);
 
         return $this;
     }
 
     /**
+     * Set attribute value
+     *
      * @param string $name
-     * @param mixed $value
-     * @return $this
+     * @param string $value
+     * @return AttributesContract
      */
     public function put($name, $value)
     {
-        $this->list[$name] = $value;
+        $this->attributes[$name] = $value;
 
         return $this;
     }
 
     /**
+     * Merge attributes and merge their values
+     *
      * @param array $attributes
-     * @return $this
+     * @return AttributesContract
      */
     public function merge(array $attributes)
     {
@@ -101,6 +126,8 @@ class Attributes
     }
 
     /**
+     * Build attributes html valid string
+     *
      * @param array $attributes
      * @return string
      */

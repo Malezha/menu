@@ -2,14 +2,20 @@
 namespace Malezha\Menu\Entity;
 
 use Malezha\Menu\Contracts\Builder as BuilderContract;
+use Malezha\Menu\Contracts\Group as GroupContract;
+use Malezha\Menu\Contracts\Item as ItemContract;
 use Malezha\Menu\Traits\DisplayRule;
 
-class Group
+/**
+ * Class Group
+ * @package Malezha\Menu\Entity
+ */
+class Group implements GroupContract
 {
     use DisplayRule;
 
     /**
-     * @var Item
+     * @var ItemContract
      */
     protected $item;
 
@@ -20,9 +26,9 @@ class Group
 
     /**
      * @param BuilderContract $menu
-     * @param Item $item
+     * @param ItemContract $item
      */
-    public function __construct(BuilderContract $menu, Item $item)
+    public function __construct(BuilderContract $menu, ItemContract $item)
     {
         $this->menu = $menu;
         $this->item = $item;
@@ -31,15 +37,15 @@ class Group
     /**
      * @return BuilderContract
      */
-    public function menu()
+    public function getMenu()
     {
         return $this->menu;
     }
 
     /**
-     * @return Item
+     * @return ItemContract
      */
-    public function item()
+    public function getItem()
     {
         return $this->item;
     }

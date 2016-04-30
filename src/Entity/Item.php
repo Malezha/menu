@@ -1,39 +1,52 @@
 <?php
 namespace Malezha\Menu\Entity;
 
+use Illuminate\Http\Request;
+use Malezha\Menu\Contracts\Attributes as AttributesContract;
+use Malezha\Menu\Contracts\Builder as BuilderContract;
+use Malezha\Menu\Contracts\Link as LinkContract;
+use Malezha\Menu\Contracts\Item as ItemContract;
 use Malezha\Menu\Traits\DisplayRule;
 use Malezha\Menu\Traits\HasAttributes;
-use Malezha\Menu\Traits\IsUrlEqual;
 use Malezha\Menu\Support\MergeAttributes;
 
-class Item
+/**
+ * Class Item
+ * @package Malezha\Menu\Entity
+ */
+class Item implements ItemContract
 {
-    use HasAttributes, DisplayRule, IsUrlEqual;
+    use HasAttributes, DisplayRule;
 
     /**
-     * @var Link
+     * @var LinkContract
      */
     protected $link;
 
     /**
-     * @var Builder
+     * @var BuilderContract
      */
     protected $builder;
 
     /**
-     * @param Builder $builder
-     * @param string $name
-     * @param array $attributes
-     * @param string $title
-     * @param string $url
-     * @param array $linkAttributes
+     * @var Request
      */
-    public function __construct(Builder $builder, $name, $attributes = [], $title = '', $url = '#', $linkAttributes = [])
+    protected $request;
+
+    /**
+     * Item constructor.
+     * @param BuilderContract $builder
+     * @param AttributesContract $attributes
+     * @param LinkContract $link
+     * @param Request $request
+     */
+    public function __construct(BuilderContract $builder, AttributesContract $attributes, 
+                                LinkContract $link, Request $request)
     {
-        $title = empty($title) ? $name : $title;
         $this->builder = $builder;
-        $this->attributes = new Attributes($attributes);
-        $this->link = new Link($title, $url, $linkAttributes);
+        $this->attributes = $attributes;
+        $this->link = $link;
+        $this->request = $request;
     }
 
     /**
@@ -60,11 +73,34 @@ class Item
     /**
      * @return bool
      */
-    public function isActive()
+    protected function isActive()
     {
-        $currentUrl = app('request')->url();
+        $currentUrl = $this->request->url();
         $url = url($this->getLink()->getUrl());
         
         return $this->isUrlEqual($url, $currentUrl);
+    }
+
+    /**
+     * Check is two url equal
+     *
+     * @param string $first
+     * @param string $second
+     * @return bool
+     */
+    protected function isUrlEqual($first, $second)
+    {
+        $uriForTrim = [
+            '#',
+            '/index',
+            '/'
+        ];
+        
+        foreach ($uriForTrim as $trim) {
+            $first = rtrim($first, $trim);
+            $second = rtrim($second, $trim);
+        }
+
+        return $first == $second;
     }
 }

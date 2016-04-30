@@ -2,14 +2,18 @@
 
 namespace Malezha\Menu\Tests;
 
-use Illuminate\Contracts\Routing\UrlGenerator;
-use Malezha\Menu\Entity\Link;
+use Malezha\Menu\Contracts\Attributes;
+use Malezha\Menu\Contracts\Link;
 
 class LinkTest extends TestCase
 {
     protected function linkFactory()
     {
-        return new Link('Home', url('/index'), ['class' => 'link']);
+        return $this->app->make(Link::class, [
+            'title' => 'Home',
+            'url' => url('/index'),
+            'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'link']]),
+        ]);
     }
 
     public function testTitle()

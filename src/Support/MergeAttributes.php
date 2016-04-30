@@ -6,7 +6,7 @@ class MergeAttributes
     protected $arrays = [];
     
     /**
-     * @param array $arrays,...
+     * @param array...
      * @throws \RuntimeException
      */
     public function __construct()

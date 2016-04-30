@@ -3,6 +3,10 @@ namespace Malezha\Menu\Contracts;
 
 use Illuminate\Contracts\Container\Container;
 
+/**
+ * Interface Menu
+ * @package Malezha\Menu\Contracts
+ */
 interface Menu
 {
     /**
@@ -12,16 +16,20 @@ interface Menu
     public function __construct(Container $container);
 
     /**
+     * Make new global menu
+     * 
      * @param string $name
-     * @param callable $callback
+     * @param \Closure $callback
      * @param string $type
      * @param array $attributes
      * @param array $activeAttributes
      * @return Builder
      */
-    public function make($name, $callback, $type = Builder::UL, $attributes = [], $activeAttributes = []);
+    public function make($name, \Closure $callback, $type = Builder::UL, $attributes = [], $activeAttributes = []);
 
     /**
+     * Get global menu
+     * 
      * @param string $name
      * @return Builder
      * @throws \RuntimeException
@@ -29,6 +37,8 @@ interface Menu
     public function get($name);
 
     /**
+     * Render global menu to html
+     * 
      * @param string $name
      * @param null|string $view
      */

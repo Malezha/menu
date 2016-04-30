@@ -1,9 +1,11 @@
 <?php
 namespace Malezha\Menu\Entity;
 
+use Malezha\Menu\Contracts\Attributes as AttributesContract;
+use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Traits\HasAttributes;
 
-class Link
+class Link implements LinkContract
 {
     use HasAttributes;
 
@@ -17,12 +19,18 @@ class Link
      */
     protected $title;
 
-
-    public function __construct($title = '', $url = '#', $attributes = [])
+    /**
+     * Link constructor.
+     * 
+     * @param string $title
+     * @param string $url
+     * @param AttributesContract $attributes
+     */
+    public function __construct($title = '', $url = '#', AttributesContract $attributes)
     {
         $this->setTitle($title);
         $this->setUrl($url);
-        $this->attributes = new Attributes($attributes);
+        $this->attributes = $attributes;
     }
 
     /**

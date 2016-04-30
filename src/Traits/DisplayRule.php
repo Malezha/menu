@@ -1,12 +1,22 @@
 <?php
 namespace Malezha\Menu\Traits;
 
+/**
+ * Class DisplayRule
+ * @package Malezha\Menu\Traits
+ */
 trait DisplayRule
 {
+    /**
+     * @var bool|\Closure
+     */
     protected $rule = true;
 
     /**
-     * @param mixed $rule
+     * Set boolean or callback, witch return boolean to determine whether to display or not this item.
+     * Callback will be called each time rendering item.
+     *
+     * @param bool|\Closure $rule
      */
     public function setDisplayRule($rule)
     {
@@ -14,6 +24,8 @@ trait DisplayRule
     }
 
     /**
+     * The element should be rendered?
+     *
      * @return bool
      */
     public function canDisplay()

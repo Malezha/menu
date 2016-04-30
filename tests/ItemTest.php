@@ -2,17 +2,35 @@
 
 namespace Malezha\Menu\Tests;
 
+use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
-use Malezha\Menu\Entity\Item;
-use Malezha\Menu\Entity\Link;
+use Malezha\Menu\Contracts\Item;
+use Malezha\Menu\Contracts\Link;
 
 class ItemTest extends TestCase
 {
+    /**
+     * @return Item
+     */
     protected function itemFactory()
     {
-        $builder = $this->app->make(Builder::class, ['name' => 'test']);
+        $builder = $this->app->make(Builder::class, [
+            'name' => 'test',
+            'activeAttributes' => ['class' => 'active'],
+        ]);
+        $link = $this->app->make(Link::class, [
+            'title' => 'Index',
+            'url' => '/index',
+            'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'link']]),
+        ]);
+        $item = $this->app->make(Item::class, [
+            'builder' => $builder,
+            'attributes' => $this->app->make(Attributes::class, ['attributes' => []]),
+            'link' => $link,
+            'request' => $this->app->make('request'),
+        ]);
         
-        return new Item($builder, 'index', [], 'Index', '/index', ['class' => 'link']);
+        return $item;
     }
 
     public function testLink()
@@ -29,13 +47,10 @@ class ItemTest extends TestCase
         $this->assertInternalType('string', $item->buildAttributes());
     }
     
-    public function testIsUrlEqual()
+    public function testIsActiveUrl()
     {
         $item = $this->itemFactory();
         
-        $first = url('/index');
-        $second = url('/');
-        
-        $this->assertTrue($item->isUrlEqual($first, $second));
+        $this->assertEquals(' class="active"', $item->buildAttributes());
     }
 }

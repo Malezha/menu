@@ -1,8 +1,12 @@
 <?php
 namespace Malezha\Menu\Traits;
 
-use Malezha\Menu\Entity\Attributes;
+use Malezha\Menu\Contracts\Attributes;
 
+/**
+ * Class HasAttributes
+ * @package Malezha\Menu\Traits
+ */
 trait HasAttributes
 {
     /**
@@ -11,6 +15,9 @@ trait HasAttributes
     protected $attributes;
 
     /**
+     * Get attributes object.
+     * If send \Closure option as parameter then returned callback result.
+     * 
      * @param callable|null $callback
      * @return Attributes|mixed
      */
@@ -24,6 +31,8 @@ trait HasAttributes
     }
 
     /**
+     * Build attributes to html valid string
+     * 
      * @param array $attributes
      * @return string
      */

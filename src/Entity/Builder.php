@@ -1,12 +1,21 @@
 <?php
 namespace Malezha\Menu\Entity;
 
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Support\Collection;
 use Illuminate\Contracts\View\Factory as ViewFactory;
+use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
+use Malezha\Menu\Contracts\Group;
+use Malezha\Menu\Contracts\HasAttributes as HasAttributesContract;
+use Malezha\Menu\Contracts\Item;
+use Malezha\Menu\Contracts\Link;
 use Malezha\Menu\Traits\HasAttributes;
 
+/**
+ * Class Builder
+ * @package Malezha\Menu\Entity
+ */
 class Builder implements BuilderContract
 {
     use HasAttributes;
@@ -32,7 +41,7 @@ class Builder implements BuilderContract
     protected $type;
 
     /**
-     * @var Attributes
+     * @var AttributesContract
      */
     protected $activeAttributes;
 
@@ -48,9 +57,9 @@ class Builder implements BuilderContract
         $this->container = $container;
         $this->name = $name;
         $this->type = $type;
-        $this->attributes = new Attributes($attributes);
+        $this->attributes = $this->container->make(AttributesContract::class, ['attributes' => $attributes]);
         $this->items = [];
-        $this->activeAttributes = new Attributes($activeAttributes);
+        $this->activeAttributes = $this->container->make(AttributesContract::class, ['attributes' => $activeAttributes]);
     }
 
     /**
@@ -61,7 +70,15 @@ class Builder implements BuilderContract
      */
     public function group($name, \Closure $itemCallable, \Closure $menuCallable)
     {
-        $item = new Item($this, $name);
+        $item = $this->container->make(Item::class, [
+            'builder' => $this,
+            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
+            'link' => $this->container->make(Link::class, [
+                'title' => $name,
+                'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
+            ]),
+            'request' => $this->container->make('request'),
+        ]);
         call_user_func($itemCallable, $item);
 
         $menu = $this->container->make(BuilderContract::class, [
@@ -71,7 +88,10 @@ class Builder implements BuilderContract
         ]);
         call_user_func($menuCallable, $menu);
 
-        $group = new Group($menu, $item);
+        $group = $this->container->make(Group::class, [
+            'menu' => $menu,
+            'item' => $item,
+        ]);
         $this->items[$name] = $group;
 
         return $group;
@@ -88,7 +108,18 @@ class Builder implements BuilderContract
      */
     public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
-        $item = new Item($this, $name, $attributes, $title, $url, $linkAttributes);
+        $link = $this->container->make(Link::class, [
+            'title' => $title,
+            'url' => $url,
+            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => $linkAttributes]),
+        ]);
+        
+        $item = $this->container->make(Item::class, [
+            'builder' => $this,
+            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => $attributes]),
+            'link' => $link,
+            'request' => $this->container->make('request'),
+        ]);
 
         if (is_callable($callback)) {
             call_user_func($callback, $item);
@@ -161,8 +192,11 @@ class Builder implements BuilderContract
      */
     public function render($view = null)
     {
-        $view = (empty($view)) ? config('menu.view') : $view;
-        $minify = config('menu.minify', false);
+        /** @var Repository $config */
+        $config = $this->container->make('config');
+        
+        $view = (empty($view)) ? $config->get('menu.view') : $view;
+        $minify = $config->get('menu.minify', false);
         
         /* @var ViewFactory $viewFactory */
         $viewFactory = $this->container->make(ViewFactory::class);
@@ -192,6 +226,10 @@ class Builder implements BuilderContract
         return $this->activeAttributes;
     }
 
+    /**
+     * @param $html
+     * @return mixed
+     */
     protected function minifyHtmlOutput($html)
     {
         $search = array(

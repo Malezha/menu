@@ -2,10 +2,9 @@
 
 namespace Malezha\Menu\Tests;
 
-use Illuminate\Support\Collection;
+use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
-use Malezha\Menu\Entity\Attributes;
-use Malezha\Menu\Entity\Item;
+use Malezha\Menu\Contracts\Item;
 
 class BuilderTest extends TestCase
 {
@@ -102,7 +101,7 @@ class BuilderTest extends TestCase
         
         $this->assertInstanceOf(Attributes::class, $activeAttributes);
 
-        $result = $builder->activeAttributes(function ($attributes) {
+        $result = $builder->activeAttributes(function (Attributes $attributes) {
             $this->assertInstanceOf(Attributes::class, $attributes);
             
             return $attributes->get('class');
@@ -131,18 +130,18 @@ class BuilderTest extends TestCase
         $index = $builder->add('index', 'Index Page', url('/'));
         $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
-        $builder->group('orders', function ($item) {
+        $builder->group('orders', function (Item $item) {
             $item->getAttributes()->push(['class' => 'child-menu']);
             
             $link = $item->getLink();
             $link->setTitle('Orders');
             $link->setUrl('javascript:;');
 
-        }, function ($menu) {
+        }, function (Builder $menu) {
             $menu->add('all', 'All', url('/orders/all'));
             $menu->add('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
 
-            $menu->add('type_2', 'Type 2', url('/orders/2'), [], [], function ($item) {
+            $menu->add('type_2', 'Type 2', url('/orders/2'), [], [], function (Item $item) {
                 $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
             });
         });
