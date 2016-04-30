@@ -15,8 +15,8 @@ class BuilderTest extends TestCase
     {
         return $this->app->make(Builder::class, [
             'name' => 'test', 
-            'activeAttributes' => ['class' => 'active'],
-            'attributes' => ['class' => 'menu'],
+            'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
+            'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
     }
     

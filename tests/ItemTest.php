@@ -16,7 +16,8 @@ class ItemTest extends TestCase
     {
         $builder = $this->app->make(Builder::class, [
             'name' => 'test',
-            'activeAttributes' => ['class' => 'active'],
+            'attributes' => $this->app->make(Attributes::class, ['attributes' => []]),
+            'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
         ]);
         $link = $this->app->make(Link::class, [
             'title' => 'Index',

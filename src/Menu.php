@@ -3,6 +3,7 @@
 namespace Malezha\Menu;
 
 use Illuminate\Contracts\Container\Container;
+use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Menu as MenuContract;
 use Malezha\Menu\Contracts\Builder;
 
@@ -15,7 +16,7 @@ class Menu implements MenuContract
     /**
      * @var array
      */
-    protected $menus = [];
+    protected $menuList = [];
 
     /**
      * @var Container
@@ -44,13 +45,15 @@ class Menu implements MenuContract
      */
     public function make($name, \Closure $callback, $type = Builder::UL, $attributes = [], $activeAttributes = [])
     {
-        if (!is_callable($callback)) {
-            throw new \InvalidArgumentException('Argument must be callable');
-        }
-        
-        $menu = $this->container->make(Builder::class, [$this->container, $name, $type, $attributes, $activeAttributes]);
+        $menu = $this->container->make(Builder::class, [
+            'container' => $this->container, 
+            'name' => $name, 
+            'type' => $type, 
+            'attributes' => $this->container->make(Attributes::class, ['attributes' => $attributes]), 
+            'activeAttributes' => $this->container->make(Attributes::class, ['attributes' => $activeAttributes]),
+        ]);
         call_user_func($callback, $menu);
-        $this->menus[$name] = $menu;
+        $this->menuList[$name] = $menu;
 
         return $menu;
     }
@@ -64,7 +67,7 @@ class Menu implements MenuContract
      */
     public function get($name)
     {
-        if (array_key_exists($name, $this->menus) && ($menu = $this->menus[$name]) instanceof Builder) {
+        if (array_key_exists($name, $this->menuList) && ($menu = $this->menuList[$name]) instanceof Builder) {
             return $menu;
         }
 
@@ -80,5 +83,28 @@ class Menu implements MenuContract
     public function render($name, $view = null)
     {
         $this->get($name)->render($view);
+    }
+
+    /**
+     * Check exits global menu by name
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function has($name)
+    {
+        return array_key_exists($name, $this->menuList);
+    }
+
+    /**
+     * Delete menu from global list
+     *
+     * @param string $name
+     */
+    public function forget($name)
+    {
+        if ($this->has($name)) {
+            unset($this->menuList[$name]);
+        }
     }
 }

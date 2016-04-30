@@ -6,9 +6,9 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
-use Malezha\Menu\Contracts\Group;
-use Malezha\Menu\Contracts\Item;
-use Malezha\Menu\Contracts\Link;
+use Malezha\Menu\Contracts\Group as GroupContract;
+use Malezha\Menu\Contracts\Item as ItemContract;
+use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Traits\HasAttributes;
 
 /**
@@ -47,32 +47,33 @@ class Builder implements BuilderContract
     /**
      * @param Container $container
      * @param string $name
+     * @param AttributesContract $attributes
+     * @param AttributesContract $activeAttributes
      * @param string $type
-     * @param array $attributes
-     * @param array $activeAttributes
      */
-    public function __construct(Container $container, $name, $type = self::UL, $attributes = [], $activeAttributes = [])
+    public function __construct(Container $container, $name, AttributesContract $attributes,
+                                AttributesContract $activeAttributes, $type = self::UL)
     {
         $this->container = $container;
         $this->name = $name;
         $this->type = $type;
-        $this->attributes = $this->container->make(AttributesContract::class, ['attributes' => $attributes]);
+        $this->attributes = $attributes;
         $this->items = [];
-        $this->activeAttributes = $this->container->make(AttributesContract::class, ['attributes' => $activeAttributes]);
+        $this->activeAttributes = $activeAttributes;
     }
 
     /**
      * @param string $name
      * @param \Closure $itemCallable
      * @param \Closure $menuCallable
-     * @return Group
+     * @return GroupContract
      */
     public function group($name, \Closure $itemCallable, \Closure $menuCallable)
     {
-        $item = $this->container->make(Item::class, [
+        $item = $this->container->make(ItemContract::class, [
             'builder' => $this,
             'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
-            'link' => $this->container->make(Link::class, [
+            'link' => $this->container->make(LinkContract::class, [
                 'title' => $name,
                 'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
             ]),
@@ -83,11 +84,12 @@ class Builder implements BuilderContract
         $menu = $this->container->make(BuilderContract::class, [
             'container' => $this->container, 
             'name' => $name,
-            'activeAttributes' => $this->activeAttributes()->all(),
+            'activeAttributes' => $this->activeAttributes(),
+            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []])
         ]);
         call_user_func($menuCallable, $menu);
 
-        $group = $this->container->make(Group::class, [
+        $group = $this->container->make(GroupContract::class, [
             'menu' => $menu,
             'item' => $item,
         ]);
@@ -103,17 +105,17 @@ class Builder implements BuilderContract
      * @param array $attributes
      * @param array $linkAttributes
      * @param \Closure|null $callback
-     * @return Item
+     * @return ItemContract
      */
     public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
-        $link = $this->container->make(Link::class, [
+        $link = $this->container->make(LinkContract::class, [
             'title' => $title,
             'url' => $url,
             'attributes' => $this->container->make(AttributesContract::class, ['attributes' => $linkAttributes]),
         ]);
         
-        $item = $this->container->make(Item::class, [
+        $item = $this->container->make(ItemContract::class, [
             'builder' => $this,
             'attributes' => $this->container->make(AttributesContract::class, ['attributes' => $attributes]),
             'link' => $link,
@@ -141,7 +143,7 @@ class Builder implements BuilderContract
     /**
      * @param string $name
      * @param mixed|null $default
-     * @return Item|Group|null
+     * @return ItemContract|GroupContract|null
      */
     public function get($name, $default = null)
     {
@@ -214,7 +216,7 @@ class Builder implements BuilderContract
 
     /**
      * @param \Closure|null $callback
-     * @return Attributes|mixed
+     * @return AttributesContract|mixed
      */
     public function activeAttributes($callback = null)
     {

@@ -12,15 +12,16 @@ interface Builder extends HasAttributes
     const UL = 'ul';
 
     const OL = 'ol';
-    
+
     /**
-     * @param Container $container 
+     * @param Container $container
      * @param string $name
+     * @param Attributes $attributes
+     * @param Attributes $activeAttributes
      * @param string $type
-     * @param array $attributes
-     * @param array $activeAttributes
      */
-    function __construct(Container $container, $name, $type = self::UL, $attributes = [], $activeAttributes = []);
+    function __construct(Container $container, $name, Attributes $attributes, 
+                         Attributes $activeAttributes, $type = self::UL);
 
     /**
      * Make sub menu

@@ -37,6 +37,21 @@ interface Menu
     public function get($name);
 
     /**
+     * Check exits global menu by name
+     * 
+     * @param string $name
+     * @return bool
+     */
+    public function has($name);
+
+    /**
+     * Delete menu from global list
+     * 
+     * @param string $name
+     */
+    public function forget($name);
+
+    /**
      * Render global menu to html
      * 
      * @param string $name
