@@ -229,7 +229,7 @@ class Builder implements BuilderContract
 
     /**
      * @param string $html
-     * @return mixed
+     * @return string
      */
     protected function minifyHtmlOutput($html)
     {

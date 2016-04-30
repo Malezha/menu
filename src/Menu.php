@@ -79,10 +79,11 @@ class Menu implements MenuContract
      * 
      * @param string $name
      * @param null|string $view
+     * @return string
      */
     public function render($name, $view = null)
     {
-        $this->get($name)->render($view);
+        return $this->get($name)->render($view);
     }
 
     /**

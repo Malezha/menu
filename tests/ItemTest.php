@@ -1,5 +1,4 @@
 <?php
-
 namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Contracts\Attributes;
@@ -7,6 +6,10 @@ use Malezha\Menu\Contracts\Builder;
 use Malezha\Menu\Contracts\Item;
 use Malezha\Menu\Contracts\Link;
 
+/**
+ * Class ItemTest
+ * @package Malezha\Menu\Tests
+ */
 class ItemTest extends TestCase
 {
     /**

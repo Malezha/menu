@@ -1,11 +1,14 @@
 <?php
-
 namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
 use Malezha\Menu\Contracts\Item;
 
+/**
+ * Class BuilderTest
+ * @package Malezha\Menu\Tests
+ */
 class BuilderTest extends TestCase
 {
     /**

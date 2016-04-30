@@ -1,10 +1,13 @@
 <?php
-
 namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Support\MergeAttributes;
 
+/**
+ * Class AttributesTest
+ * @package Malezha\Menu\Tests
+ */
 class AttributesTest extends TestCase
 {
     /**

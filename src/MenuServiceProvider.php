@@ -66,7 +66,7 @@ class MenuServiceProvider extends ServiceProvider
         $this->app->singleton('menu.instance', function(Container $app) {
             return new Menu($app);
         });
-        $this->app->alias(MenuContract::class, 'menu.instance');
+        $this->app->alias('menu.instance', MenuContract::class);
     }
 
     protected function registerBuilder()

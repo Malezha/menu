@@ -1,10 +1,13 @@
 <?php
-
 namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Link;
 
+/**
+ * Class LinkTest
+ * @package Malezha\Menu\Tests
+ */
 class LinkTest extends TestCase
 {
     protected function linkFactory()
