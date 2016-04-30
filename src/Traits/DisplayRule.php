@@ -31,9 +31,9 @@ trait DisplayRule
     public function canDisplay()
     {
         if (is_callable($this->rule)) {
-            return (bool)call_user_func($this->rule);
+            return (bool) call_user_func($this->rule);
         }
         
-        return (bool)$this->rule;
+        return (bool) $this->rule;
     }
 }

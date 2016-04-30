@@ -37,7 +37,7 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
 
         $item = $builder->add('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link'],
-            function (Item $item) {
+            function(Item $item) {
                 $this->assertAttributeEquals('Index', 'title', $item->getLink());
                 $item->getLink()->setTitle('Home');
             });
@@ -101,7 +101,7 @@ class BuilderTest extends TestCase
         
         $this->assertInstanceOf(Attributes::class, $activeAttributes);
 
-        $result = $builder->activeAttributes(function (Attributes $attributes) {
+        $result = $builder->activeAttributes(function(Attributes $attributes) {
             $this->assertInstanceOf(Attributes::class, $attributes);
             
             return $attributes->get('class');
@@ -114,9 +114,9 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
         
-        $group = $builder->group('test', function (Item $item) use ($builder) {
+        $group = $builder->group('test', function(Item $item) use ($builder) {
             $this->assertAttributeEquals($builder, 'builder', $item);
-        }, function (Builder $menu) use ($builder) {
+        }, function(Builder $menu) use ($builder) {
             $this->assertEquals($builder->activeAttributes()->all(), $menu->activeAttributes()->all());
         });
 
@@ -130,18 +130,18 @@ class BuilderTest extends TestCase
         $index = $builder->add('index', 'Index Page', url('/'));
         $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
-        $builder->group('orders', function (Item $item) {
+        $builder->group('orders', function(Item $item) {
             $item->getAttributes()->push(['class' => 'child-menu']);
             
             $link = $item->getLink();
             $link->setTitle('Orders');
             $link->setUrl('javascript:;');
 
-        }, function (Builder $menu) {
+        }, function(Builder $menu) {
             $menu->add('all', 'All', url('/orders/all'));
             $menu->add('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
 
-            $menu->add('type_2', 'Type 2', url('/orders/2'), [], [], function (Item $item) {
+            $menu->add('type_2', 'Type 2', url('/orders/2'), [], [], function(Item $item) {
                 $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
             });
         });
@@ -157,7 +157,7 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
 
         $builder->add('index', 'Index Page', url('/'));
-        $builder->add('login', 'Login', url('/login'))->setDisplayRule(function () {
+        $builder->add('login', 'Login', url('/login'))->setDisplayRule(function() {
             return true;
         });
         $builder->add('admin', 'Admin', url('/admin'))->setDisplayRule(false);

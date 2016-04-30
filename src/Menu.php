@@ -44,7 +44,7 @@ class Menu implements MenuContract
      */
     public function make($name, \Closure $callback, $type = Builder::UL, $attributes = [], $activeAttributes = [])
     {
-        if(!is_callable($callback)) {
+        if (!is_callable($callback)) {
             throw new \InvalidArgumentException('Argument must be callable');
         }
         
