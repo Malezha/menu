@@ -16,22 +16,26 @@ Write a comprehensive documentation.
 ## Example
 
 ```php
-Menu::make('main', 'ul', [], function (\Malezha\Menu\Entity\Builder $menu) {
+use Malezha\Menu\Contracts\Builder;
+use Malezha\Menu\Contracts\Item;
+use Menu;
+
+Menu::make('main', 'ul', [], function (Builder $menu) {
 
     $index = $menu->add('index', 'Index Page', '/');
     $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
-    $menu->group('orders', function (\Malezha\Menu\Entity\Item $item) {
+    $menu->group('orders', function (Item $item) {
         $item->getAttributes()->push(['class' => 'child-menu']);
 
         $link = $item->getLink();
         $link->setTitle('Orders');
         $link->setUrl('javascript:;');
 
-    }, function (\Malezha\Menu\Contracts\Builder $menu) {
+    }, function (Builder $menu) {
         $menu->add('all', 'All', '/orders/all');
 
-        $menu->add('type_2', 'Type 2', '/orders/2', [], [], function ($item) {
+        $menu->add('type_2', 'Type 2', '/orders/2', [], [], function (Item $item) {
             $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
         });
     });
@@ -40,7 +44,7 @@ Menu::make('main', 'ul', [], function (\Malezha\Menu\Entity\Builder $menu) {
 ```
 
 ```html
-<!-- Menu::render('main') -->
+<!-- \Menu::render('main') -->
 <ul>
     <li><a href="/" class="menu-link">Index Page</a></li>
     <li class="child-menu">
