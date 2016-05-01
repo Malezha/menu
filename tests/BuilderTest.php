@@ -60,6 +60,7 @@ class BuilderTest extends TestCase
         $item = $builder->add('test', 'Test', '/test');
         
         $this->assertEquals($item, $builder->get('test'));
+        $this->assertEquals(null, $builder->get('notFound'));
     }
     
     public function testHas()

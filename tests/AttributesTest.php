@@ -100,4 +100,9 @@ class AttributesTest extends TestCase
         $this->assertEquals($expected, $attributes->build(['class' => 'active']));
         $this->assertEquals($expectedString, (string) $attributes);
     }
+    
+    public function testMergeAttributesEmptyConstructor()
+    {
+        $this->assertEquals([], (new MergeAttributes())->merge());
+    }
 }
