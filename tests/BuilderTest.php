@@ -171,4 +171,30 @@ class BuilderTest extends TestCase
 
         $this->assertEquals($file, $html);
     }
+
+    public function testAnotherViewRender()
+    {
+        view()->addLocation(__DIR__ . '/stub');
+        
+        $builder = $this->builderFactory();
+        $builder->add('index', 'Index Page', url('/'));
+        $builder->group('group', function(Item $item){}, function(Builder $menu) {
+            $menu->setView('another');
+            $menu->add('one', 'One', url('/one'));
+        });
+
+        $html = $builder->render();
+        $file = file_get_contents(__DIR__ . '/stub/another_sub_menu.html');
+        $this->assertEquals($file, $html);
+
+        $html = $builder->render('another');
+        $file = file_get_contents(__DIR__ . '/stub/another_menu.html');
+        $this->assertEquals($file, $html);
+
+        $builder->setView('another');
+        $builder->get('group')->getMenu()->setView('menu::view');
+        $html = $builder->render();
+        $file = file_get_contents(__DIR__ . '/stub/another_set_view_menu.html');
+        $this->assertEquals($file, $html);
+    }
 }

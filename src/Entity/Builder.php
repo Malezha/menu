@@ -1,7 +1,6 @@
 <?php
 namespace Malezha\Menu\Entity;
 
-use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
