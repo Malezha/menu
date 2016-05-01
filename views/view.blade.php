@@ -6,7 +6,7 @@
         <li{!! $item->buildAttributes() !!}>
             <a href="{{ $item->getLink()->getUrl() }}"{!! $item->getLink()->buildAttributes() !!}>{!! $item->getLink()->getTitle() !!}</a>
             @if($isGroup)
-                @include(config('menu.view'), ['menu' => $value->getMenu()])
+                {!! $value->getMenu()->render() !!}
             @endif
         </li>
         @endif

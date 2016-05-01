@@ -19,9 +19,10 @@ interface Builder extends HasAttributes
      * @param Attributes $attributes
      * @param Attributes $activeAttributes
      * @param string $type
+     * @param string $view
      */
     function __construct(Container $container, $name, Attributes $attributes, 
-                         Attributes $activeAttributes, $type = self::UL);
+                         Attributes $activeAttributes, $type = self::UL, $view = null);
 
     /**
      * Make sub menu
@@ -106,4 +107,19 @@ interface Builder extends HasAttributes
      * @return Attributes|mixed
      */
     public function activeAttributes($callback = null);
+
+    /**
+     * Get render view
+     *
+     * @return string
+     */
+    public function getView();
+
+    /**
+     * Set render view
+     *
+     * @param string $view
+     * @throws \Exception
+     */
+    public function setView($view);
 }

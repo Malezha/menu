@@ -45,6 +45,21 @@ class Builder implements BuilderContract
     protected $activeAttributes;
 
     /**
+     * @var ViewFactory
+     */
+    protected $viewFactory;
+
+    /**
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * @var string
+     */
+    protected $view;
+    
+    /**
      * Builder constructor.
      *
      * @param Container $container
@@ -52,9 +67,10 @@ class Builder implements BuilderContract
      * @param AttributesContract $attributes
      * @param AttributesContract $activeAttributes
      * @param string $type
+     * @param string $view
      */
     public function __construct(Container $container, $name, AttributesContract $attributes,
-                                AttributesContract $activeAttributes, $type = self::UL)
+                                AttributesContract $activeAttributes, $type = self::UL, $view = null)
     {
         $this->container = $container;
         $this->name = $name;
@@ -62,6 +78,13 @@ class Builder implements BuilderContract
         $this->attributes = $attributes;
         $this->items = [];
         $this->activeAttributes = $activeAttributes;
+        $this->viewFactory = $this->container->make(ViewFactory::class);
+        $this->config = $this->container->make('config')->get('menu');
+        try {
+            $this->setView($view);
+        } catch (\Exception $e) {
+            $this->view = $this->config['view'];
+        }
     }
 
     /**
@@ -89,7 +112,8 @@ class Builder implements BuilderContract
             'container' => $this->container, 
             'name' => $name,
             'activeAttributes' => $this->activeAttributes(),
-            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []])
+            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
+            'view' => $this->getView(),
         ]);
         call_user_func($menuCallable, $menu);
 
@@ -213,16 +237,15 @@ class Builder implements BuilderContract
      */
     public function render($view = null)
     {
-        /** @var Repository $config */
-        $config = $this->container->make('config');
-        
-        $view = (empty($view)) ? $config->get('menu.view') : $view;
-        $minify = $config->get('menu.minify', false);
-        
-        /* @var ViewFactory $viewFactory */
-        $viewFactory = $this->container->make(ViewFactory::class);
+        try {
+            $this->setView($view);
+        } catch (\Exception $e) {}
 
-        $rendered = $viewFactory->make($view, [
+        $view = $this->getView();
+
+        $minify = $this->config['minify'];
+
+        $rendered = $this->viewFactory->make($view, [
             'menu' => $this,
             'renderView' => $view,
         ])->render();
@@ -248,6 +271,31 @@ class Builder implements BuilderContract
         }
 
         return $this->activeAttributes;
+    }
+
+    /**
+     * Get render view
+     *
+     * @return string
+     */
+    public function getView()
+    {
+        return $this->view;
+    }
+
+    /**
+     * Set render view
+     *
+     * @param string $view
+     * @throws \Exception
+     */
+    public function setView($view)
+    {
+        if (!$this->viewFactory->exists($view)) {
+            throw new \Exception('View not found');
+        }
+        
+        $this->view = $view;
     }
 
     /**

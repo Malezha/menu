@@ -24,8 +24,12 @@ class MergeAttributes
     public function merge()
     {
         $arrays = $this->arrays;
-        $keys = [];
 
+        if (empty($arrays)) {
+            return [];
+        }
+
+        $keys = [];
         foreach ($arrays as $array) {
             $keys = array_merge($keys, array_keys($array));
         }
