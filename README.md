@@ -75,8 +75,34 @@ Menu::forget('main-menu');
 
 At any time you can render your menu. The second parameter can specify an alternative view.
 
+Attention! Setup `$view` variable ignores configuration specified when defining the menu.
+
 ```php
 $html = Menu::render('main-menu', 'partials.main-menu');
+```
+
+#### Builder methods
+
+When you add to menu new item, you can directly set parameters `Item` and `Link`.
+
+The required parameters are only the name, title and URL.
+
+```php
+$item = $builder->add('element-name', 'Link title', 'http::/example.com/url', ['id' => 'element'], ['id' => 'link'], $callback);
+```
+
+As the latter parameter can be the callback.
+
+```php
+$callback = function (\Malezha\Menu\Contracts\Item $item {
+    $id = $item->getAttributes()->get('id'); // 'element'
+});
+```
+
+Also, the object `Link` can get in the callback and the returned object.
+
+```php
+$link = $item->getLink(); // \Malezha\Menu\Contracts\Link
 ```
 
 ### Simple example
@@ -87,7 +113,6 @@ use Malezha\Menu\Contracts\Item;
 use Menu;
 
 Menu::make('main', 'ul', [], function (Builder $menu) {
-
     $index = $menu->add('index', 'Index Page', '/');
     $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
@@ -105,7 +130,6 @@ Menu::make('main', 'ul', [], function (Builder $menu) {
             $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
         });
     });
-    
 });
 ```
 
