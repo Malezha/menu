@@ -88,7 +88,8 @@ When you add to menu new item, you can directly set parameters `Item` and `Link`
 The required parameters are only the name, title and URL.
 
 ```php
-$item = $builder->add('element-name', 'Link title', 'http::/example.com/url', ['id' => 'element'], ['id' => 'link'], $callback);
+$item = $builder->add('element-name', 'Link title', 'http::/example.com/url',
+                      ['id' => 'element'], ['id' => 'link'], $callback);
 ```
 
 As the latter parameter can be the callback.
@@ -103,6 +104,7 @@ Also, the object `Link` can get in the callback and the returned object.
 
 ```php
 $link = $item->getLink(); // \Malezha\Menu\Contracts\Link
+$id = $link->getAttributes()->get('id'); // 'link'
 ```
 
 ### Simple example
@@ -150,4 +152,4 @@ Menu::make('main', 'ul', [], function (Builder $menu) {
 
 ### License
 
-[MIT license](http://opensource.org/licenses/MIT)
+[MIT license](https://github.com/Malezha/menu/blob/master/LICENSE)
