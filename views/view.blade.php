@@ -6,7 +6,7 @@
         <li{!! $item->buildAttributes() !!}>
             <a href="{{ $item->getLink()->getUrl() }}"{!! $item->getLink()->buildAttributes() !!}>{!! $item->getLink()->getTitle() !!}</a>
             @if($isGroup)
-                {!! $value->getMenu()->render() !!}
+                {!! $value->getMenu()->render($renderView) !!}
             @endif
         </li>
         @endif

@@ -56,7 +56,7 @@ class Builder implements BuilderContract
     /**
      * @var string
      */
-    protected $view;
+    protected $view = null;
     
     /**
      * Builder constructor.
@@ -81,9 +81,7 @@ class Builder implements BuilderContract
         $this->config = $this->container->make('config')->get('menu');
         try {
             $this->setView($view);
-        } catch (\Exception $e) {
-            $this->view = $this->config['view'];
-        }
+        } catch (\Exception $e) {}
     }
 
     /**
@@ -231,18 +229,18 @@ class Builder implements BuilderContract
     /**
      * Render menu to html
      *
-     * @param string|null $view
+     * @param string|null $renderView
      * @return string
      */
-    public function render($view = null)
+    public function render($renderView = null)
     {
-        $view = $this->viewFactory->exists($view) ? $view : $this->getView();
+        $view = $this->getRenderView($renderView);
 
         $minify = $this->config['minify'];
 
         $rendered = $this->viewFactory->make($view, [
             'menu' => $this,
-            'renderView' => $view,
+            'renderView' => $renderView,
         ])->render();
         
         if ($minify) {
@@ -314,5 +312,26 @@ class Builder implements BuilderContract
         );
 
         return preg_replace($search, $replace, $html);
+    }
+
+    /**
+     * Get view for render
+     * 
+     * @param string $view
+     * @return string
+     */
+    protected function getRenderView($view = null)
+    {
+        $renderView = $this->config['view'];
+        
+        if (!empty($this->view)) {
+            $renderView = $this->view;
+        }
+        
+        if (!empty($view) && $this->viewFactory->exists($view)) {
+            $renderView = $view;
+        }
+        
+        return $renderView;
     }
 }
