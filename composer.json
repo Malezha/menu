@@ -10,7 +10,6 @@
         }
     ],
     "require": {
-        "illuminate/view": "^5.1",
         "illuminate/container": "^5.1",
         "illuminate/config": "^5.1"
     },

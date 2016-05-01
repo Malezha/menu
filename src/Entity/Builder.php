@@ -2,12 +2,12 @@
 namespace Malezha\Menu\Entity;
 
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Contracts\View\Factory as ViewFactory;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
 use Malezha\Menu\Contracts\Group as GroupContract;
 use Malezha\Menu\Contracts\Item as ItemContract;
 use Malezha\Menu\Contracts\Link as LinkContract;
+use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Traits\HasAttributes;
 
 /**
@@ -44,7 +44,7 @@ class Builder implements BuilderContract
     protected $activeAttributes;
 
     /**
-     * @var ViewFactory
+     * @var MenuRender
      */
     protected $viewFactory;
 
@@ -77,7 +77,7 @@ class Builder implements BuilderContract
         $this->attributes = $attributes;
         $this->items = [];
         $this->activeAttributes = $activeAttributes;
-        $this->viewFactory = $this->container->make(ViewFactory::class);
+        $this->viewFactory = $this->container->make(MenuRender::class);
         $this->config = $this->container->make('config')->get('menu');
         try {
             $this->setView($view);
@@ -238,7 +238,7 @@ class Builder implements BuilderContract
 
         $minify = $this->config['minify'];
 
-        $rendered = $this->viewFactory->make($view, [
+        $rendered = $this->viewFactory->make($view)->with([
             'menu' => $this,
             'renderView' => $renderView,
         ])->render();

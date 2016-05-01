@@ -176,6 +176,7 @@ class BuilderTest extends TestCase
     public function testAnotherViewRender()
     {
         view()->addLocation(__DIR__ . '/stub');
+        $this->app['config']->prepend('menu.paths', __DIR__ . '/stub');
         
         $builder = $this->builderFactory();
         $builder->add('index', 'Index Page', url('/'));

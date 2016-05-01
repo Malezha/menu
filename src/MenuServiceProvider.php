@@ -10,6 +10,7 @@ use Malezha\Menu\Contracts\Group as GroupContract;
 use Malezha\Menu\Contracts\Item as ItemContract;
 use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Contracts\Menu as MenuContract;
+use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Entity\Attributes;
 use Malezha\Menu\Entity\Builder;
 use Malezha\Menu\Entity\Group;
@@ -51,14 +52,15 @@ class MenuServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
+        
+        $this->registerRenderSystem();
         $this->registerAttributes();
         $this->registerLink();
         $this->registerBuilder();
         $this->registerItem();
         $this->registerGroup();
         $this->registerSingleton();
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
     }
 
     protected function registerSingleton()
@@ -97,6 +99,22 @@ class MenuServiceProvider extends ServiceProvider
     {
         $this->app->bind('menu.attributes', Attributes::class);
         $this->app->alias('menu.attributes', AttributesContract::class);
+    }
+
+    protected function registerRenderSystem()
+    {
+        $this->app->bind('menu.render', function (Container $app) {
+            $config = $app['config']->get('menu');
+            $key = $config['template-system'];
+            $available = $config['available-template-systems'];
+
+            if (array_key_exists($key, $available)) {
+                return new $available[$key]($app);
+            }
+
+            throw new \Exception('Can use template system: ' . $config['template-system']);
+        });
+        $this->app->alias('menu.render', MenuRender::class);
     }
 
     /**
