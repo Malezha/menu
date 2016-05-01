@@ -236,11 +236,7 @@ class Builder implements BuilderContract
      */
     public function render($view = null)
     {
-        try {
-            $this->setView($view);
-        } catch (\Exception $e) {}
-
-        $view = $this->getView();
+        $view = $this->viewFactory->exists($view) ? $view : $this->getView();
 
         $minify = $this->config['minify'];
 

@@ -179,16 +179,16 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
         $builder->add('index', 'Index Page', url('/'));
         $builder->group('group', function(Item $item){}, function(Builder $menu) {
-            $menu->setView('another');
             $menu->add('one', 'One', url('/one'));
         });
 
-        $html = $builder->render();
-        $file = file_get_contents(__DIR__ . '/stub/another_sub_menu.html');
-        $this->assertEquals($file, $html);
-
         $html = $builder->render('another');
         $file = file_get_contents(__DIR__ . '/stub/another_menu.html');
+        $this->assertEquals($file, $html);
+
+        $builder->get('group')->getMenu()->setView('another');
+        $html = $builder->render();
+        $file = file_get_contents(__DIR__ . '/stub/another_sub_menu.html');
         $this->assertEquals($file, $html);
 
         $builder->setView('another');
