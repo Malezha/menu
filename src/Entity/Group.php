@@ -4,7 +4,6 @@ namespace Malezha\Menu\Entity;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
 use Malezha\Menu\Contracts\Group as GroupContract;
 use Malezha\Menu\Contracts\Item as ItemContract;
-use Malezha\Menu\Traits\DisplayRule;
 
 /**
  * Class Group
@@ -12,7 +11,6 @@ use Malezha\Menu\Traits\DisplayRule;
  */
 class Group implements GroupContract
 {
-    use DisplayRule;
 
     /**
      * @var ItemContract

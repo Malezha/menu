@@ -5,7 +5,7 @@ namespace Malezha\Menu\Contracts;
  * Interface Group
  * @package Malezha\Menu\Contracts
  */
-interface Group extends DisplayRule
+interface Group
 {
     /**
      * @param Builder $menu
