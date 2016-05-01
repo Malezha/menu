@@ -3,22 +3,22 @@ namespace Malezha\Menu\Support;
 
 class MergeAttributes
 {
-    protected $arrays = [];
-    
     /**
-     * @param array...
-     * @throws \RuntimeException
+     * @var array
+     */
+    protected $arrays = [];
+
+    /**
+     * MergeAttributes constructor.
      */
     public function __construct()
     {
-        if (func_num_args() <= 1) {
-            throw new \RuntimeException("Must has min two parameters.");
-        }
-        
         $this->arrays = func_get_args();
     }
     
     /**
+     * Merge array values as html attributes
+     *
      * @return array
      */
     public function merge()

@@ -45,6 +45,8 @@ class Builder implements BuilderContract
     protected $activeAttributes;
 
     /**
+     * Builder constructor.
+     *
      * @param Container $container
      * @param string $name
      * @param AttributesContract $attributes
@@ -63,10 +65,12 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Make sub menu
+     *
      * @param string $name
      * @param \Closure $itemCallable
      * @param \Closure $menuCallable
-     * @return GroupContract
+     * @return mixed
      */
     public function group($name, \Closure $itemCallable, \Closure $menuCallable)
     {
@@ -99,6 +103,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Add new element
+     *
      * @param string $name
      * @param string $title
      * @param string $url
@@ -132,6 +138,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Check exits by name
+     *
      * @param string $name
      * @return bool
      */
@@ -141,6 +149,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Get element or sub menu by name
+     *
      * @param string $name
      * @param mixed|null $default
      * @return ItemContract|GroupContract|null
@@ -154,6 +164,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Get all elements and sub menus
+     *
      * @return array
      */
     public function all()
@@ -162,6 +174,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Delete element
+     *
      * @param string $name
      */
     public function forget($name)
@@ -172,6 +186,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Get menu type: UL or OL
+     *
      * @return string
      */
     public function getType()
@@ -180,6 +196,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Set menu type. You can use constants at this interface
+     *
      * @param string $type
      */
     public function setType($type)
@@ -188,6 +206,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Render menu to html
+     *
      * @param string|null $view
      * @return string
      */
@@ -215,6 +235,9 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Get active attributes object.
+     * If send \Closure option as parameter then returned callback result.
+     *
      * @param \Closure|null $callback
      * @return AttributesContract|mixed
      */
@@ -228,6 +251,8 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Minify html
+     *
      * @param string $html
      * @return string
      */

@@ -2,8 +2,8 @@
 namespace Malezha\Menu\Contracts;
 
 /**
- * Class Attributes
- * @package Malezha\Menu\Entity
+ * Interface Attributes
+ * @package Malezha\Menu\Contracts
  */
 interface Attributes
 {
