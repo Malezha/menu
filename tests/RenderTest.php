@@ -1,7 +1,6 @@
 <?php
 namespace Malezha\Menu\Tests;
 
-use Illuminate\Contracts\Container\Container;
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
 use Malezha\Menu\Contracts\Item;
@@ -65,5 +64,20 @@ class RenderTest extends TestCase
     public function testBasicRender()
     {
         $this->makeTest(new Basic($this->app));
+    }
+
+    public function testDirectoryPath()
+    {
+        $path = __DIR__ . '/stub';
+        $view = 'directory.view';
+        $text = 'Hello, Menu builder!';
+        $this->app['config']->prepend('menu.paths', $path);
+        $this->app['view']->addLocation($path);
+        
+        $basic = new Basic($this->app);
+        $this->assertEquals($text, $basic->make($view)->render());
+        
+        $blade = new Blade($this->app);
+        $this->assertEquals($text, $blade->make($view)->render());
     }
 }

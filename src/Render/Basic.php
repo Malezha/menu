@@ -106,6 +106,6 @@ class Basic implements MenuRender
      */
     protected function replaceNameFromBlade($view)
     {
-        return preg_replace("/(.*)(::)(.*)/", "$3", $view);
+        return str_replace('.', '/', preg_replace("/(.*)(::)(.*)/", "$3", $view));
     }
 }
