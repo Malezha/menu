@@ -103,8 +103,29 @@ $callback = function (\Malezha\Menu\Contracts\Item $item {
 Also, the object `Link` can get in the callback and the returned object.
 
 ```php
-$link = $item->getLink(); // \Malezha\Menu\Contracts\Link
+/** @var Malezha\Menu\Contracts\Link $link */
+$link = $item->getLink();
 $id = $link->getAttributes()->get('id'); // 'link'
+```
+
+To create a submenu, use the method `group`.
+
+```php
+$menu->group('submenu', function (Item $item) {
+    // In this callback, you can customize the element that declares the submenu.
+}, function (Builder $menu) {
+    // Submenu elements
+});
+```
+
+Builder are also available methods similar builder global menu:
+
+```php
+$array = $builder->all(); // Get all menu elements.
+$bool = $builder->has('name'); // Check exists element by name.
+$item = $builder->get('name', $default = null); // Get element by name if exists or default value.
+$builder->forget('name'); // Delete element from menu.
+$html = $builder->render('view_name'); // Render view.
 ```
 
 ### Simple example
