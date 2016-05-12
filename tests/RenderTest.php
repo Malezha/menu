@@ -18,20 +18,20 @@ class RenderTest extends TestCase
             'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
             'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
-        $index = $builder->add('index', 'Index Page', url('/'));
+        $index = $builder->create('index', 'Index Page', url('/'));
         $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
-        $builder->group('orders', function(Item $item) {
+        $builder->submenu('orders', function(Item $item) {
             $item->getAttributes()->push(['class' => 'child-menu']);
 
             $link = $item->getLink();
             $link->setTitle('Orders');
             $link->setUrl('javascript:;');
         }, function(Builder $menu) {
-            $menu->add('all', 'All', url('/orders/all'));
-            $menu->add('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
+            $menu->create('all', 'All', url('/orders/all'));
+            $menu->create('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
 
-            $menu->add('type_2', 'Type 2', url('/orders/2'), [], [], function(Item $item) {
+            $menu->create('type_2', 'Type 2', url('/orders/2'), [], [], function(Item $item) {
                 $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
             });
         });

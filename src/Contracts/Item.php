@@ -20,6 +20,8 @@ interface Item extends HasAttributes, DisplayRule
     public function __construct(Builder $builder, Attributes $attributes, Link $link, Request $request);
 
     /**
+     * Get link object
+     * 
      * @return Link
      */
     public function getLink();

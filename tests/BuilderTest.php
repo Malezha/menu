@@ -35,11 +35,11 @@ class BuilderTest extends TestCase
         $this->assertAttributeInstanceOf(Attributes::class, 'activeAttributes', $builder);
     }
 
-    public function testAdd()
+    public function testCreate()
     {
         $builder = $this->builderFactory();
 
-        $item = $builder->add('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link'],
+        $item = $builder->create('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link'],
             function(Item $item) {
                 $this->assertAttributeEquals('Index', 'title', $item->getLink());
                 $item->getLink()->setTitle('Home');
@@ -57,7 +57,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
         
-        $item = $builder->add('test', 'Test', '/test');
+        $item = $builder->create('test', 'Test', '/test');
         
         $this->assertEquals($item, $builder->get('test'));
         $this->assertEquals(null, $builder->get('notFound'));
@@ -84,7 +84,7 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
         
         $this->assertEquals([], $builder->all());
-        $item = $builder->add('test', 'Test', '/test');
+        $item = $builder->create('test', 'Test', '/test');
         $this->assertEquals(['test' => $item], $builder->all());
     }
     
@@ -92,7 +92,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $builder->add('test', 'Test', '/test');
+        $builder->create('test', 'Test', '/test');
         $this->assertTrue($builder->has('test'));
         $builder->forget('test');
         $this->assertFalse($builder->has('test'));
@@ -114,11 +114,11 @@ class BuilderTest extends TestCase
         $this->assertEquals('active', $result);
     }
     
-    public function testGroup()
+    public function testSubMenu()
     {
         $builder = $this->builderFactory();
         
-        $group = $builder->group('test', function(Item $item) use ($builder) {
+        $group = $builder->submenu('test', function(Item $item) use ($builder) {
             $this->assertAttributeEquals($builder, 'builder', $item);
         }, function(Builder $menu) use ($builder) {
             $this->assertEquals($builder->activeAttributes()->all(), $menu->activeAttributes()->all());
@@ -131,10 +131,10 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $index = $builder->add('index', 'Index Page', url('/'));
+        $index = $builder->create('index', 'Index Page', url('/'));
         $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
-        $builder->group('orders', function(Item $item) {
+        $builder->submenu('orders', function(Item $item) {
             $item->getAttributes()->push(['class' => 'child-menu']);
             
             $link = $item->getLink();
@@ -142,10 +142,10 @@ class BuilderTest extends TestCase
             $link->setUrl('javascript:;');
 
         }, function(Builder $menu) {
-            $menu->add('all', 'All', url('/orders/all'));
-            $menu->add('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
+            $menu->create('all', 'All', url('/orders/all'));
+            $menu->create('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
 
-            $menu->add('type_2', 'Type 2', url('/orders/2'), [], [], function(Item $item) {
+            $menu->create('type_2', 'Type 2', url('/orders/2'), [], [], function(Item $item) {
                 $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
             });
         });
@@ -160,12 +160,12 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $builder->add('index', 'Index Page', url('/'));
-        $builder->add('login', 'Login', url('/login'))->setDisplayRule(function() {
+        $builder->create('index', 'Index Page', url('/'));
+        $builder->create('login', 'Login', url('/login'))->setDisplayRule(function() {
             return true;
         });
-        $builder->add('admin', 'Admin', url('/admin'))->setDisplayRule(false);
-        $builder->add('logout', 'Logout', url('/logout'))->setDisplayRule(null);
+        $builder->create('admin', 'Admin', url('/admin'))->setDisplayRule(false);
+        $builder->create('logout', 'Logout', url('/logout'))->setDisplayRule(null);
 
         $html = $builder->render();
         $file = file_get_contents(__DIR__ . '/stub/display_rules.html');
@@ -179,9 +179,9 @@ class BuilderTest extends TestCase
         $this->app['config']->prepend('menu.paths', __DIR__ . '/stub');
         
         $builder = $this->builderFactory();
-        $builder->add('index', 'Index Page', url('/'));
-        $builder->group('group', function(Item $item){}, function(Builder $menu) {
-            $menu->add('one', 'One', url('/one'));
+        $builder->create('index', 'Index Page', url('/'));
+        $builder->submenu('group', function(Item $item){}, function(Builder $menu) {
+            $menu->create('one', 'One', url('/one'));
         });
 
         $html = $builder->render('another');

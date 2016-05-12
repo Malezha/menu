@@ -4,7 +4,7 @@ namespace Malezha\Menu\Entity;
 use Illuminate\Contracts\Container\Container;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
-use Malezha\Menu\Contracts\Group as GroupContract;
+use Malezha\Menu\Contracts\SubMenu as GroupContract;
 use Malezha\Menu\Contracts\Item as ItemContract;
 use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Contracts\MenuRender;
@@ -59,14 +59,7 @@ class Builder implements BuilderContract
     protected $view = null;
     
     /**
-     * Builder constructor.
-     *
-     * @param Container $container
-     * @param string $name
-     * @param AttributesContract $attributes
-     * @param AttributesContract $activeAttributes
-     * @param string $type
-     * @param string $view
+     * @inheritDoc
      */
     public function __construct(Container $container, $name, AttributesContract $attributes,
                                 AttributesContract $activeAttributes, $type = self::UL, $view = null)
@@ -85,14 +78,9 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Make sub menu
-     *
-     * @param string $name
-     * @param \Closure $itemCallable
-     * @param \Closure $menuCallable
-     * @return mixed
+     * @inheritDoc
      */
-    public function group($name, \Closure $itemCallable, \Closure $menuCallable)
+    public function submenu($name, \Closure $itemCallable, \Closure $menuCallable)
     {
         $item = $this->container->make(ItemContract::class, [
             'builder' => $this,
@@ -124,17 +112,9 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Add new element
-     *
-     * @param string $name
-     * @param string $title
-     * @param string $url
-     * @param array $attributes
-     * @param array $linkAttributes
-     * @param \Closure|null $callback
-     * @return ItemContract
+     * @inheritDoc
      */
-    public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
+    public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
         $link = $this->container->make(LinkContract::class, [
             'title' => $title,
@@ -159,10 +139,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Check exits by name
-     *
-     * @param string $name
-     * @return bool
+     * @inheritDoc
      */
     public function has($name)
     {
@@ -170,11 +147,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Get element or sub menu by name
-     *
-     * @param string $name
-     * @param mixed|null $default
-     * @return ItemContract|GroupContract|null
+     * @inheritDoc
      */
     public function get($name, $default = null)
     {
@@ -185,9 +158,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Get all elements and sub menus
-     *
-     * @return array
+     * @inheritDoc
      */
     public function all()
     {
@@ -195,9 +166,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Delete element
-     *
-     * @param string $name
+     * @inheritDoc
      */
     public function forget($name)
     {
@@ -207,9 +176,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Get menu type: UL or OL
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getType()
     {
@@ -217,9 +184,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Set menu type. You can use constants at this interface
-     *
-     * @param string $type
+     * @inheritDoc
      */
     public function setType($type)
     {
@@ -227,10 +192,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Render menu to html
-     *
-     * @param string|null $renderView
-     * @return string
+     * @inheritDoc
      */
     public function render($renderView = null)
     {
@@ -251,11 +213,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Get active attributes object.
-     * If send \Closure option as parameter then returned callback result.
-     *
-     * @param \Closure|null $callback
-     * @return AttributesContract|mixed
+     * @inheritDoc
      */
     public function activeAttributes($callback = null)
     {
@@ -267,9 +225,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Get render view
-     *
-     * @return string
+     * @inheritDoc
      */
     public function getView()
     {
@@ -277,10 +233,7 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Set render view
-     *
-     * @param string $view
-     * @throws \Exception
+     * @inheritDoc
      */
     public function setView($view)
     {

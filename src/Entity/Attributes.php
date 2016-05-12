@@ -16,7 +16,7 @@ class Attributes implements AttributesContract
     protected $attributes;
 
     /**
-     * @param array $attributes
+     * @inheritDoc
      */
     public function __construct(array $attributes)
     {
@@ -24,11 +24,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Get attribute by name
-     *
-     * @param string $name
-     * @param string|null $default
-     * @return string|null
+     * @inheritDoc
      */
     public function get($name, $default = null)
     {
@@ -39,10 +35,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Set array attributes
-     *
-     * @param array $attributes
-     * @return AttributesContract
+     * @inheritDoc
      */
     public function set(array $attributes)
     {
@@ -52,9 +45,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Get all attributes
-     *
-     * @return array
+     * @inheritDoc
      */
     public function all()
     {
@@ -62,10 +53,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Check exits attribute by name
-     *
-     * @param string $name
-     * @return bool
+     * @inheritDoc
      */
     public function has($name)
     {
@@ -73,9 +61,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Delete attribute by name
-     *
-     * @param string $name
+     * @inheritDoc
      */
     public function forget($name)
     {
@@ -85,11 +71,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Set attribute or attributes.
-     * No merge attributes value.
-     *
-     * @param array $attributes
-     * @return AttributesContract
+     * @inheritDoc
      */
     public function push(array $attributes)
     {
@@ -99,11 +81,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Set attribute value
-     *
-     * @param string $name
-     * @param string $value
-     * @return AttributesContract
+     * @inheritDoc
      */
     public function put($name, $value)
     {
@@ -113,10 +91,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Merge attributes and merge their values
-     *
-     * @param array $attributes
-     * @return AttributesContract
+     * @inheritDoc
      */
     public function merge(array $attributes)
     {
@@ -126,10 +101,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * Build attributes html valid string
-     *
-     * @param array $attributes
-     * @return string
+     * @inheritDoc
      */
     public function build($attributes = [])
     {
@@ -145,7 +117,7 @@ class Attributes implements AttributesContract
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function __toString()
     {

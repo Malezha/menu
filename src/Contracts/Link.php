@@ -17,21 +17,29 @@ interface Link extends HasAttributes
     public function __construct($title = '', $url = '#', Attributes $attributes);
 
     /**
+     * Get title text
+     * 
      * @return string
      */
     public function getTitle();
 
     /**
+     * Set title text
+     * 
      * @param string $title
      */
     public function setTitle($title);
 
     /**
+     * Get URL
+     * 
      * @return string
      */
     public function getUrl();
 
     /**
+     * Set URL
+     * 
      * @param string $url
      */
     public function setUrl($url);

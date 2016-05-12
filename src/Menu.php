@@ -24,9 +24,7 @@ class Menu implements MenuContract
     protected $container;
 
     /**
-     * Menu constructor.
-     * 
-     * @param Container $container
+     * @inheritDoc
      */
     public function __construct(Container $container)
     {
@@ -34,14 +32,7 @@ class Menu implements MenuContract
     }
 
     /**
-     * Make new global menu
-     * 
-     * @param string $name
-     * @param \Closure $callback
-     * @param string $type
-     * @param array $attributes
-     * @param array $activeAttributes
-     * @return Builder
+     * @inheritDoc
      */
     public function make($name, \Closure $callback, $type = Builder::UL, $attributes = [], $activeAttributes = [])
     {
@@ -59,11 +50,7 @@ class Menu implements MenuContract
     }
 
     /**
-     * Get global menu
-     * 
-     * @param string $name
-     * @return Builder
-     * @throws \RuntimeException
+     * @inheritDoc
      */
     public function get($name)
     {
@@ -75,11 +62,7 @@ class Menu implements MenuContract
     }
 
     /**
-     * Render global menu to html
-     * 
-     * @param string $name
-     * @param null|string $view
-     * @return string
+     * @inheritDoc
      */
     public function render($name, $view = null)
     {
@@ -87,10 +70,7 @@ class Menu implements MenuContract
     }
 
     /**
-     * Check exits global menu by name
-     *
-     * @param string $name
-     * @return bool
+     * @inheritDoc
      */
     public function has($name)
     {
@@ -98,9 +78,7 @@ class Menu implements MenuContract
     }
 
     /**
-     * Delete menu from global list
-     *
-     * @param string $name
+     * @inheritDoc
      */
     public function forget($name)
     {

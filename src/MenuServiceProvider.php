@@ -6,14 +6,14 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
-use Malezha\Menu\Contracts\Group as GroupContract;
+use Malezha\Menu\Contracts\SubMenu as GroupContract;
 use Malezha\Menu\Contracts\Item as ItemContract;
 use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Contracts\Menu as MenuContract;
 use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Entity\Attributes;
 use Malezha\Menu\Entity\Builder;
-use Malezha\Menu\Entity\Group;
+use Malezha\Menu\Entity\SubMenu;
 use Malezha\Menu\Entity\Item;
 use Malezha\Menu\Entity\Link;
 
@@ -79,7 +79,7 @@ class MenuServiceProvider extends ServiceProvider
 
     protected function registerGroup()
     {
-        $this->app->bind('menu.group', Group::class);
+        $this->app->bind('menu.group', SubMenu::class);
         $this->app->alias('menu.group', GroupContract::class);
     }
 

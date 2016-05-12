@@ -2,10 +2,10 @@
 namespace Malezha\Menu\Contracts;
 
 /**
- * Interface Group
+ * Interface SubMenu
  * @package Malezha\Menu\Contracts
  */
-interface Group
+interface SubMenu
 {
     /**
      * @param Builder $menu
@@ -14,11 +14,15 @@ interface Group
     public function __construct(Builder $menu, Item $item);
 
     /**
+     * Get sub menu builder
+     * 
      * @return Builder
      */
     public function getMenu();
 
     /**
+     * Get sub menu item
+     * 
      * @return Item
      */
     public function getItem();

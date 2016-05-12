@@ -18,7 +18,7 @@ class MenuTest extends TestCase
         /** @var Menu $menu */
         $menu = $this->app->make(Menu::class, ['container' => $this->app]);
         $menu->make('test', function(Builder $builder) {
-            $builder->add('one', 'One', '/one');
+            $builder->create('one', 'One', '/one');
         });
         
         return $menu;

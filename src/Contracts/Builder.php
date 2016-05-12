@@ -32,10 +32,10 @@ interface Builder extends HasAttributes
      * @param \Closure $menuCallable
      * @return mixed
      */
-    public function group($name, \Closure $itemCallable, \Closure $menuCallable);
+    public function submenu($name, \Closure $itemCallable, \Closure $menuCallable);
 
     /**
-     * Add new element
+     * Create new element
      *
      * @param string $name
      * @param string $title
@@ -45,7 +45,7 @@ interface Builder extends HasAttributes
      * @param \Closure|null $callback
      * @return mixed
      */
-    public function add($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null);
+    public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null);
 
     /**
      * Check exits by name
@@ -59,7 +59,7 @@ interface Builder extends HasAttributes
      *
      * @param string $name
      * @param mixed|null $default
-     * @return Item|Group|null
+     * @return Item|SubMenu|null
      */
     public function get($name, $default = null);
 

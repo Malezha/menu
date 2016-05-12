@@ -83,12 +83,12 @@ $html = Menu::render('main-menu', 'partials.main-menu');
 
 #### Builder methods
 
-When you add to menu new item, you can directly set parameters `Item` and `Link`.
+When you create new menu element, you can directly set parameters `Item` and `Link`.
 
 The required parameters are only the name, title and URL.
 
 ```php
-$item = $builder->add('element-name', 'Link title', 'http::/example.com/url',
+$item = $builder->create('element-name', 'Link title', 'http::/example.com/url',
                       ['id' => 'element'], ['id' => 'link'], $callback);
 ```
 
@@ -108,11 +108,11 @@ $link = $item->getLink();
 $id = $link->getAttributes()->get('id'); // 'link'
 ```
 
-To create a submenu, use the method `group`.
+To create a sub menu, use the method `submenu`.
 
 ```php
-$menu->group('submenu', function (Item $item) {
-    // In this callback, you can customize the element that declares the submenu.
+$menu->submenu('submenu', function (Item $item) {
+    // In this callback, you can customize the element that declares the sub menu.
 }, function (Builder $menu) {
     // Submenu elements
 });
@@ -136,10 +136,10 @@ use Malezha\Menu\Contracts\Item;
 use Menu;
 
 Menu::make('main', 'ul', [], function (Builder $menu) {
-    $index = $menu->add('index', 'Index Page', '/');
+    $index = $menu->create('index', 'Index Page', '/');
     $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
 
-    $menu->group('orders', function (Item $item) {
+    $menu->submenu('orders', function (Item $item) {
         $item->getAttributes()->push(['class' => 'child-menu']);
 
         $link = $item->getLink();
@@ -147,9 +147,9 @@ Menu::make('main', 'ul', [], function (Builder $menu) {
         $link->setUrl('javascript:;');
 
     }, function (Builder $menu) {
-        $menu->add('all', 'All', '/orders/all');
+        $menu->create('all', 'All', '/orders/all');
 
-        $menu->add('type_2', 'Type 2', '/orders/2', [], [], function (Item $item) {
+        $menu->create('type_2', 'Type 2', '/orders/2', [], [], function (Item $item) {
             $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
         });
     });

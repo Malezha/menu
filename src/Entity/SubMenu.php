@@ -2,14 +2,14 @@
 namespace Malezha\Menu\Entity;
 
 use Malezha\Menu\Contracts\Builder as BuilderContract;
-use Malezha\Menu\Contracts\Group as GroupContract;
+use Malezha\Menu\Contracts\SubMenu as SubMenuContract;
 use Malezha\Menu\Contracts\Item as ItemContract;
 
 /**
- * Class Group
+ * Class SubMenu
  * @package Malezha\Menu\Entity
  */
-class Group implements GroupContract
+class SubMenu implements SubMenuContract
 {
 
     /**
@@ -23,8 +23,7 @@ class Group implements GroupContract
     protected $menu;
 
     /**
-     * @param BuilderContract $menu
-     * @param ItemContract $item
+     * @inheritDoc
      */
     public function __construct(BuilderContract $menu, ItemContract $item)
     {
@@ -33,7 +32,7 @@ class Group implements GroupContract
     }
 
     /**
-     * @return BuilderContract
+     * @inheritDoc
      */
     public function getMenu()
     {
@@ -41,7 +40,7 @@ class Group implements GroupContract
     }
 
     /**
-     * @return ItemContract
+     * @inheritDoc
      */
     public function getItem()
     {

@@ -2,7 +2,7 @@
     <?php if ($menu) :?>
         <<?=$menu->getType() . $menu->buildAttributes();?>>
             <?php foreach ($menu->all() as $element) :?>
-                <?php $isGroup = $element instanceof \Malezha\Menu\Contracts\Group;?>
+                <?php $isGroup = $element instanceof \Malezha\Menu\Contracts\SubMenu;?>
                 <?php if ($isGroup) $item = $element->getItem(); else $item = $element;?>
                 <?php if ($item->canDisplay()) :?>
                     <li<?=$item->buildAttributes();?>>

@@ -34,11 +34,7 @@ class Item implements ItemContract
     protected $request;
 
     /**
-     * Item constructor.
-     * @param BuilderContract $builder
-     * @param AttributesContract $attributes
-     * @param LinkContract $link
-     * @param Request $request
+     * @inheritDoc
      */
     public function __construct(BuilderContract $builder, AttributesContract $attributes, 
                                 LinkContract $link, Request $request)
@@ -50,7 +46,7 @@ class Item implements ItemContract
     }
 
     /**
-     * @return Link
+     * @inheritDoc
      */
     public function getLink()
     {
@@ -58,8 +54,7 @@ class Item implements ItemContract
     }
 
     /**
-     * @param array $attributes
-     * @return string
+     * @inheritDoc
      */
     public function buildAttributes($attributes = [])
     {

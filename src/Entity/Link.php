@@ -5,6 +5,10 @@ use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Traits\HasAttributes;
 
+/**
+ * Class Link
+ * @package Malezha\Menu\Entity
+ */
 class Link implements LinkContract
 {
     use HasAttributes;
@@ -20,11 +24,7 @@ class Link implements LinkContract
     protected $title;
 
     /**
-     * Link constructor.
-     * 
-     * @param string $title
-     * @param string $url
-     * @param AttributesContract $attributes
+     * @inheritDoc
      */
     public function __construct($title = '', $url = '#', AttributesContract $attributes)
     {
@@ -34,7 +34,7 @@ class Link implements LinkContract
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getTitle()
     {
@@ -42,7 +42,7 @@ class Link implements LinkContract
     }
 
     /**
-     * @param string $title
+     * @inheritDoc
      */
     public function setTitle($title)
     {
@@ -52,7 +52,7 @@ class Link implements LinkContract
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getUrl()
     {
@@ -60,7 +60,7 @@ class Link implements LinkContract
     }
 
     /**
-     * @param string $url
+     * @inheritDoc
      */
     public function setUrl($url)
     {
