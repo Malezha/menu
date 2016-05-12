@@ -70,14 +70,18 @@ class RenderTest extends TestCase
     {
         $path = __DIR__ . '/stub';
         $view = 'directory.view';
+        $view2 = 'directory/view';
         $text = 'Hello, Menu builder!';
+        
         $this->app['config']->prepend('menu.paths', $path);
         $this->app['view']->addLocation($path);
         
         $basic = new Basic($this->app);
         $this->assertEquals($text, $basic->make($view)->render());
+        $this->assertEquals($text, $basic->make($view2)->render());
         
         $blade = new Blade($this->app);
         $this->assertEquals($text, $blade->make($view)->render());
+        $this->assertEquals($text, $blade->make($view2)->render());
     }
 }
