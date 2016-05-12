@@ -17,6 +17,9 @@
         "phpunit/phpunit": "~4.7",
         "orchestra/testbench": "~3.0"
     },
+    "suggest": {
+        "illuminate/view": "For using BladeRender"
+    },
     "autoload": {
         "psr-4": {
             "Malezha\\Menu\\": "src/"
