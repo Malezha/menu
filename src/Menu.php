@@ -5,7 +5,7 @@ namespace Malezha\Menu;
 use Illuminate\Contracts\Container\Container;
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Menu as MenuContract;
-use Malezha\Menu\Contracts\Builder;
+use Malezha\Menu\Contracts\Builder as BuilderContract;
 
 /**
  * Class Menu
@@ -36,7 +36,7 @@ class Menu implements MenuContract
      */
     public function make($name, \Closure $callback, $type = Builder::UL, $attributes = [], $activeAttributes = [])
     {
-        $menu = $this->container->make(Builder::class, [
+        $menu = $this->container->make(BuilderContract::class, [
             'container' => $this->container, 
             'name' => $name, 
             'type' => $type, 
@@ -54,7 +54,7 @@ class Menu implements MenuContract
      */
     public function get($name)
     {
-        if (array_key_exists($name, $this->menuList) && ($menu = $this->menuList[$name]) instanceof Builder) {
+        if (array_key_exists($name, $this->menuList) && ($menu = $this->menuList[$name]) instanceof BuilderContract) {
             return $menu;
         }
 

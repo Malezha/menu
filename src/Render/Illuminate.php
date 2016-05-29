@@ -7,10 +7,10 @@ use Illuminate\Contracts\View\View;
 use Malezha\Menu\Contracts\MenuRender;
 
 /**
- * Class Blade
+ * Class Illuminate
  * @package Malezha\Menu\Render
  */
-class Blade implements MenuRender
+class Illuminate implements MenuRender
 {
     /**
      * @var Container

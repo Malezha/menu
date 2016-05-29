@@ -1,25 +1,25 @@
 <?php
-namespace Malezha\Menu\Entity;
+namespace Malezha\Menu;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Http\Request;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
-use Malezha\Menu\Contracts\SubMenu as GroupContract;
-use Malezha\Menu\Contracts\Item as ItemContract;
-use Malezha\Menu\Contracts\Link as LinkContract;
+use Malezha\Menu\Contracts\Element;
+use Malezha\Menu\Contracts\ElementFactory;
+use Malezha\Menu\Contracts\HasActiveAttributes;
 use Malezha\Menu\Contracts\MenuRender;
-use Malezha\Menu\Contracts\SubMenu as SubMenuContract;
+use Malezha\Menu\Element\SubMenu;
+use Malezha\Menu\Traits\HasActiveAttributes as TraitHasActiveAttributes;
 use Malezha\Menu\Traits\HasAttributes;
 
 /**
  * Class Builder
- * @package Malezha\Menu\Entity
+ * @package Malezha\Menu
  */
 class Builder implements BuilderContract
 {
-    use HasAttributes;
+    use HasAttributes, TraitHasActiveAttributes;
 
     /**
      * @var Container
@@ -88,37 +88,35 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function submenu($name, \Closure $itemCallable, \Closure $menuCallable)
-    {
-        $link = $this->linkFactory($name);
-        $item = $this->itemFactory($link, [], $itemCallable);
-        $menu = $this->builderFactory($name, [], $this->activeAttributes()->all(), $menuCallable);
-
-        $group = $this->app->make(GroupContract::class, [
-            'menu' => $menu,
-            'item' => $item,
-        ]);
-        
-        $this->saveItem($name, $group);
-
-        return $group;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
+    public function create($name, $type, $callback = null)
     {
         if ($this->has($name)) {
             throw new \RuntimeException("Duplicate menu key \"${name}\"");
         }
 
-        $link = $this->linkFactory($title, $url, $linkAttributes);
-        $item = $this->itemFactory($link, $attributes, $callback);
+        $factory = $this->getFactory($type);
+        $result = null;
 
-        $this->saveItem($name, $item);
-
-        return $item;
+        $reflection = new \ReflectionClass($type);
+        if ($reflection->implementsInterface(HasActiveAttributes::class)) {
+            $factory->setActiveAttributes($this->activeAttributes);
+        }
+        
+        if (is_callable($callback)) {
+            $result = call_user_func($callback, $factory);
+            
+            if (empty($result)) {
+                $result = $factory;
+            }
+        }
+        
+        if ($result instanceof ElementFactory) {
+            $result = $result->build();
+        }
+        
+        $this->saveItem($name, $result);
+        
+        return $result;
     }
 
     /**
@@ -224,18 +222,6 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function activeAttributes($callback = null)
-    {
-        if (is_callable($callback)) {
-            return call_user_func($callback, $this->activeAttributes);
-        }
-
-        return $this->activeAttributes;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getView()
     {
         return $this->view;
@@ -298,45 +284,8 @@ class Builder implements BuilderContract
     }
 
     /**
-     * @param string $title
-     * @param string $url
-     * @param array $attributes
-     * @return LinkContract
-     */
-    protected function linkFactory($title = '', $url = '#', $attributes = [])
-    {
-        return $this->app->make(LinkContract::class, [
-            'title' => $title,
-            'url' => $url,
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
-        ]);
-    }
-
-    /**
-     * @param LinkContract $link
-     * @param array $attributes
-     * @param \Closure $callback
-     * @return ItemContract
-     */
-    protected function itemFactory($link, $attributes = [], $callback = null)
-    {
-        $item = $this->app->make(ItemContract::class, [
-            'builder' => $this,
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
-            'link' => $link,
-            'request' => $this->app->make(Request::class),
-        ]);
-
-        if (is_callable($callback)) {
-            call_user_func($callback, $item);
-        }
-        
-        return $item;
-    }
-
-    /**
      * @param string $name
-     * @param ItemContract|SubMenuContract $item
+     * @param Element $item
      */
     protected function saveItem($name, $item)
     {
@@ -408,5 +357,16 @@ class Builder implements BuilderContract
         $firstArray = array_splice($this->items, 0, $position);
         $this->items = array_merge($firstArray, $values, $this->items);
         $this->rebuildIndexesArray();
+    }
+
+    /**
+     * @param $element
+     * @return ElementFactory
+     */
+    protected function getFactory($element)
+    {
+        $factoryClass = $this->app->make(Repository::class)->get('menu.elements')[$element]['factory'];
+        
+        return $this->app->make($factoryClass);
     }
 }

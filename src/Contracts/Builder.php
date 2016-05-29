@@ -7,7 +7,7 @@ use Illuminate\Contracts\Container\Container;
  * Interface Builder
  * @package Malezha\Menu\Contracts
  */
-interface Builder extends HasAttributes
+interface Builder extends HasAttributes, HasActiveAttributes
 {
     const UL = 'ul';
 
@@ -25,34 +25,19 @@ interface Builder extends HasAttributes
                          Attributes $activeAttributes, $type = self::UL, $view = null);
 
     /**
-     * Make sub menu
-     *
      * @param string $name
-     * @param \Closure $itemCallable
-     * @param \Closure $menuCallable
-     * @return mixed
+     * @param string $type
+     * @param callable $callback
+     * @return Element
      */
-    public function submenu($name, \Closure $itemCallable, \Closure $menuCallable);
-
-    /**
-     * Create new element
-     *
-     * @param string $name
-     * @param string $title
-     * @param string $url
-     * @param array $attributes
-     * @param array $linkAttributes
-     * @param \Closure|null $callback
-     * @return Item
-     */
-    public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null);
+    public function create($name, $type, $callback = null);
 
     /**
      * Insert values before item
      * 
      * @param string $name
      * @param \Closure $callback
-     * @return Item
+     * @return Element
      */
     public function insertBefore($name, \Closure $callback);
 
@@ -77,7 +62,7 @@ interface Builder extends HasAttributes
      *
      * @param string $name
      * @param mixed|null $default
-     * @return Item|SubMenu|null|mixed
+     * @return Element|mixed
      */
     public function get($name, $default = null);
 
@@ -86,7 +71,7 @@ interface Builder extends HasAttributes
      *
      * @param int $index
      * @param mixed|null $default
-     * @return Item|SubMenu|null|mixed
+     * @return Element|mixed
      */
     public function getByIndex($index, $default = null);
 
@@ -125,15 +110,6 @@ interface Builder extends HasAttributes
      * @return string
      */
     public function render($view = null);
-
-    /**
-     * Get active attributes object.
-     * If send \Closure option as parameter then returned callback result.
-     *
-     * @param \Closure|null $callback
-     * @return Attributes|mixed
-     */
-    public function activeAttributes($callback = null);
 
     /**
      * Get render view

@@ -3,6 +3,8 @@ namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Contracts\Builder;
 use Malezha\Menu\Contracts\Menu;
+use Malezha\Menu\Element\Link;
+use Malezha\Menu\Factory\LinkFactory;
 
 /**
  * Class MenuTest
@@ -18,7 +20,9 @@ class MenuTest extends TestCase
         /** @var Menu $menu */
         $menu = $this->app->make(Menu::class, ['container' => $this->app]);
         $menu->make('test', function(Builder $builder) {
-            $builder->create('one', 'One', '/one');
+            $builder->create('one', Link::class, function(LinkFactory $factory) {
+                $factory->setTitle('One')->setUrl('/one');
+            });
         });
         
         return $menu;

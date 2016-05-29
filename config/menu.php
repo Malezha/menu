@@ -3,7 +3,21 @@
 return [
 
     /**
-     * If you use laravel or illuminate\view set 'blade' template render.
+     * Available menu elements.
+     */
+    'elements' => [
+        \Malezha\Menu\Element\Link::class => [
+            'view' => 'menu::elements.link',
+            'factory' => \Malezha\Menu\Factory\LinkFactory::class,
+        ],
+        \Malezha\Menu\Element\SubMenu::class => [
+            'view' => 'menu::elements.submenu',
+            'factory' => \Malezha\Menu\Factory\SubMenuFactory::class,
+        ],
+    ],
+    
+    /**
+     * If you use laravel or illuminate\view set 'illuminate' template render.
      * You can also use a simple embedded template render - 'basic'
      */
     'default' => 'basic',
@@ -12,8 +26,8 @@ return [
      * Available template renders.
      */
     'renders' => [
-        'blade' => \Malezha\Menu\Render\Blade::class,
         'basic' => \Malezha\Menu\Render\Basic::class,
+        'illuminate' => \Malezha\Menu\Render\Illuminate::class,
     ],
 
     /**

@@ -1,12 +1,12 @@
 <?php
-namespace Malezha\Menu\Entity;
+namespace Malezha\Menu\Support;
 
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Support\MergeAttributes;
 
 /**
  * Class Attributes
- * @package Malezha\Menu\Entity
+ * @package Malezha\Menu
  */
 class Attributes implements AttributesContract
 {

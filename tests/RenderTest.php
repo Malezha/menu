@@ -3,10 +3,13 @@ namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
-use Malezha\Menu\Contracts\Item;
 use Malezha\Menu\Contracts\MenuRender;
+use Malezha\Menu\Element\Link;
+use Malezha\Menu\Element\SubMenu;
+use Malezha\Menu\Factory\LinkFactory;
+use Malezha\Menu\Factory\SubMenuFactory;
 use Malezha\Menu\Render\Basic;
-use Malezha\Menu\Render\Blade;
+use Malezha\Menu\Render\Illuminate;
 
 class RenderTest extends TestCase
 {
@@ -18,21 +21,27 @@ class RenderTest extends TestCase
             'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
             'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
-        $index = $builder->create('index', 'Index Page', url('/'));
-        $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
+        $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->setTitle('Index Page')
+                ->setUrl(url('/'))
+                ->getLinkAttributes()->push(['class' => 'menu-link']);
+        });
 
-        $builder->submenu('orders', function(Item $item) {
-            $item->getAttributes()->push(['class' => 'child-menu']);
+        $builder->create('orders', SubMenu::class, function(SubMenuFactory $factory) {
+            $factory->getAttributes()->push(['class' => 'child-menu']);
+            $factory->setTitle('Orders')->setUrl('javascript:;');
 
-            $link = $item->getLink();
-            $link->setTitle('Orders');
-            $link->setUrl('javascript:;');
-        }, function(Builder $menu) {
-            $menu->create('all', 'All', url('/orders/all'));
-            $menu->create('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
-
-            $menu->create('type_2', 'Type 2', url('/orders/2'), [], [], function(Item $item) {
-                $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
+            $subBuilder = $factory->getBuilder();
+            $subBuilder->create('all', Link::class, function(LinkFactory $factory) {
+                $factory->setTitle('All')->setUrl(url('/orders/all'));
+            });
+            $subBuilder->create('type_1', Link::class, function(LinkFactory $factory) {
+                $factory->setTitle('Type 1')->setUrl(url('/orders/1'))
+                    ->getLinkAttributes()->push(['class' => 'text-color-red']);
+            });
+            $subBuilder->create('type_2', Link::class, function(LinkFactory $factory) {
+                $factory->setTitle('Type 2')->setUrl(url('/orders/2'))
+                    ->getLinkAttributes()->push(['data-attribute' => 'value']);
             });
         });
 
@@ -57,7 +66,7 @@ class RenderTest extends TestCase
 
     public function testBladeRender()
     {
-        $this->makeTest(new Blade($this->app));
+        $this->makeTest(new Illuminate($this->app));
 
     }
 
@@ -80,7 +89,7 @@ class RenderTest extends TestCase
         $this->assertEquals($text, $basic->make($view)->render());
         $this->assertEquals($text, $basic->make($view2)->render());
         
-        $blade = new Blade($this->app);
+        $blade = new Illuminate($this->app);
         $this->assertEquals($text, $blade->make($view)->render());
         $this->assertEquals($text, $blade->make($view2)->render());
     }
