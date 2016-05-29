@@ -118,12 +118,24 @@ $menu->submenu('submenu', function (Item $item) {
 });
 ```
 
+You can insert new elements into menu before or after defined element:
+
+```php
+$callback = function (Builder $menu) {
+    ...
+};
+
+$menu->insertBefore('logout', $callback);
+$menu->insertAfter('index', $callback);
+```
+
 Builder are also available methods similar builder global menu:
 
 ```php
 $array = $builder->all(); // Get all menu elements.
 $bool = $builder->has('name'); // Check exists element by name.
 $item = $builder->get('name', $default = null); // Get element by name if exists or default value.
+$item = $builder->getByIndex(2, $default = null); // Get element by index
 $builder->forget('name'); // Delete element from menu.
 $html = $builder->render('view_name'); // Render view.
 ```
