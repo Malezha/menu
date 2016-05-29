@@ -43,9 +43,27 @@ interface Builder extends HasAttributes
      * @param array $attributes
      * @param array $linkAttributes
      * @param \Closure|null $callback
-     * @return mixed
+     * @return Item
      */
     public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null);
+
+    /**
+     * Insert values before item
+     * 
+     * @param string $name
+     * @param \Closure $callback
+     * @return Item
+     */
+    public function insertBefore($name, \Closure $callback);
+
+    /**
+     * Insert values after item
+     * 
+     * @param string $name
+     * @param \Closure $callback
+     * @return mixed
+     */
+    public function insertAfter($name, \Closure $callback);
 
     /**
      * Check exits by name

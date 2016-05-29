@@ -92,15 +92,7 @@ class Builder implements BuilderContract
     {
         $link = $this->linkFactory($name);
         $item = $this->itemFactory($link, [], $itemCallable);
-
-        $menu = $this->app->make(BuilderContract::class, [
-            'container' => $this->app, 
-            'name' => $name,
-            'activeAttributes' => $this->activeAttributes(),
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => []]),
-            'view' => $this->getView(),
-        ]);
-        call_user_func($menuCallable, $menu);
+        $menu = $this->builderFactory($name, [], $this->activeAttributes()->all(), $menuCallable);
 
         $group = $this->app->make(GroupContract::class, [
             'menu' => $menu,
@@ -127,6 +119,22 @@ class Builder implements BuilderContract
         $this->saveItem($name, $item);
 
         return $item;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function insertBefore($name, \Closure $callback)
+    {
+        $this->insert($this->indexes[$name], $this->prepareInsert($name, $callback));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function insertAfter($name, \Closure $callback)
+    {
+        $this->insert($this->indexes[$name] + 1, $this->prepareInsert($name, $callback));
     }
 
     /**
@@ -334,5 +342,71 @@ class Builder implements BuilderContract
     {
         $this->items[$name] = $item;
         $this->indexes[$name] = count($this->items) - 1;
+    }
+
+    /**
+     * @param string $name
+     * @param array $attributes
+     * @param array $activeAttributes
+     * @param \Closure|null $callback
+     * @return BuilderContract
+     */
+    protected function builderFactory($name, $attributes = [], $activeAttributes = [], $callback = null)
+    {
+        $menu = $this->app->make(BuilderContract::class, [
+            'container' => $this->app,
+            'name' => $name,
+            'activeAttributes' => $this->app->make(AttributesContract::class, ['attributes' => $activeAttributes]),
+            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
+            'view' => $this->getView(),
+        ]);
+
+        if (is_callable($callback)) {
+            call_user_func($callback, $menu);
+        }
+
+        return $menu;
+    }
+
+    protected function rebuildIndexesArray()
+    {
+        $this->indexes = [];
+        $iterator = 0;
+
+        foreach ($this->items as $key => $value) {
+            $this->indexes[$key] = $iterator++;
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param \Closure $callback
+     * @return array
+     */
+    protected function prepareInsert($name, $callback)
+    {
+        if (!$this->has($name)) {
+            throw new \RuntimeException("Menu item \"${name}\" must be exists");
+        }
+
+        $forInsert = $this->builderFactory('tmp', [], [], $callback)->all();
+        $diff = array_diff(array_keys(array_diff_key($this->items, $forInsert)), array_keys($this->items));
+
+        if (count($diff) > 0) {
+            throw new \RuntimeException('Duplicated keys: ' . implode(', ', array_keys($diff)));
+        }
+        
+        return $forInsert;
+    }
+
+    /**
+     * @param int $position
+     * @param array $values
+     */
+    protected function insert($position, $values)
+    {
+        $firstArray = array_splice($this->items, 0, $position);
+        $this->items = array_merge($firstArray, $values, $this->items);
+        $this->rebuildIndexesArray();
     }
 }

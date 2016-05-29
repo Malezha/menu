@@ -219,4 +219,23 @@ class BuilderTest extends TestCase
         $file = file_get_contents(__DIR__ . '/stub/another_set_view_menu.html');
         $this->assertEquals($file, $html);
     }
+    
+    public function testInsert()
+    {
+        $builder = $this->builderFactory();
+        $builder->create('index', 'Index Page', url('/'));
+        $builder->create('logout', 'logout', url('logout'));
+        
+        $builder->insertAfter('index', function (Builder $builder) {
+            $builder->create('users', 'Users', url('users'));
+        });
+        
+        $builder->insertBefore('users', function (Builder $builder) {
+            $builder->create('profile', 'Profile', url('profile'));
+        });
+
+        $html = $builder->render('another');
+        $file = file_get_contents(__DIR__ . '/stub/insert.html');
+        $this->assertEquals($file, $html);
+    }
 }
