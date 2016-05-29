@@ -10,6 +10,7 @@ use Malezha\Menu\Contracts\SubMenu as GroupContract;
 use Malezha\Menu\Contracts\Item as ItemContract;
 use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Contracts\MenuRender;
+use Malezha\Menu\Contracts\SubMenu as SubMenuContract;
 use Malezha\Menu\Traits\HasAttributes;
 
 /**
@@ -29,6 +30,11 @@ class Builder implements BuilderContract
      * @var array
      */
     protected $items;
+
+    /**
+     * @var array
+     */
+    protected $indexes = [];
 
     /**
      * @var string
@@ -84,16 +90,8 @@ class Builder implements BuilderContract
      */
     public function submenu($name, \Closure $itemCallable, \Closure $menuCallable)
     {
-        $item = $this->app->make(ItemContract::class, [
-            'builder' => $this,
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => []]),
-            'link' => $this->app->make(LinkContract::class, [
-                'title' => $name,
-                'attributes' => $this->app->make(AttributesContract::class, ['attributes' => []]),
-            ]),
-            'request' => $this->app->make(Request::class),
-        ]);
-        call_user_func($itemCallable, $item);
+        $link = $this->linkFactory($name);
+        $item = $this->itemFactory($link, [], $itemCallable);
 
         $menu = $this->app->make(BuilderContract::class, [
             'container' => $this->app, 
@@ -108,7 +106,8 @@ class Builder implements BuilderContract
             'menu' => $menu,
             'item' => $item,
         ]);
-        $this->items[$name] = $group;
+        
+        $this->saveItem($name, $group);
 
         return $group;
     }
@@ -118,24 +117,14 @@ class Builder implements BuilderContract
      */
     public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
-        $link = $this->app->make(LinkContract::class, [
-            'title' => $title,
-            'url' => $url,
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $linkAttributes]),
-        ]);
-        
-        $item = $this->app->make(ItemContract::class, [
-            'builder' => $this,
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
-            'link' => $link,
-            'request' => $this->app->make(Request::class),
-        ]);
-
-        if (is_callable($callback)) {
-            call_user_func($callback, $item);
+        if ($this->has($name)) {
+            throw new \RuntimeException("Duplicate menu key \"${name}\"");
         }
 
-        $this->items[$name] = $item;
+        $link = $this->linkFactory($title, $url, $linkAttributes);
+        $item = $this->itemFactory($link, $attributes, $callback);
+
+        $this->saveItem($name, $item);
 
         return $item;
     }
@@ -157,6 +146,16 @@ class Builder implements BuilderContract
             return $this->items[$name];
         }
         return $default;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByIndex($index, $default = null)
+    {
+        $key = array_search($index, $this->indexes);
+        
+        return $key === false ? $default : $this->get($key, $default);
     }
 
     /**
@@ -288,5 +287,52 @@ class Builder implements BuilderContract
         }
         
         return $renderView;
+    }
+
+    /**
+     * @param string $title
+     * @param string $url
+     * @param array $attributes
+     * @return LinkContract
+     */
+    protected function linkFactory($title = '', $url = '#', $attributes = [])
+    {
+        return $this->app->make(LinkContract::class, [
+            'title' => $title,
+            'url' => $url,
+            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
+        ]);
+    }
+
+    /**
+     * @param LinkContract $link
+     * @param array $attributes
+     * @param \Closure $callback
+     * @return ItemContract
+     */
+    protected function itemFactory($link, $attributes = [], $callback = null)
+    {
+        $item = $this->app->make(ItemContract::class, [
+            'builder' => $this,
+            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
+            'link' => $link,
+            'request' => $this->app->make(Request::class),
+        ]);
+
+        if (is_callable($callback)) {
+            call_user_func($callback, $item);
+        }
+        
+        return $item;
+    }
+
+    /**
+     * @param string $name
+     * @param ItemContract|SubMenuContract $item
+     */
+    protected function saveItem($name, $item)
+    {
+        $this->items[$name] = $item;
+        $this->indexes[$name] = count($this->items) - 1;
     }
 }

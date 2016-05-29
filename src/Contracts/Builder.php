@@ -59,9 +59,18 @@ interface Builder extends HasAttributes
      *
      * @param string $name
      * @param mixed|null $default
-     * @return Item|SubMenu|null
+     * @return Item|SubMenu|null|mixed
      */
     public function get($name, $default = null);
+
+    /**
+     * Get element or sub menu by index
+     *
+     * @param int $index
+     * @param mixed|null $default
+     * @return Item|SubMenu|null|mixed
+     */
+    public function getByIndex($index, $default = null);
 
     /**
      * Get all elements and sub menus

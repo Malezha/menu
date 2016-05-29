@@ -52,6 +52,16 @@ class BuilderTest extends TestCase
         $this->assertAttributeEquals('Home', 'title', $link);
         $this->assertAttributeEquals('/', 'url', $link);
     }
+
+    public function testCreateIfExists()
+    {
+        $this->expectException(\RuntimeException::class);
+        
+        $builder = $this->builderFactory();
+
+        $builder->create('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link']);
+        $builder->create('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link']); // Duplicate
+    }
     
     public function testGet()
     {
@@ -61,6 +71,16 @@ class BuilderTest extends TestCase
         
         $this->assertEquals($item, $builder->get('test'));
         $this->assertEquals(null, $builder->get('notFound'));
+    }
+
+    public function testGetByIndex()
+    {
+        $builder = $this->builderFactory();
+
+        $item = $builder->create('test', 'Test', '/test');
+
+        $this->assertEquals($item, $builder->getByIndex(0));
+        $this->assertEquals(null, $builder->getByIndex(1));
     }
     
     public function testHas()
