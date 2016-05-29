@@ -20,4 +20,13 @@ class TestCase extends OrchestraTestCase
     {
         return ['Menu' => MenuFacade::class];
     }
+
+    public function expectException($exception)
+    {
+        if (version_compare(\PHPUnit_Runner_Version::id(), '5.2', '>=')) {
+            parent::expectException($exception);
+        } else {
+            $this->setExpectedException($exception);
+        }
+    }
 }
