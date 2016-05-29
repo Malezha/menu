@@ -3,12 +3,15 @@
 return [
 
     /**
-     * If you use laravel or illuminate\view set 'blade' template system.
-     * You can also use a simple embedded template system - 'basic'
+     * If you use laravel or illuminate\view set 'blade' template render.
+     * You can also use a simple embedded template render - 'basic'
      */
-    'template-system' => 'basic',
-    
-    'available-template-systems' => [
+    'default' => 'basic',
+
+    /**
+     * Available template renders.
+     */
+    'renders' => [
         'blade' => \Malezha\Menu\Render\Blade::class,
         'basic' => \Malezha\Menu\Render\Basic::class,
     ],
@@ -20,7 +23,7 @@ return [
 
     /**
      * Path to find patterns.
-     * Used in template 'basic'.
+     * Used in render 'basic'.
      */
     'paths' => [
         __DIR__ . '/../views',

@@ -2,6 +2,7 @@
 
 namespace Malezha\Menu;
 
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
@@ -104,15 +105,15 @@ class MenuServiceProvider extends ServiceProvider
     protected function registerRenderSystem()
     {
         $this->app->bind('menu.render', function (Container $app) {
-            $config = $app['config']->get('menu');
-            $key = $config['template-system'];
-            $available = $config['available-template-systems'];
+            $config = $app->make(Repository::class)->get('menu');
+            $key = $config['default'];
+            $available = $config['renders'];
 
             if (array_key_exists($key, $available)) {
                 return new $available[$key]($app);
             }
 
-            throw new \Exception('Can use template system: ' . $config['template-system']);
+            throw new \Exception('Can use template system: ' . $config['default']);
         });
         $this->app->alias('menu.render', MenuRender::class);
     }

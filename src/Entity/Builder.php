@@ -1,7 +1,9 @@
 <?php
 namespace Malezha\Menu\Entity;
 
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Http\Request;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
 use Malezha\Menu\Contracts\SubMenu as GroupContract;
@@ -21,7 +23,7 @@ class Builder implements BuilderContract
     /**
      * @var Container
      */
-    protected $container;
+    protected $app;
 
     /**
      * @var array
@@ -64,14 +66,14 @@ class Builder implements BuilderContract
     public function __construct(Container $container, $name, AttributesContract $attributes,
                                 AttributesContract $activeAttributes, $type = self::UL, $view = null)
     {
-        $this->container = $container;
+        $this->app = $container;
         $this->name = $name;
         $this->type = $type;
         $this->attributes = $attributes;
         $this->items = [];
         $this->activeAttributes = $activeAttributes;
-        $this->viewFactory = $this->container->make(MenuRender::class);
-        $this->config = $this->container->make('config')->get('menu');
+        $this->viewFactory = $this->app->make(MenuRender::class);
+        $this->config = $this->app->make(Repository::class)->get('menu');
         try {
             $this->setView($view);
         } catch (\Exception $e) {}
@@ -82,27 +84,27 @@ class Builder implements BuilderContract
      */
     public function submenu($name, \Closure $itemCallable, \Closure $menuCallable)
     {
-        $item = $this->container->make(ItemContract::class, [
+        $item = $this->app->make(ItemContract::class, [
             'builder' => $this,
-            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
-            'link' => $this->container->make(LinkContract::class, [
+            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => []]),
+            'link' => $this->app->make(LinkContract::class, [
                 'title' => $name,
-                'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
+                'attributes' => $this->app->make(AttributesContract::class, ['attributes' => []]),
             ]),
-            'request' => $this->container->make('request'),
+            'request' => $this->app->make(Request::class),
         ]);
         call_user_func($itemCallable, $item);
 
-        $menu = $this->container->make(BuilderContract::class, [
-            'container' => $this->container, 
+        $menu = $this->app->make(BuilderContract::class, [
+            'container' => $this->app, 
             'name' => $name,
             'activeAttributes' => $this->activeAttributes(),
-            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => []]),
+            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => []]),
             'view' => $this->getView(),
         ]);
         call_user_func($menuCallable, $menu);
 
-        $group = $this->container->make(GroupContract::class, [
+        $group = $this->app->make(GroupContract::class, [
             'menu' => $menu,
             'item' => $item,
         ]);
@@ -116,17 +118,17 @@ class Builder implements BuilderContract
      */
     public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
     {
-        $link = $this->container->make(LinkContract::class, [
+        $link = $this->app->make(LinkContract::class, [
             'title' => $title,
             'url' => $url,
-            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => $linkAttributes]),
+            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $linkAttributes]),
         ]);
         
-        $item = $this->container->make(ItemContract::class, [
+        $item = $this->app->make(ItemContract::class, [
             'builder' => $this,
-            'attributes' => $this->container->make(AttributesContract::class, ['attributes' => $attributes]),
+            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
             'link' => $link,
-            'request' => $this->container->make('request'),
+            'request' => $this->app->make(Request::class),
         ]);
 
         if (is_callable($callback)) {

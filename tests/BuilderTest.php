@@ -27,7 +27,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $this->assertAttributeEquals($this->app, 'container', $builder);
+        $this->assertAttributeEquals($this->app, 'app', $builder);
         $this->assertAttributeEquals('test', 'name', $builder);
         $this->assertAttributeEquals(Builder::UL, 'type', $builder);
         $this->assertAttributeInstanceOf(Attributes::class, 'attributes', $builder);
