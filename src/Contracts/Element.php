@@ -1,11 +1,12 @@
 <?php
 namespace Malezha\Menu\Contracts;
+use Illuminate\Contracts\Support\Arrayable;
 
 /**
  * Interface Element
  * @package Malezha\Menu\Contracts
  */
-interface Element
+interface Element extends Arrayable, \Serializable
 {
     public function getView();
     

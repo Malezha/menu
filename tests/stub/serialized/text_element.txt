@@ -1,0 +1,3 @@
+C:25:"Malezha\Menu\Element\Text":399:{a:4:{s:4:"view";s:19:"menu::elements.text";s:4:"text";s:9:"Serialize";s:10:"attributes";C:31:"Malezha\Menu\Support\Attributes":36:{a:1:{s:5:"class";s:10:"serialized";}}s:4:"rule";s:210:"C:32:"Opis\Closure\SerializableClosure":164:{a:5:{s:3:"use";a:1:{s:3:"tmp";i:0;}s:8:"function";s:65:"function () use ($tmp) {
+            return $tmp === 0;
+        }";s:5:"scope";N;s:4:"this";N;s:4:"self";N;}}";}}

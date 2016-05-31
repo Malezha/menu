@@ -2,12 +2,13 @@
 namespace Malezha\Menu\Contracts;
 
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Support\Arrayable;
 
 /**
  * Interface Builder
  * @package Malezha\Menu\Contracts
  */
-interface Builder extends HasAttributes, HasActiveAttributes
+interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayAccess, \Serializable
 {
     const UL = 'ul';
 
@@ -15,14 +16,14 @@ interface Builder extends HasAttributes, HasActiveAttributes
 
     /**
      * @param Container $container
-     * @param string $name
      * @param Attributes $attributes
      * @param Attributes $activeAttributes
      * @param string $type
      * @param string $view
+     * @internal param string $name
      */
-    function __construct(Container $container, $name, Attributes $attributes, 
-                         Attributes $activeAttributes, $type = self::UL, $view = null);
+    function __construct(Container $container, Attributes $attributes, Attributes $activeAttributes,
+                         $type = self::UL, $view = null);
 
     /**
      * @param string $name
@@ -76,7 +77,7 @@ interface Builder extends HasAttributes, HasActiveAttributes
     public function getByIndex($index, $default = null);
 
     /**
-     * Get all elements and sub menus
+     * Get all elements
      *
      * @return array
      */

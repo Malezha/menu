@@ -70,4 +70,21 @@ class SubMenu extends Link
             ->with($this->renderWith($view))
             ->render();
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray()
+    {
+        return array_merge(parent::toArray(), [
+            'builder' => $this->builder->toArray(),
+        ]);
+    }
+
+    protected function propertiesForSerialization()
+    {
+        return array_merge(parent::propertiesForSerialization(), [
+            'builder' => $this->builder,
+        ]);
+    }
 }

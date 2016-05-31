@@ -1,6 +1,8 @@
 <?php
 namespace Malezha\Menu\Element;
 
+use Illuminate\Container\Container;
+use Illuminate\Http\Request;
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\DisplayRule as DisplayRuleInterface;
 use Malezha\Menu\Contracts\HasAttributes as HasAttributesInterface;
@@ -10,6 +12,7 @@ use Malezha\Menu\Support\MergeAttributes;
 use Malezha\Menu\Traits\DisplayRule;
 use Malezha\Menu\Traits\HasActiveAttributes;
 use Malezha\Menu\Traits\HasAttributes;
+use Opis\Closure\SerializableClosure;
 
 /**
  * Class Link
@@ -125,5 +128,48 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
         }
 
         return $first == $second;
+    }
+    
+    protected function wakeupCurrentUrl()
+    {
+        $app = Container::getInstance();
+        $this->currentUrl = $app->make(Request::class)->url();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray()
+    {
+        return array_merge(parent::toArray(), [
+            'title' => $this->title,
+            'url' => $this->url,
+            'attributes' => $this->attributes->toArray(),
+            'activeAttributes' => $this->activeAttributes->toArray(),
+            'linkAttributes' => $this->linkAttributes->toArray(),
+            'canDisplay' => $this->canDisplay(),
+        ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unserialize($serialized)
+    {
+        $this->wakeupCurrentUrl();
+
+        parent::unserialize($serialized);
+    }
+
+    protected function propertiesForSerialization()
+    {
+        return array_merge(parent::propertiesForSerialization(), [
+            'title' => $this->title,
+            'url' => $this->url,
+            'attributes' => $this->attributes,
+            'activeAttributes' => $this->activeAttributes,
+            'linkAttributes' => $this->linkAttributes,
+            'rule' => $this->serializeRule(),
+        ]);
     }
 }

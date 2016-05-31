@@ -17,7 +17,6 @@ class RenderTest extends TestCase
     {
         /** @var Builder $builder */
         $builder = $this->app->make(Builder::class, [
-            'name' => 'test',
             'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
             'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
@@ -49,21 +48,15 @@ class RenderTest extends TestCase
 
         return $builder;
     }
-
-    protected function getStub()
-    {
-        return $file = file_get_contents(__DIR__ . '/stub/menu.html');
-    }
-
+    
     protected function makeTest($render)
     {
         $this->app->instance('menu.render', $render);
         $this->app->alias('menu.render', MenuRender::class);
 
         $builder = $this->getBuilder();
-        $stub = $this->getStub();
         $this->assertAttributeInstanceOf(get_class($render), 'viewFactory', $builder);
-        $this->assertEquals($stub, $builder->render());
+        $this->assertEquals($this->getStub('menu.html'), $builder->render());
     }
 
     public function testBladeRender()

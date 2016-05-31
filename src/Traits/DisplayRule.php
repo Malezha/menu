@@ -1,5 +1,6 @@
 <?php
 namespace Malezha\Menu\Traits;
+use Opis\Closure\SerializableClosure;
 
 /**
  * Class DisplayRule
@@ -35,5 +36,35 @@ trait DisplayRule
         }
         
         return (bool) $this->rule;
+    }
+
+    /**
+     * Serialize rule
+     * 
+     * @return string
+     */
+    protected function serializeRule()
+    {
+        $displayRule = $this->rule;
+
+        if ($this->rule instanceof \Closure) {
+            $displayRule = new SerializableClosure($this->rule);
+        }
+        
+        return serialize($displayRule);
+    }
+
+    /**
+     * @param string $rule
+     */
+    protected function unserializeRule($rule)
+    {
+        $rule = unserialize($rule);
+
+        if ($rule instanceof SerializableClosure) {
+            $rule = $rule->getClosure();
+        }
+
+        $this->rule = $rule;
     }
 }

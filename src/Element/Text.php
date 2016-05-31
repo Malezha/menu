@@ -13,6 +13,7 @@ use Malezha\Menu\Traits\HasAttributes;
  * @package Malezha\Menu\Element
  * 
  * @property string $text
+ * @property 
  * @property-read Attributes $attributes
  */
 class Text extends AbstractElement implements DisplayRuleInterface, HasAttributesInterface
@@ -59,5 +60,26 @@ class Text extends AbstractElement implements DisplayRuleInterface, HasAttribute
             'canDisplay' => $this->canDisplay(),
             'attributes' => $this->buildAttributes(),
         ];
+    }
+
+    protected function propertiesForSerialization()
+    {
+        return array_merge(parent::propertiesForSerialization(), [
+            'text' => $this->text,
+            'attributes' => $this->attributes,
+            'rule' => $this->serializeRule(),
+        ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray()
+    {
+        return array_merge(parent::toArray(), [
+            'text' => $this->text,
+            'attributes' => $this->attributes->toArray(),
+            'canDisplay' => $this->canDisplay(),
+        ]);
     }
 }

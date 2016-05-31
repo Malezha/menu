@@ -11,6 +11,7 @@ use Malezha\Menu\Element\Text;
  * 
  * @property string $text
  * @property Attributes $attributes
+ * @property mixed $displayRule
  */
 class TextFactory extends AbstractElementFactory
 {

@@ -16,8 +16,7 @@ use Malezha\Menu\Element\Link;
  * @property Attributes $activeAttributes
  * @property Attributes $linkAttributes
  * @property string $view
- * @property string $currentUrl
- * @property bool $displayRule
+ * @property mixed $displayRule
  *
  */
 class LinkFactory extends AbstractElementFactory

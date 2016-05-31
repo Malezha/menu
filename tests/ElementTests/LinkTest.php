@@ -23,6 +23,11 @@ class LinkTest extends TestCase
     {
         return "<li class=\"link\"><a href=\"/news\">News</a></li>\n";
     }
+
+    protected function serializeStub()
+    {
+        return $this->getStub('serialized/link_element.txt');
+    }
     
     public function testFactory()
     {
@@ -46,5 +51,17 @@ class LinkTest extends TestCase
         
         $html = $link->render();
         $this->assertEquals($this->elementRender(), $html);
+    }
+    
+    public function testSerialization()
+    {
+        $factory = $this->factory();
+        $factory->title = 'Serialize';
+        $factory->url = '/s';
+        $factory->attributes->put('class', 'serialized');
+        $link = $factory->build();
+
+        $this->assertEquals($this->serializeStub(), serialize($link));
+        $this->assertEquals($link, unserialize($this->serializeStub()));
     }
 }
