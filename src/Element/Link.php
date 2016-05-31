@@ -21,6 +21,8 @@ use Malezha\Menu\Traits\HasAttributes;
  * @property string $url
  * @property-read Attributes $attributes
  * @property-read Attributes $linkAttributes
+ * @property-read Attributes $activeAttributes
+ * @property bool|callable $displayRule
  */
 class Link extends AbstractElement implements DisplayRuleInterface, HasAttributesInterface, HasActiveAttributesInterface
 {

@@ -37,7 +37,102 @@ php artisan vendor:publish --provider="Malezha\Menu\MenuServiceProvider"
 
 ### Usage
 
-TODO
+```php
+use Malezha\Menu\Contracts\Builder;
+use Menu;
+
+Menu::make('main', function(Builder $builder) {
+    // Create menu element
+    $builder->create('element_name', ElementClass::class, function (ElementFactory $factory) {
+        $factory->elementParameter;
+    });
+
+    # Avaliable elements
+    // Link. Html:
+    // <li attributes|activeAttributes><a href="url" linkAttributes>title</a></li>
+    use Malezha\Menu\Element\Link;
+    use Malezha\Menu\Factory\LinkFactory;
+    $builder->create('link', Link::class, function (LinkFactory $factory) {
+        $factory->title = 'Title';
+        $factory->url = '/';
+        $factory->attributes->put('class', 'li');
+        $factory->activeAttributes->push(['class' => 'active-element']);
+        $factory->linkAttributes->set(['id' => 'link']);
+        $factory->displayRule = true; // Boolean or callable witch return boolean
+    });
+
+    // Submenu. Html:
+    // <li attributes|activeAttributes>
+    //  <a href="url" linkAttributes>title</a>
+    //  <ul>...</ul>
+    // </li>
+    use Malezha\Menu\Element\SubMenu;
+    use Malezha\Menu\Factory\SubMenuFactory;
+    $builder->create('submenu', SubMenu::class, function (SubMenuFactory $factory) {
+        // Submenu exdends Link so all parameters available
+        $factory->builder->create(...); // Create submenu element
+    });
+
+    // Text. Html:
+    // <li attributes>Text</li>
+    use Malezha\Menu\Element\Text;
+    use Malezha\Menu\Factory\TextFactory;
+    $builder->create('submenu', Text::class, function (TextFactory $factory) {
+        $factory->text = 'Text';
+        $factory->attributes->put('class', 'deliver');
+        $factory->displayRule = true;
+    });
+});
+
+// Building menu from array
+$array = [
+    'type' => 'ul',
+    'view' => 'menu::view', // Default view
+    'attributes' => [
+        'class' => 'menu',
+    ],
+    'activeAttributes' => [
+        'class' => 'active',
+    ],
+    'elements' => [
+        'index' => [
+            'type' => 'link',
+            'view' => 'menu::elements.link', // Default view may be changed in config
+            'url' => 'http://example.com',
+            'attributes' => [],
+            'activeAttributes' => [
+                class' => 'active',
+            ],
+            'linkAttributes' => [],
+            'displayRule' => true,
+        ],
+        ...
+        'settings' => [
+            'type' => 'submenu',
+            'view' => 'menu::elements.submenu',
+            'url' => 'http://example.com',
+            'attributes' => [],
+            'activeAttributes' => [
+                class' => 'active',
+            ],
+            'linkAttributes' => [],
+            'displayRule' => true,
+            'builder' => [
+                'type' => 'ul',
+                'view' => '_partial.submenu', // U can set view for submenu singly
+                ...
+                'elements' => [
+                    ...
+                ],
+            ],
+        ],
+    ]
+];
+
+$builder = Menu::fromArray('from-array', $array);
+$html = $builder->render; // Menu::render('from-array');
+// $builder->toArray === $array;
+```
 
 ### Simple example
 
@@ -49,28 +144,31 @@ use Malezha\Menu\Factory\LinkFactory;
 use Malezha\Menu\Factory\SubMenuFactory;
 use Menu;
 
-Menu::make('main', 'ul', [], function (Builder $builder) {
+Menu::make('main', function (Builder $builder) {
     $builder->create('index', Link::class, function(LinkFactory $factory) {
-        $factory->setTitle('Index Page')
-            ->setUrl(url('/'))
-            ->getLinkAttributes()->push(['class' => 'menu-link']);
+        $factory->title = 'Index Page';
+        $factory->url = '/';
+        $factory->linkAttributes->push(['class' => 'menu-link']);
     });
 
     $builder->create('orders', SubMenu::class, function(SubMenuFactory $factory) {
-        $factory->getAttributes()->push(['class' => 'child-menu']);
-        $factory->setTitle('Orders')->setUrl('javascript:;');
+        $factory->attributes->push(['class' => 'child-menu']);
+        $factory->title = 'Orders';
+        $factory->url = 'javascript:;';
 
-        $subBuilder = $factory->getBuilder();
-        $subBuilder->create('all', Link::class, function(LinkFactory $factory) {
-             $factory->setTitle('All')->setUrl(url('/orders/all'));
+        $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'All';
+            $factory->url = '/orders/all';
         });
-        $subBuilder->create('type_1', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Type 1')->setUrl(url('/orders/1'))
-                ->getLinkAttributes()->push(['class' => 'text-color-red']);
+        $factory->builder->create('type_1', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Type 1';
+            $factory->url = '/orders/1';
+            $factory->linkAttributes->push(['class' => 'text-color-red']);
         });
-        $subBuilder->create('type_2', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Type 2')->setUrl(url('/orders/2'))
-                ->getLinkAttributes()->push(['data-attribute' => 'value']);
+        $factory->builder->create('type_2', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Type 2';
+            $factory->url = '/orders/2';
+            $factory->linkAttributes->push(['data-attribute' => 'value']);
         });
     });
 });

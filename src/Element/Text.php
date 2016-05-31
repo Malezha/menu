@@ -13,7 +13,7 @@ use Malezha\Menu\Traits\HasAttributes;
  * @package Malezha\Menu\Element
  * 
  * @property string $text
- * @property 
+ * @property bool|callable $displayRule
  * @property-read Attributes $attributes
  */
 class Text extends AbstractElement implements DisplayRuleInterface, HasAttributesInterface

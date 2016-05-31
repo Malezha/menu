@@ -9,7 +9,7 @@ use Opis\Closure\SerializableClosure;
 trait DisplayRule
 {
     /**
-     * @var bool|\Closure
+     * @var bool|callable
      */
     protected $displayRule = true;
 
@@ -17,7 +17,7 @@ trait DisplayRule
      * Set boolean or callback, witch return boolean to determine whether to display or not this item.
      * Callback will be called each time rendering item.
      *
-     * @param bool|\Closure $rule
+     * @param bool|callable $rule
      */
     public function setDisplayRule($rule)
     {
