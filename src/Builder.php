@@ -114,7 +114,8 @@ class Builder implements BuilderContract
      */
     public function insertBefore($name, \Closure $callback)
     {
-        $this->insert($this->indexes[$name], $this->prepareInsert($name, $callback));
+        $prepared = $this->prepareInsert($name, $callback);
+        $this->insert($this->indexes[$name], $prepared);
     }
 
     /**
@@ -122,7 +123,8 @@ class Builder implements BuilderContract
      */
     public function insertAfter($name, \Closure $callback)
     {
-        $this->insert($this->indexes[$name] + 1, $this->prepareInsert($name, $callback));
+        $prepared = $this->prepareInsert($name, $callback);
+        $this->insert($this->indexes[$name] + 1, $prepared);
     }
 
     /**
@@ -330,6 +332,7 @@ class Builder implements BuilderContract
 
         $forInsert = $this->builderFactory('tmp', [], [], $callback)->all();
         $diff = array_diff(array_keys(array_diff_key($this->elements, $forInsert)), array_keys($this->elements));
+        $diff = array_intersect_key($this->elements, $forInsert);
 
         if (count($diff) > 0) {
             throw new \RuntimeException('Duplicated keys: ' . implode(', ', array_keys($diff)));
@@ -387,6 +390,9 @@ class Builder implements BuilderContract
      */
     public function offsetExists($offset)
     {
+        if (is_int($offset)) {
+            return (bool) array_search($offset, $this->indexes, true);
+        }
         return $this->has($offset);
     }
 
@@ -395,6 +401,12 @@ class Builder implements BuilderContract
      */
     public function offsetGet($offset)
     {
+        if (is_int($offset)) {
+            $offset = array_search($offset, $this->indexes, true);
+            if ($offset === false) {
+                return null;
+            }
+        }
         return $this->get($offset);
     }
 
@@ -403,7 +415,9 @@ class Builder implements BuilderContract
      */
     public function offsetSet($offset, $value)
     {
-        $this->elements[$offset] = $value;
+        if ($value instanceof Element) {
+            $this->elements[$offset] = $value;
+        }
     }
 
     /**

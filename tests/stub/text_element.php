@@ -1,0 +1,1 @@
+<div<?php echo $attributes;?>><?php echo $text;?></div>

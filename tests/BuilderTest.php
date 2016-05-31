@@ -156,6 +156,8 @@ class BuilderTest extends TestCase
         
         $this->assertEquals($item, $builder->get('test'));
         $this->assertEquals(null, $builder->get('notFound'));
+        $this->assertEquals($item, $builder['test']);
+        $this->assertEquals(null, $builder['notFound']);
     }
 
     public function testGetByIndex()
@@ -166,6 +168,8 @@ class BuilderTest extends TestCase
 
         $this->assertEquals($item, $builder->getByIndex(0));
         $this->assertEquals(null, $builder->getByIndex(1));
+        $this->assertEquals($item, $builder[0]);
+        $this->assertEquals(null, $builder[1]);
     }
     
     public function testHas()
@@ -173,6 +177,7 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
 
         $this->assertFalse($builder->has('test'));
+        $this->assertFalse(isset($builder['test']));
     }
     
     public function testType()
@@ -198,9 +203,15 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
 
         $builder->create('test', Link::class);
+        $builder->create('another', Text::class);
+        
         $this->assertTrue($builder->has('test'));
         $builder->forget('test');
         $this->assertFalse($builder->has('test'));
+        
+        $this->assertTrue($builder->has('another'));
+        unset($builder['another']);
+        $this->assertFalse($builder->has('another'));
     }
     
     public function testActiveAttributes()
@@ -341,6 +352,34 @@ class BuilderTest extends TestCase
 
         $this->assertEquals($this->getStub('insert.html'), $builder->render('another'));
     }
+
+    public function testInsertExceptionHasNot()
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $builder = $this->builderFactory();
+        $builder->insertBefore('not_exist', function (Builder $builder) {});
+    }
+
+    public function testInsertExceptionDuplicate()
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $builder = $this->builderFactory();
+        $builder->create('home', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Home';
+            $factory->url = '/';
+        });
+        $builder->create('some', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Some';
+            $factory->url = '/';
+        });
+        $builder->insertAfter('home', function (Builder $builder) {
+            $builder->create('some', Text::class, function(TextFactory $factory) {
+                $factory->text = 'Duplicate some';
+            });
+        });
+    }
     
     public function testSerialization()
     {
@@ -387,8 +426,7 @@ class BuilderTest extends TestCase
         });
 
         $this->assertEquals($this->serializeStub(), serialize($builder));
-        // $this->assertEquals($builder, $this->serializeStub()); # TODO
-        // Error: 'C:20:"Malezha\Menu\Builder":4...;}}}}}' does not match expected type "object". 
+        $this->assertEquals($builder, unserialize($this->serializeStub()));
     }
     
     public function testArray()
@@ -411,5 +449,20 @@ class BuilderTest extends TestCase
 
         $builderFormArray = $builder->fromArray($builder->toArray());
         $this->assertEquals($builder, $builderFormArray);
+    }
+    
+    public function testSet()
+    {
+        $builder = $this->builderFactory();
+        $element = (new TextFactory($this->app))->build([
+            'text' => 'Text',
+        ]);
+        $notElement = [];
+        
+        $builder['element'] = $element;
+        $builder['notElement'] = $notElement;
+        
+        $this->assertTrue($builder->has('element'));
+        $this->assertFalse($builder->has('notElement'));
     }
 }

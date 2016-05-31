@@ -85,4 +85,17 @@ class TextTest extends TestCase
         
         $this->assertEquals($this->toArrayStub(), $element->toArray());
     }
+    
+    public function testView()
+    {
+        view()->addLocation(__DIR__ . '/../stub');
+        $this->app['config']->prepend('menu.paths', __DIR__ . '/../stub');
+        $view = 'text_element';
+
+        $element = $this->factory()->build(['text' => 'Block']);
+        $element->setView($view);
+        $this->assertAttributeEquals($view, 'view', $element);
+        $this->assertEquals($view, $element->getView());
+        $this->assertEquals('<div>Block</div>', $element->render());
+    }
 }

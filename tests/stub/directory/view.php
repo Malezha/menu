@@ -1,1 +1,1 @@
-Hello, Menu builder!
+Hello, <?php echo $menu;?> builder!

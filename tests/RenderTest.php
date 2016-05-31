@@ -81,11 +81,27 @@ class RenderTest extends TestCase
         $this->app['view']->addLocation($path);
         
         $basic = new Basic($this->app);
-        $this->assertEquals($text, $basic->make($view)->render());
-        $this->assertEquals($text, $basic->make($view2)->render());
+        $this->assertEquals($text, $basic->make($view)->with('menu', 'Menu')->render());
+        $this->assertEquals($text, $basic->make($view2)->with('menu', 'Menu')->render());
         
         $blade = new Illuminate($this->app);
-        $this->assertEquals($text, $blade->make($view)->render());
-        $this->assertEquals($text, $blade->make($view2)->render());
+        $this->assertEquals($text, $blade->make($view)->with('menu', 'Menu')->render());
+        $this->assertEquals($text, $blade->make($view2)->with('menu', 'Menu')->render());
+    }
+
+    public function testMakeExceptionBasic()
+    {
+        $this->expectException(\Exception::class);
+
+        $basic = new Basic($this->app);
+        $basic->make('view_not_found');
+    }
+
+    public function testMakeExceptionIlluminate()
+    {
+        $this->expectException(\Exception::class);
+
+        $blade = new Illuminate($this->app);
+        $blade->make('view_not_found');
     }
 }

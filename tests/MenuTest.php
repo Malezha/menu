@@ -111,5 +111,6 @@ class MenuTest extends TestCase
         $menu->fromArray('from_array', $builder->toArray());
         
         $this->assertEquals($builder, $menu->get('from_array'));
+        $this->assertEquals($builder->toArray(), $menu->toArray('from_array'));
     }
 }

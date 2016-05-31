@@ -66,7 +66,7 @@ class Basic implements MenuRender
      */
     public function render()
     {
-        $s = extract($this->variables);
+        $__e = extract($this->variables);
 
         ob_start();
         include($this->view);
