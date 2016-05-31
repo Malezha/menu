@@ -7,16 +7,9 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
-use Malezha\Menu\Contracts\SubMenu as GroupContract;
-use Malezha\Menu\Contracts\Item as ItemContract;
-use Malezha\Menu\Contracts\Link as LinkContract;
 use Malezha\Menu\Contracts\Menu as MenuContract;
 use Malezha\Menu\Contracts\MenuRender;
-use Malezha\Menu\Entity\Attributes;
-use Malezha\Menu\Entity\Builder;
-use Malezha\Menu\Entity\SubMenu;
-use Malezha\Menu\Entity\Item;
-use Malezha\Menu\Entity\Link;
+use Malezha\Menu\Support\Attributes;
 
 /**
  * Class MenuServiceProvider
@@ -57,10 +50,7 @@ class MenuServiceProvider extends ServiceProvider
         
         $this->registerRenderSystem();
         $this->registerAttributes();
-        $this->registerLink();
         $this->registerBuilder();
-        $this->registerItem();
-        $this->registerGroup();
         $this->registerSingleton();
     }
 
@@ -76,24 +66,6 @@ class MenuServiceProvider extends ServiceProvider
     {
         $this->app->bind('menu.builder', Builder::class);
         $this->app->alias('menu.builder', BuilderContract::class);
-    }
-
-    protected function registerGroup()
-    {
-        $this->app->bind('menu.group', SubMenu::class);
-        $this->app->alias('menu.group', GroupContract::class);
-    }
-
-    protected function registerItem()
-    {
-        $this->app->bind('menu.item', Item::class);
-        $this->app->alias('menu.item', ItemContract::class);
-    }
-
-    protected function registerLink()
-    {
-        $this->app->bind('menu.link', Link::class);
-        $this->app->alias('menu.link', LinkContract::class);
     }
 
     protected function registerAttributes()

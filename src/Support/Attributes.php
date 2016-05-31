@@ -1,12 +1,12 @@
 <?php
-namespace Malezha\Menu\Entity;
+namespace Malezha\Menu\Support;
 
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Support\MergeAttributes;
 
 /**
  * Class Attributes
- * @package Malezha\Menu\Entity
+ * @package Malezha\Menu
  */
 class Attributes implements AttributesContract
 {
@@ -106,6 +106,7 @@ class Attributes implements AttributesContract
     public function build($attributes = [])
     {
         $attributes = (new MergeAttributes($this->all(), $attributes))->merge();
+        ksort($attributes);
 
         $html = (count($attributes) > 0) ? ' ' : '';
 
@@ -122,5 +123,64 @@ class Attributes implements AttributesContract
     public function __toString()
     {
         return $this->build();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray()
+    {
+        $array = $this->all();
+        ksort($array);
+        
+        return $array;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetExists($offset)
+    {
+        return $this->has($offset);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->put($offset, $value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetUnset($offset)
+    {
+        $this->forget($offset);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function serialize()
+    {
+        return serialize($this->attributes);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unserialize($serialized)
+    {
+        $this->attributes = unserialize($serialized);
     }
 }

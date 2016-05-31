@@ -16,11 +16,21 @@ class AttributesTest extends TestCase
     protected function attributeFactory()
     {
         return $this->app->make(Attributes::class, [
-            'attributes' =>[
-                'class' => 'some-style',
-                'id' => 'test',
-            ]
+            'attributes' => $this->attributesStub(),
         ]);
+    }
+    
+    protected function serializeStub()
+    {
+        return 'C:31:"Malezha\Menu\Support\Attributes":56:{a:2:{s:5:"class";s:10:"some-style";s:2:"id";s:4:"test";}}';
+    }
+    
+    protected function attributesStub()
+    {
+        return [
+            'class' => 'some-style',
+            'id' => 'test',
+        ];
     }
     
     public function testGet()
@@ -28,6 +38,7 @@ class AttributesTest extends TestCase
         $attributes = $this->attributeFactory();
         
         $this->assertEquals('some-style', $attributes->get('class'));
+        $this->assertEquals('some-style', $attributes['class']);
     }
     
     public function testSet()
@@ -45,8 +56,10 @@ class AttributesTest extends TestCase
         $attributes = $this->attributeFactory();
         
         $attributes->forget('id');
+        unset($attributes['class']);
         
         $this->assertEquals(null, $attributes->get('id'));
+        $this->assertEquals(null, $attributes->get('class'));
     }
     
     public function testPut()
@@ -54,8 +67,10 @@ class AttributesTest extends TestCase
         $attributes = $this->attributeFactory();
 
         $attributes->put('data-test', 'value');
+        $attributes['class'] = 'test';
 
         $this->assertEquals('value', $attributes->get('data-test'));
+        $this->assertEquals('test', $attributes->get('class'));
     }
     
     public function testPush()
@@ -75,6 +90,7 @@ class AttributesTest extends TestCase
         $attributes = $this->attributeFactory();
         
         $this->assertTrue($attributes->has('class'));
+        $this->assertTrue(isset($attributes['class']));
     }
 
     public function testMerge()
@@ -104,5 +120,18 @@ class AttributesTest extends TestCase
     public function testMergeAttributesEmptyConstructor()
     {
         $this->assertEquals([], (new MergeAttributes())->merge());
+    }
+    
+    public function testSerialization()
+    {
+        $attributes = $this->attributeFactory();
+        $this->assertEquals($this->serializeStub(), serialize($attributes));
+        $this->assertEquals($attributes, unserialize($this->serializeStub()));
+    }
+    
+    public function testToArray()
+    {
+        $attributes = $this->attributeFactory();
+        $this->assertEquals($this->attributesStub(), $attributes->toArray());
     }
 }

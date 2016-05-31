@@ -1,25 +1,25 @@
 <?php
-namespace Malezha\Menu\Entity;
+namespace Malezha\Menu;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Http\Request;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
-use Malezha\Menu\Contracts\SubMenu as GroupContract;
-use Malezha\Menu\Contracts\Item as ItemContract;
-use Malezha\Menu\Contracts\Link as LinkContract;
+use Malezha\Menu\Contracts\Element;
+use Malezha\Menu\Contracts\ElementFactory;
+use Malezha\Menu\Contracts\HasActiveAttributes;
+use Malezha\Menu\Contracts\HasBuilder;
 use Malezha\Menu\Contracts\MenuRender;
-use Malezha\Menu\Contracts\SubMenu as SubMenuContract;
+use Malezha\Menu\Traits\HasActiveAttributes as TraitHasActiveAttributes;
 use Malezha\Menu\Traits\HasAttributes;
 
 /**
  * Class Builder
- * @package Malezha\Menu\Entity
+ * @package Malezha\Menu
  */
 class Builder implements BuilderContract
 {
-    use HasAttributes;
+    use HasAttributes, TraitHasActiveAttributes;
 
     /**
      * @var Container
@@ -29,7 +29,7 @@ class Builder implements BuilderContract
     /**
      * @var array
      */
-    protected $items;
+    protected $elements;
 
     /**
      * @var array
@@ -39,17 +39,7 @@ class Builder implements BuilderContract
     /**
      * @var string
      */
-    protected $name;
-
-    /**
-     * @var string
-     */
     protected $type;
-
-    /**
-     * @var AttributesContract
-     */
-    protected $activeAttributes;
 
     /**
      * @var MenuRender
@@ -69,14 +59,14 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function __construct(Container $container, $name, AttributesContract $attributes,
-                                AttributesContract $activeAttributes, $type = self::UL, $view = null)
+    public function __construct(Container $container, AttributesContract $attributes, 
+                                AttributesContract $activeAttributes, 
+                                $type = self::UL, $view = null)
     {
         $this->app = $container;
-        $this->name = $name;
         $this->type = $type;
         $this->attributes = $attributes;
-        $this->items = [];
+        $this->elements = [];
         $this->activeAttributes = $activeAttributes;
         $this->viewFactory = $this->app->make(MenuRender::class);
         $this->config = $this->app->make(Repository::class)->get('menu');
@@ -88,37 +78,35 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function submenu($name, \Closure $itemCallable, \Closure $menuCallable)
-    {
-        $link = $this->linkFactory($name);
-        $item = $this->itemFactory($link, [], $itemCallable);
-        $menu = $this->builderFactory($name, [], $this->activeAttributes()->all(), $menuCallable);
-
-        $group = $this->app->make(GroupContract::class, [
-            'menu' => $menu,
-            'item' => $item,
-        ]);
-        
-        $this->saveItem($name, $group);
-
-        return $group;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function create($name, $title, $url, $attributes = [], $linkAttributes = [], $callback = null)
+    public function create($name, $type, $callback = null)
     {
         if ($this->has($name)) {
             throw new \RuntimeException("Duplicate menu key \"${name}\"");
         }
 
-        $link = $this->linkFactory($title, $url, $linkAttributes);
-        $item = $this->itemFactory($link, $attributes, $callback);
+        $factory = $this->getFactory($type);
+        $result = null;
 
-        $this->saveItem($name, $item);
-
-        return $item;
+        $reflection = new \ReflectionClass($type);
+        if ($reflection->implementsInterface(HasActiveAttributes::class)) {
+            $factory->activeAttributes = clone $this->activeAttributes;
+        }
+        
+        if (is_callable($callback)) {
+            $result = call_user_func($callback, $factory);
+            
+            if (empty($result)) {
+                $result = $factory;
+            }
+        }
+        
+        if ($result instanceof ElementFactory) {
+            $result = $result->build();
+        }
+        
+        $this->saveItem($name, $result);
+        
+        return $result;
     }
 
     /**
@@ -142,7 +130,7 @@ class Builder implements BuilderContract
      */
     public function has($name)
     {
-        return array_key_exists($name, $this->items);
+        return array_key_exists($name, $this->elements);
     }
 
     /**
@@ -151,7 +139,7 @@ class Builder implements BuilderContract
     public function get($name, $default = null)
     {
         if ($this->has($name)) {
-            return $this->items[$name];
+            return $this->elements[$name];
         }
         return $default;
     }
@@ -171,7 +159,7 @@ class Builder implements BuilderContract
      */
     public function all()
     {
-        return $this->items;
+        return $this->elements;
     }
 
     /**
@@ -180,7 +168,7 @@ class Builder implements BuilderContract
     public function forget($name)
     {
         if ($this->has($name)) {
-            unset($this->items[$name]);
+            unset($this->elements[$name]);
         }
     }
 
@@ -219,18 +207,6 @@ class Builder implements BuilderContract
         }
         
         return $rendered;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function activeAttributes($callback = null)
-    {
-        if (is_callable($callback)) {
-            return call_user_func($callback, $this->activeAttributes);
-        }
-
-        return $this->activeAttributes;
     }
 
     /**
@@ -298,50 +274,13 @@ class Builder implements BuilderContract
     }
 
     /**
-     * @param string $title
-     * @param string $url
-     * @param array $attributes
-     * @return LinkContract
-     */
-    protected function linkFactory($title = '', $url = '#', $attributes = [])
-    {
-        return $this->app->make(LinkContract::class, [
-            'title' => $title,
-            'url' => $url,
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
-        ]);
-    }
-
-    /**
-     * @param LinkContract $link
-     * @param array $attributes
-     * @param \Closure $callback
-     * @return ItemContract
-     */
-    protected function itemFactory($link, $attributes = [], $callback = null)
-    {
-        $item = $this->app->make(ItemContract::class, [
-            'builder' => $this,
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
-            'link' => $link,
-            'request' => $this->app->make(Request::class),
-        ]);
-
-        if (is_callable($callback)) {
-            call_user_func($callback, $item);
-        }
-        
-        return $item;
-    }
-
-    /**
      * @param string $name
-     * @param ItemContract|SubMenuContract $item
+     * @param Element $item
      */
     protected function saveItem($name, $item)
     {
-        $this->items[$name] = $item;
-        $this->indexes[$name] = count($this->items) - 1;
+        $this->elements[$name] = $item;
+        $this->indexes[$name] = count($this->elements) - 1;
     }
 
     /**
@@ -373,7 +312,7 @@ class Builder implements BuilderContract
         $this->indexes = [];
         $iterator = 0;
 
-        foreach ($this->items as $key => $value) {
+        foreach ($this->elements as $key => $value) {
             $this->indexes[$key] = $iterator++;
         }
     }
@@ -390,7 +329,7 @@ class Builder implements BuilderContract
         }
 
         $forInsert = $this->builderFactory('tmp', [], [], $callback)->all();
-        $diff = array_diff(array_keys(array_diff_key($this->items, $forInsert)), array_keys($this->items));
+        $diff = array_diff(array_keys(array_diff_key($this->elements, $forInsert)), array_keys($this->elements));
 
         if (count($diff) > 0) {
             throw new \RuntimeException('Duplicated keys: ' . implode(', ', array_keys($diff)));
@@ -405,8 +344,145 @@ class Builder implements BuilderContract
      */
     protected function insert($position, $values)
     {
-        $firstArray = array_splice($this->items, 0, $position);
-        $this->items = array_merge($firstArray, $values, $this->items);
+        $firstArray = array_splice($this->elements, 0, $position);
+        $this->elements = array_merge($firstArray, $values, $this->elements);
         $this->rebuildIndexesArray();
+    }
+
+    /**
+     * @param $element
+     * @return ElementFactory
+     */
+    protected function getFactory($element)
+    {
+        $factoryClass = $this->app->make(Repository::class)->get('menu.elements')[$element]['factory'];
+        
+        return $this->app->make($factoryClass);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray()
+    {
+        $this->view = $this->getRenderView($this->view);
+        $elements = [];
+        
+        foreach ($this->elements as $key => $element) {
+            $elements[$key] = $element->toArray();
+            $elements[$key]['type'] = array_search(get_class($element), $this->config['alias']);
+        }
+        
+        return [
+            'type' => $this->type,
+            'view' => $this->view,
+            'attributes' => $this->attributes->toArray(),
+            'activeAttributes' => $this->activeAttributes->toArray(),
+            'elements' => $elements,
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetExists($offset)
+    {
+        return $this->has($offset);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetGet($offset)
+    {
+        return $this->get($offset);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->elements[$offset] = $value;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function offsetUnset($offset)
+    {
+        $this->forget($offset);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function serialize()
+    {
+        return serialize([
+            'type' => $this->type,
+            'view' => $this->view,
+            'attributes' => $this->attributes,
+            'activeAttributes' => $this->activeAttributes,
+            'elements' => $this->elements,
+        ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unserialize($serialized)
+    {
+        $this->app = \Illuminate\Container\Container::getInstance();
+        $this->viewFactory = $this->app->make(MenuRender::class);
+        $this->config = $this->app->make(Repository::class)->get('menu');
+
+        $data = unserialize($serialized);
+
+        foreach ($data as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            }
+        }
+        
+        $this->rebuildIndexesArray();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    static public function fromArray(array $builder)
+    {
+        $app = \Illuminate\Container\Container::getInstance();
+        $config = $app->make(Repository::class)->get('menu');
+        
+        /** @var self $builderObject */
+        $builderObject = $app->make(self::class, [
+            'attributes' => $app->make(AttributesContract::class, ['attributes' => $builder['attributes']]),
+            'activeAttributes' => $app->make(AttributesContract::class, ['attributes' => $builder['activeAttributes']]),
+            'view' => $builder['view'],
+            'type' => $builder['type'],
+        ]);
+        
+        foreach ($builder['elements'] as $key => $element) {
+            $class = $config['alias'][$element['type']];
+            
+            $builderObject->create($key, $class, function(ElementFactory $factory) use ($class, $element, $app) {
+                $reflection = new \ReflectionClass($class);
+                if ($reflection->implementsInterface(HasBuilder::class)) {
+                    $element['builder'] = self::fromArray($element['builder']);
+                }
+
+                $attributes = preg_grep("/.*(attributes)/i", array_keys($element));
+
+                foreach ($attributes as $key) {
+                    $element[$key] = $app->make(AttributesContract::class, ['attributes' => $element[$key]]);
+                }
+                
+                return $factory->build($element);
+            });
+        }
+        
+        return $builderObject;
     }
 }

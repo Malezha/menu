@@ -1,5 +1,6 @@
 <?php
 namespace Malezha\Menu\Traits;
+use Opis\Closure\SerializableClosure;
 
 /**
  * Class DisplayRule
@@ -8,19 +9,19 @@ namespace Malezha\Menu\Traits;
 trait DisplayRule
 {
     /**
-     * @var bool|\Closure
+     * @var bool|callable
      */
-    protected $rule = true;
+    protected $displayRule = true;
 
     /**
      * Set boolean or callback, witch return boolean to determine whether to display or not this item.
      * Callback will be called each time rendering item.
      *
-     * @param bool|\Closure $rule
+     * @param bool|callable $rule
      */
     public function setDisplayRule($rule)
     {
-        $this->rule = $rule;
+        $this->displayRule = $rule;
     }
 
     /**
@@ -30,10 +31,40 @@ trait DisplayRule
      */
     public function canDisplay()
     {
-        if (is_callable($this->rule)) {
-            return (bool) call_user_func($this->rule);
+        if (is_callable($this->displayRule)) {
+            return (bool) call_user_func($this->displayRule);
         }
         
-        return (bool) $this->rule;
+        return (bool) $this->displayRule;
+    }
+
+    /**
+     * Serialize rule
+     * 
+     * @return string
+     */
+    protected function serializeRule()
+    {
+        $displayRule = $this->displayRule;
+
+        if ($this->displayRule instanceof \Closure) {
+            $displayRule = new SerializableClosure($this->displayRule);
+        }
+        
+        return serialize($displayRule);
+    }
+
+    /**
+     * @param string $rule
+     */
+    protected function unserializeRule($rule)
+    {
+        $rule = unserialize($rule);
+
+        if ($rule instanceof SerializableClosure) {
+            $rule = $rule->getClosure();
+        }
+
+        $this->displayRule = $rule;
     }
 }

@@ -19,13 +19,13 @@ interface Menu
      * Make new global menu
      * 
      * @param string $name
-     * @param \Closure $callback
+     * @param callable $callback
      * @param string $type
      * @param array $attributes
      * @param array $activeAttributes
      * @return Builder
      */
-    public function make($name, \Closure $callback, $type = Builder::UL, $attributes = [], $activeAttributes = []);
+    public function make($name, callable $callback, $type = Builder::UL, $attributes = [], $activeAttributes = []);
 
     /**
      * Get global menu
@@ -58,4 +58,21 @@ interface Menu
      * @param null|string $view
      */
     public function render($name, $view = null);
+
+    /**
+     * Make menu from array
+     * 
+     * @param string $name
+     * @param array $builder
+     * @return Builder
+     */
+    public function fromArray($name, array $builder);
+
+    /**
+     * Convert menu to array
+     * 
+     * @param string $name
+     * @return array
+     */
+    public function toArray($name);
 }

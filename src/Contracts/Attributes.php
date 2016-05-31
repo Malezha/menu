@@ -1,11 +1,12 @@
 <?php
 namespace Malezha\Menu\Contracts;
+use Illuminate\Contracts\Support\Arrayable;
 
 /**
  * Interface Attributes
  * @package Malezha\Menu\Contracts
  */
-interface Attributes
+interface Attributes extends Arrayable, \ArrayAccess, \Serializable
 {
     /**
      * @param array $attributes

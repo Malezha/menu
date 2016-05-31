@@ -3,7 +3,12 @@ namespace Malezha\Menu\Tests;
 
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
-use Malezha\Menu\Contracts\Item;
+use Malezha\Menu\Element\Link;
+use Malezha\Menu\Element\SubMenu;
+use Malezha\Menu\Element\Text;
+use Malezha\Menu\Factory\LinkFactory;
+use Malezha\Menu\Factory\SubMenuFactory;
+use Malezha\Menu\Factory\TextFactory;
 
 /**
  * Class BuilderTest
@@ -17,10 +22,92 @@ class BuilderTest extends TestCase
     protected function builderFactory()
     {
         return $this->app->make(Builder::class, [
-            'name' => 'test', 
             'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
             'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
+    }
+    
+    protected function serializeStub()
+    {
+        return $this->getStub('serialized/builder.txt');
+    }
+    
+    protected function toArrayStub()
+    {
+        return [
+            'type' => 'ul',
+            'view' => 'menu::view',
+            'attributes' => [
+                'class' => 'menu',
+            ],
+            'activeAttributes' => [
+                'class' => 'active',
+            ],
+            'elements' => [
+                'index' => [
+                    'view' => 'menu::elements.link',
+                    'title' => 'Index',
+                    'url' => 'http://localhost',
+                    'attributes' => [],
+                    'activeAttributes' => [
+                        'class' => 'active',
+                    ],
+                    'linkAttributes' => [],
+                    'displayRule' => true,
+                    'type' => 'link',
+                ],
+                'submenu' => [
+                    'view' => 'menu::elements.submenu',
+                    'title' => '',
+                    'url' => '#',
+                    'attributes' => [],
+                    'activeAttributes' => [
+                        'class' => 'active',
+                    ],
+                    'linkAttributes' => [],
+                    'displayRule' => true,
+                    'builder' => [
+                        'type' => 'ul',
+                        'view' => 'menu::view',
+                        'attributes' => [],
+                        'activeAttributes' => [],
+                        'elements' => [
+                            'item_1' => [
+                                'view' => 'menu::elements.link',
+                                'title' => 'Item 1',
+                                'url' => 'http://localhost/item/1',
+                                'attributes' => [],
+                                'activeAttributes' => [],
+                                'linkAttributes' => [],
+                                'displayRule' => true,
+                                'type' => 'link',
+                            ],
+                            'item_2' => [
+                                'view' => 'menu::elements.link',
+                                'title' => 'Item 2',
+                                'url' => 'http://localhost/item/2',
+                                'attributes' => [],
+                                'activeAttributes' => [],
+                                'linkAttributes' => [],
+                                'displayRule' => true,
+                                'type' => 'link',
+                            ],
+                            'item_3' => [
+                                'view' => 'menu::elements.link',
+                                'title' => 'Item 3',
+                                'url' => 'http://localhost/item/3',
+                                'attributes' => [],
+                                'activeAttributes' => [],
+                                'linkAttributes' => [],
+                                'displayRule' => true,
+                                'type' => 'link',
+                            ],
+                        ],
+                    ],
+                    'type' => 'submenu',
+                ],
+            ],
+        ];
     }
     
     public function testConstructor()
@@ -28,10 +115,9 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
 
         $this->assertAttributeEquals($this->app, 'app', $builder);
-        $this->assertAttributeEquals('test', 'name', $builder);
         $this->assertAttributeEquals(Builder::UL, 'type', $builder);
         $this->assertAttributeInstanceOf(Attributes::class, 'attributes', $builder);
-        $this->assertAttributeInternalType('array', 'items', $builder);
+        $this->assertAttributeInternalType('array', 'elements', $builder);
         $this->assertAttributeInstanceOf(Attributes::class, 'activeAttributes', $builder);
     }
 
@@ -39,18 +125,17 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $item = $builder->create('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link'],
-            function(Item $item) {
-                $this->assertAttributeEquals('Index', 'title', $item->getLink());
-                $item->getLink()->setTitle('Home');
-            });
+        /** @var Link $item */
+        $item = $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Home';
+            $factory->url = '/';
+        });
 
-        $this->assertAttributeEquals($builder, 'builder', $item);
-        $this->assertAttributeInstanceOf(Attributes::class, 'attributes', $item);
-
-        $link = $item->getLink();
-        $this->assertAttributeEquals('Home', 'title', $link);
-        $this->assertAttributeEquals('/', 'url', $link);
+        $this->assertAttributeEquals(['index' => $item], 'elements', $builder);
+        $this->assertAttributeEquals(['index' => 0], 'indexes', $builder);
+        $this->assertInstanceOf(Link::class, $item);
+        $this->assertAttributeEquals('Home', 'title', $item);
+        $this->assertAttributeEquals('/', 'url', $item);
     }
 
     public function testCreateIfExists()
@@ -59,15 +144,15 @@ class BuilderTest extends TestCase
         
         $builder = $this->builderFactory();
 
-        $builder->create('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link']);
-        $builder->create('index', 'Index', '/', ['class' => 'main-menu'], ['class' => 'link']); // Duplicate
+        $builder->create('index', Link::class);
+        $builder->create('index', SubMenu::class); // Duplicate
     }
     
     public function testGet()
     {
         $builder = $this->builderFactory();
         
-        $item = $builder->create('test', 'Test', '/test');
+        $item = $builder->create('test', Link::class);
         
         $this->assertEquals($item, $builder->get('test'));
         $this->assertEquals(null, $builder->get('notFound'));
@@ -77,7 +162,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $item = $builder->create('test', 'Test', '/test');
+        $item = $builder->create('test', Link::class);
 
         $this->assertEquals($item, $builder->getByIndex(0));
         $this->assertEquals(null, $builder->getByIndex(1));
@@ -104,7 +189,7 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
         
         $this->assertEquals([], $builder->all());
-        $item = $builder->create('test', 'Test', '/test');
+        $item = $builder->create('test', Link::class);
         $this->assertEquals(['test' => $item], $builder->all());
     }
     
@@ -112,7 +197,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $builder->create('test', 'Test', '/test');
+        $builder->create('test', Link::class);
         $this->assertTrue($builder->has('test'));
         $builder->forget('test');
         $this->assertFalse($builder->has('test'));
@@ -121,11 +206,11 @@ class BuilderTest extends TestCase
     public function testActiveAttributes()
     {
         $builder = $this->builderFactory();
-        $activeAttributes = $builder->activeAttributes();
+        $activeAttributes = $builder->getActiveAttributes();
         
         $this->assertInstanceOf(Attributes::class, $activeAttributes);
 
-        $result = $builder->activeAttributes(function(Attributes $attributes) {
+        $result = $builder->getActiveAttributes(function(Attributes $attributes) {
             $this->assertInstanceOf(Attributes::class, $attributes);
             
             return $attributes->get('class');
@@ -133,64 +218,72 @@ class BuilderTest extends TestCase
         
         $this->assertEquals('active', $result);
     }
-    
-    public function testSubMenu()
-    {
-        $builder = $this->builderFactory();
-        
-        $group = $builder->submenu('test', function(Item $item) use ($builder) {
-            $this->assertAttributeEquals($builder, 'builder', $item);
-        }, function(Builder $menu) use ($builder) {
-            $this->assertEquals($builder->activeAttributes()->all(), $menu->activeAttributes()->all());
-        });
-
-        $this->assertEquals($group, $builder->get('test'));
-    }
 
     public function testRender()
     {
         $builder = $this->builderFactory();
 
-        $index = $builder->create('index', 'Index Page', url('/'));
-        $index->getLink()->getAttributes()->push(['class' => 'menu-link']);
-
-        $builder->submenu('orders', function(Item $item) {
-            $item->getAttributes()->push(['class' => 'child-menu']);
+        $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
+            $factory->linkAttributes->push(['class' => 'menu-link']);
+        });
+        
+        $builder->create('orders', SubMenu::class, function(SubMenuFactory $factory) {
+            $factory->attributes->push(['class' => 'child-menu']);
+            $factory->title = 'Orders';
+            $factory->url = 'javascript:;';
             
-            $link = $item->getLink();
-            $link->setTitle('Orders');
-            $link->setUrl('javascript:;');
-
-        }, function(Builder $menu) {
-            $menu->create('all', 'All', url('/orders/all'));
-            $menu->create('type_1', 'Type 1', url('/orders/1'), [], ['class' => 'text-color-red']);
-
-            $menu->create('type_2', 'Type 2', url('/orders/2'), [], [], function(Item $item) {
-                $item->getLink()->getAttributes()->push(['data-attribute' => 'value']);
+            $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'All';
+                $factory->url = url('/orders/all');
+            });
+            $factory->builder->create('type_1', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'Type 1';
+                $factory->url = url('/orders/1');
+                $factory->linkAttributes->push(['class' => 'text-color-red']);
+            });
+            $factory->builder->create('type_2', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'Type 2';
+                $factory->url = url('/orders/2');
+                $factory->linkAttributes->push(['data-attribute' => 'value']);
             });
         });
         
         $html = $builder->render();
-        $file = file_get_contents(__DIR__ . '/stub/menu.html');
         
-        $this->assertEquals($file, $html);
+        $this->assertEquals($this->getStub('menu.html'), $html);
     }
     
     public function testDisplayRules()
     {
         $builder = $this->builderFactory();
 
-        $builder->create('index', 'Index Page', url('/'));
-        $builder->create('login', 'Login', url('/login'))->setDisplayRule(function() {
-            return true;
+        $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
         });
-        $builder->create('admin', 'Admin', url('/admin'))->setDisplayRule(false);
-        $builder->create('logout', 'Logout', url('/logout'))->setDisplayRule(null);
+        $builder->create('login', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Login';
+            $factory->url = url('/login');
+            $factory->displayRule = function() {
+                return true;
+            };
+        });
+        $builder->create('admin', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Admin';
+            $factory->url = url('/admin');
+            $factory->displayRule = false;
+        });
+        $builder->create('logout', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Logout';
+            $factory->url = url('/logout');
+            $factory->displayRule = null;
+        });
 
         $html = $builder->render();
-        $file = file_get_contents(__DIR__ . '/stub/display_rules.html');
 
-        $this->assertEquals($file, $html);
+        $this->assertEquals($this->getStub('display_rules.html'), $html);
     }
 
     public function testAnotherViewRender()
@@ -199,43 +292,124 @@ class BuilderTest extends TestCase
         $this->app['config']->prepend('menu.paths', __DIR__ . '/stub');
         
         $builder = $this->builderFactory();
-        $builder->create('index', 'Index Page', url('/'));
-        $builder->submenu('group', function(Item $item){}, function(Builder $menu) {
-            $menu->create('one', 'One', url('/one'));
+        $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
         });
+        $builder->create('group', SubMenu::class, function(SubMenuFactory $factory) {
+            $factory->builder->create('one', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'One';
+                $factory->url = url('/one');
+            });
+        });
+        
+        $this->assertEquals($this->getStub('another_menu.html'), $builder->render('another'));
 
-        $html = $builder->render('another');
-        $file = file_get_contents(__DIR__ . '/stub/another_menu.html');
-        $this->assertEquals($file, $html);
-
-        $builder->get('group')->getMenu()->setView('another');
-        $html = $builder->render();
-        $file = file_get_contents(__DIR__ . '/stub/another_sub_menu.html');
-        $this->assertEquals($file, $html);
+        $builder->get('group')->getBuilder()->setView('another');
+        $this->assertEquals($this->getStub('another_sub_menu.html'), $builder->render());
 
         $builder->setView('another');
-        $builder->get('group')->getMenu()->setView('menu::view');
-        $html = $builder->render();
-        $file = file_get_contents(__DIR__ . '/stub/another_set_view_menu.html');
-        $this->assertEquals($file, $html);
+        $builder->get('group')->getBuilder()->setView('menu::view');
+        $this->assertEquals($this->getStub('another_set_view_menu.html'), $builder->render());
     }
     
     public function testInsert()
     {
         $builder = $this->builderFactory();
-        $builder->create('index', 'Index Page', url('/'));
-        $builder->create('logout', 'logout', url('logout'));
+        $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
+        });
+        $builder->create('logout', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Logout';
+            $factory->url = url('logout');
+        });
         
         $builder->insertAfter('index', function (Builder $builder) {
-            $builder->create('users', 'Users', url('users'));
+            $builder->create('users', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'Users';
+                $factory->url = url('users');
+            });
         });
         
         $builder->insertBefore('users', function (Builder $builder) {
-            $builder->create('profile', 'Profile', url('profile'));
+            $builder->create('profile', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'Profile';
+                $factory->url = url('profile');
+            });
         });
 
-        $html = $builder->render('another');
-        $file = file_get_contents(__DIR__ . '/stub/insert.html');
-        $this->assertEquals($file, $html);
+        $this->assertEquals($this->getStub('insert.html'), $builder->render('another'));
+    }
+    
+    public function testSerialization()
+    {
+        $builder = $this->builderFactory();
+        $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Index';
+            $factory->url = url('/');
+        });
+        $builder->create('users', SubMenu::class, function(SubMenuFactory $factory) {
+            $factory->title = 'Users';
+            $factory->builder->getAttributes()->put('class', 'menu');
+            $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'All';
+                $factory->url = url('/users');
+            });
+            $factory->builder->create('admins', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'Admins';
+                $factory->url = url('/users', ['role' => 'admin']);
+                $factory->displayRule = false;
+            });
+            $factory->builder->create('create', SubMenu::class, function(SubMenuFactory $factory) {
+                $factory->title = 'Create';
+                $factory->builder->create('user', Link::class, function(LinkFactory $factory) {
+                    $factory->title = 'User';
+                    $factory->url = url('/users/create/user');
+                });
+                $factory->builder->create('role', Link::class, function(LinkFactory $factory) {
+                    $factory->title = 'Role';
+                    $factory->url = url('/users/create/role');
+                });
+            });
+        });
+        $builder->create('settings', Link::class, function(LinkFactory $factory) {
+            $factory->displayRule = function () {return false;};
+            $factory->title = 'Settings';
+            $factory->url = url('/settings');
+        });
+        $builder->create('deliver', Text::class, function(TextFactory $factory) {
+            $factory->text = '-';
+        });
+        $builder->create('logout', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Logout';
+            $factory->url = url('/logout');
+        });
+
+        $this->assertEquals($this->serializeStub(), serialize($builder));
+        // $this->assertEquals($builder, $this->serializeStub()); # TODO
+        // Error: 'C:20:"Malezha\Menu\Builder":4...;}}}}}' does not match expected type "object". 
+    }
+    
+    public function testArray()
+    {
+        $builder = $this->builderFactory();
+        $builder->create('index', Link::class, function(LinkFactory $factory) {
+            $factory->title = 'Index';
+            $factory->url = url('/');
+        });
+        $builder->create('submenu', SubMenu::class, function(SubMenuFactory $factory) {
+            for ($i = 1; $i <= 3; ++$i) {
+                $factory->builder->create('item_' . $i, Link::class, function(LinkFactory $factory) use ($i) {
+                    $factory->title = 'Item ' . $i;
+                    $factory->url = url('/item', ['id' => $i]);
+                });
+            }
+        });
+        
+        $this->assertEquals($this->toArrayStub(), $builder->toArray());
+
+        $builderFormArray = $builder->fromArray($builder->toArray());
+        $this->assertEquals($builder, $builderFormArray);
     }
 }

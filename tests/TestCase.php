@@ -29,4 +29,9 @@ class TestCase extends OrchestraTestCase
             $this->setExpectedException($exception);
         }
     }
+    
+    protected function getStub($file)
+    {
+        return file_get_contents(__DIR__ . '/stub/' . $file);
+    }
 }
