@@ -99,7 +99,7 @@ class Builder implements BuilderContract
 
         $reflection = new \ReflectionClass($type);
         if ($reflection->implementsInterface(HasActiveAttributes::class)) {
-            $factory->setActiveAttributes($this->activeAttributes);
+            $factory->activeAttributes = $this->activeAttributes;
         }
         
         if (is_callable($callback)) {

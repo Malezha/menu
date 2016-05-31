@@ -42,8 +42,10 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
+        /** @var Link $item */
         $item = $builder->create('index', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Home')->setUrl('/');
+            $factory->title = 'Home';
+            $factory->url = '/';
         });
 
         $this->assertAttributeEquals(['index' => $item], 'items', $builder);
@@ -139,26 +141,29 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
 
         $builder->create('index', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Index Page')
-                ->setUrl(url('/'))
-                ->getLinkAttributes()->push(['class' => 'menu-link']);
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
+            $factory->linkAttributes->push(['class' => 'menu-link']);
         });
         
         $builder->create('orders', SubMenu::class, function(SubMenuFactory $factory) {
-            $factory->getAttributes()->push(['class' => 'child-menu']);
-            $factory->setTitle('Orders')->setUrl('javascript:;');
+            $factory->attributes->push(['class' => 'child-menu']);
+            $factory->title = 'Orders';
+            $factory->url = 'javascript:;';
             
-            $subBuilder = $factory->getBuilder();
-            $subBuilder->create('all', Link::class, function(LinkFactory $factory) {
-                $factory->setTitle('All')->setUrl(url('/orders/all'));
+            $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'All';
+                $factory->url = url('/orders/all');
             });
-            $subBuilder->create('type_1', Link::class, function(LinkFactory $factory) {
-                $factory->setTitle('Type 1')->setUrl(url('/orders/1'))
-                    ->getLinkAttributes()->push(['class' => 'text-color-red']);
+            $factory->builder->create('type_1', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'Type 1';
+                $factory->url = url('/orders/1');
+                $factory->linkAttributes->push(['class' => 'text-color-red']);
             });
-            $subBuilder->create('type_2', Link::class, function(LinkFactory $factory) {
-                $factory->setTitle('Type 2')->setUrl(url('/orders/2'))
-                    ->getLinkAttributes()->push(['data-attribute' => 'value']);
+            $factory->builder->create('type_2', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'Type 2';
+                $factory->url = url('/orders/2');
+                $factory->linkAttributes->push(['data-attribute' => 'value']);
             });
         });
         
@@ -173,19 +178,26 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
 
         $builder->create('index', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Index Page')->setUrl(url('/'));
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
         });
         $builder->create('login', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Login')->setUrl(url('/login'));
-        })->setDisplayRule(function() {
-            return true;
+            $factory->title = 'Login';
+            $factory->url = url('/login');
+            $factory->displayRule = function() {
+                return true;
+            };
         });
         $builder->create('admin', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Admin')->setUrl(url('/admin'));
-        })->setDisplayRule(false);
+            $factory->title = 'Admin';
+            $factory->url = url('/admin');
+            $factory->displayRule = false;
+        });
         $builder->create('logout', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Logout')->setUrl(url('/logout'));
-        })->setDisplayRule(null);
+            $factory->title = 'Logout';
+            $factory->url = url('/logout');
+            $factory->displayRule = null;
+        });
 
         $html = $builder->render();
         $file = file_get_contents(__DIR__ . '/stub/display_rules.html');
@@ -200,11 +212,13 @@ class BuilderTest extends TestCase
         
         $builder = $this->builderFactory();
         $builder->create('index', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Index Page')->setUrl(url('/'));
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
         });
         $builder->create('group', SubMenu::class, function(SubMenuFactory $factory) {
-            $factory->getBuilder()->create('one', Link::class, function(LinkFactory $factory) {
-                $factory->setTitle('One')->setUrl(url('/one'));
+            $factory->builder->create('one', Link::class, function(LinkFactory $factory) {
+                $factory->title = 'One';
+                $factory->url = url('/one');
             });
         });
 
@@ -228,21 +242,25 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
         $builder->create('index', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('Index Page')->setUrl(url('/'));
+            $factory->title = 'Index Page';
+            $factory->url = url('/');
         });
         $builder->create('logout', Link::class, function(LinkFactory $factory) {
-            $factory->setTitle('logout')->setUrl(url('logout'));
+            $factory->title = 'Logout';
+            $factory->url = url('logout');
         });
         
         $builder->insertAfter('index', function (Builder $builder) {
             $builder->create('users', Link::class, function(LinkFactory $factory) {
-                $factory->setTitle('Users')->setUrl(url('users'));
+                $factory->title = 'Users';
+                $factory->url = url('users');
             });
         });
         
         $builder->insertBefore('users', function (Builder $builder) {
             $builder->create('profile', Link::class, function(LinkFactory $factory) {
-                $factory->setTitle('Profile')->setUrl(url('profile'));
+                $factory->title = 'Profile';
+                $factory->url = url('profile');
             });
         });
 

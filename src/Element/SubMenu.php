@@ -8,6 +8,10 @@ use Malezha\Menu\Contracts\MenuRender;
 /**
  * Class SubMenu
  * @package Malezha\Menu\Element
+ * 
+ * @property-read Attributes $activeAttributes
+ * @property-read Builder $builder
+ * @inheritdoc
  */
 class SubMenu extends Link
 {

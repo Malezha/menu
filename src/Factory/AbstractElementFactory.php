@@ -84,21 +84,43 @@ abstract class AbstractElementFactory implements ElementFactory
     }
 
     /**
-     * @inheritDoc
+     * @param array $parameters
+     * @return array
      */
-    function __call($name, $arguments)
+    protected function mergeParameters($parameters = [])
     {
-        preg_match("/^(get|set|unset|exists)([^;]+?)(;|$)/", $name, $matches);
-        $parameter = lcfirst($matches[2]);
-        $action = $matches[1];
-        $method = $action . 'Parameter';
-
-        if (method_exists($this, $method)) {
-            return call_user_func_array([$this, $method], array_merge(['name' => $parameter], $arguments));
-        }
-
-        throw new \RuntimeException("Parameter \"$parameter\" not found");
+        return array_merge($this->parameters, $parameters);
     }
 
+    /**
+     * @inheritDoc
+     */
+    function __get($name)
+    {
+        return $this->getParameter($name);
+    }
 
+    /**
+     * @inheritDoc
+     */
+    function __set($name, $value)
+    {
+        $this->setParameter($name, $value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function __isset($name)
+    {
+        return $this->existsParameter($name);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    function __unset($name)
+    {
+        $this->unsetParameter($name);
+    }
 }

@@ -12,9 +12,11 @@ class TraitsTest extends TestCase
 {
     public function testGetAttributesCallback()
     {
-        $link = (new LinkFactory($this->app))->setAttributes($this->app->make(Attributes::class, ['attributes' => [
+        $factory = (new LinkFactory($this->app));
+        $factory->attributes = $this->app->make(Attributes::class, ['attributes' => [
             'class' => 'color-red',
-        ]]))->build();
+        ]]);
+        $link = $factory->build();
         
         $hasClass = $link->getAttributes(function($attributes) {
             $this->assertInstanceOf(Attributes::class, $attributes);

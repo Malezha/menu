@@ -21,7 +21,8 @@ class MenuTest extends TestCase
         $menu = $this->app->make(Menu::class, ['container' => $this->app]);
         $menu->make('test', function(Builder $builder) {
             $builder->create('one', Link::class, function(LinkFactory $factory) {
-                $factory->setTitle('One')->setUrl('/one');
+                $factory->title = 'One';
+                $factory->url = '/one';
             });
         });
         

@@ -10,10 +10,7 @@ use Malezha\Menu\Element\SubMenu;
  * Class SubMenuFactory
  * @package Malezha\Menu\Factory
  * 
- * @method Builder getBuilder()
- * @method $this setBuilder(Builder $value)
- * @method $this unsetBuilder()
- * @method bool existsBuilder()
+ * @property Builder $builder
  * @inheritdoc
  */
 class SubMenuFactory extends LinkFactory
@@ -24,17 +21,22 @@ class SubMenuFactory extends LinkFactory
 
         $this->parameters['builder'] = $this->app->make(Builder::class, [
             'container' => $this->app,
-            'name' => 'submenu' . spl_object_hash($this),
+            'name' => 'submenu-' . spl_object_hash($this),
             'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => []]),
             'attributes' => $this->app->make(Attributes::class, ['attributes' => []]),
         ]);
         $this->parameters['view'] = $this->getElementConfig(SubMenu::class)['view'];
     }
 
-    public function build(...$options)
+    /**
+     * @param array $parameters
+     * @return SubMenu
+     */
+    public function build($parameters = [])
     {
-        $parameters = array_merge($this->parameters, $options);
-
-        return $this->app->make(SubMenu::class, $parameters);
+        $subMenu = $this->app->make(SubMenu::class, $this->mergeParameters($parameters));
+        $this->setDisplayRule($subMenu);
+        
+        return $subMenu;
     }
 }

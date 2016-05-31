@@ -14,6 +14,11 @@ use Malezha\Menu\Traits\HasAttributes;
 /**
  * Class Link
  * @package Malezha\Menu\Element
+ *
+ * @property string $title
+ * @property string $url
+ * @property-read Attributes $attributes
+ * @property-read Attributes $linkAttributes
  */
 class Link extends AbstractElement implements DisplayRuleInterface, HasAttributesInterface, HasActiveAttributesInterface
 {

@@ -10,34 +10,14 @@ use Malezha\Menu\Element\Link;
  * Class LinkFactory
  * @package Malezha\Menu\Factory
  *
- * @method string getTitle()
- * @method $this setTitle(string $value)
- * @method $this unsetTitle()
- * @method bool existsTitle()
- * @method string getUrl()
- * @method $this setUrl(string $value)
- * @method $this unsetUrl()
- * @method bool existsUrl()
- * @method Attributes getAttributes()
- * @method $this setAttributes(Attributes $value)
- * @method $this unsetAttributes()
- * @method bool existsAttributes()
- * @method Attributes getActiveAttributes()
- * @method $this setActiveAttributes(Attributes $value)
- * @method $this unsetActiveAttributes()
- * @method bool existsActiveAttributes()
- * @method Attributes getLinkAttributes()
- * @method $this setLinkAttributes(Attributes $value)
- * @method $this unsetLinkAttributes()
- * @method bool existsLinkAttributes()
- * @method string getView()
- * @method $this setView(string $value)
- * @method $this unsetView()
- * @method bool existsView()
- * @method string getCurrentUrl()
- * @method $this setCurrentUrl(string $value)
- * @method $this unsetCurrentUrl()
- * @method bool existsCurrentUrl()
+ * @property string $title
+ * @property string $url
+ * @property Attributes $attributes
+ * @property Attributes $activeAttributes
+ * @property Attributes $linkAttributes
+ * @property string $view
+ * @property string $currentUrl
+ * @property bool $displayRule
  *
  */
 class LinkFactory extends AbstractElementFactory
@@ -57,17 +37,26 @@ class LinkFactory extends AbstractElementFactory
             'linkAttributes' => $this->app->make(Attributes::class, ['attributes' => []]),
             'view' => $this->getElementConfig(Link::class)['view'],
             'currentUrl' => $this->app->make(Request::class)->url(),
+            'displayRule' => true,
         ];
     }
 
     /**
-     * @param array ...$options
+     * @param array $parameters
      * @return Link
      */
-    public function build(...$options)
+    public function build($parameters = [])
     {
-        $parameters = array_merge($this->parameters, $options);
+        $link = $this->app->make(Link::class, $this->mergeParameters($parameters));
+        $this->setDisplayRule($link);
         
-        return $this->app->make(Link::class, $parameters);
+        return $link;
+    }
+    
+    protected function setDisplayRule(Link $link)
+    {
+        if (array_key_exists('displayRule', $this->parameters)) {
+            $link->setDisplayRule($this->parameters['displayRule']);
+        }
     }
 }

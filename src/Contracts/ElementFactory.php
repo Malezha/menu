@@ -16,8 +16,8 @@ interface ElementFactory
     public function __construct(Container $container);
 
     /**
-     * @param array ...$options
+     * @param array $parameters
      * @return Element
      */
-    public function build(...$options);
+    public function build($parameters = []);
 }

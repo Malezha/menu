@@ -3,6 +3,7 @@ namespace Malezha\Menu\Element;
 
 use Malezha\Menu\Contracts\Element;
 use Malezha\Menu\Contracts\MenuRender;
+use Serafim\Properties\Properties;
 
 /**
  * Class AbstractElement
@@ -10,6 +11,8 @@ use Malezha\Menu\Contracts\MenuRender;
  */
 abstract class AbstractElement implements Element
 {
+    use Properties;
+    
     /**
      * @var string
      */

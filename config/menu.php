@@ -14,6 +14,10 @@ return [
             'view' => 'menu::elements.submenu',
             'factory' => \Malezha\Menu\Factory\SubMenuFactory::class,
         ],
+        \Malezha\Menu\Element\Text::class => [
+            'view' => 'menu::elements.text',
+            'factory' => \Malezha\Menu\Factory\TextFactory::class,
+        ],
     ],
     
     /**
