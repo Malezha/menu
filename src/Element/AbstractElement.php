@@ -77,10 +77,10 @@ abstract class AbstractElement implements Element
 
         if ($this instanceof DisplayRule
             && method_exists($this, 'unserializeRule')
-            && array_key_exists('rule', $data)
+            && array_key_exists('displayRule', $data)
         ) {
-            $this->unserializeRule($data['rule']);
-            unset($data['rule']);
+            $this->unserializeRule($data['displayRule']);
+            unset($data['displayRule']);
         }
 
         foreach ($data as $key => $value) {

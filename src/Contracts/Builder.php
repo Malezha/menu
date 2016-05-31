@@ -126,4 +126,10 @@ interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayA
      * @throws \Exception
      */
     public function setView($view);
+
+    /**
+     * @param array $builder
+     * @return Builder
+     */
+    static public function fromArray(array $builder);
 }

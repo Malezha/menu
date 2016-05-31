@@ -3,6 +3,7 @@ namespace Malezha\Menu\Element;
 
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
+use Malezha\Menu\Contracts\HasBuilder;
 use Malezha\Menu\Contracts\MenuRender;
 
 /**
@@ -13,7 +14,7 @@ use Malezha\Menu\Contracts\MenuRender;
  * @property-read Builder $builder
  * @inheritdoc
  */
-class SubMenu extends Link
+class SubMenu extends Link implements HasBuilder
 {
     /**
      * @var Builder

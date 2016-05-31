@@ -53,8 +53,8 @@ class BuilderTest extends TestCase
                         'class' => 'active',
                     ],
                     'linkAttributes' => [],
-                    'canDisplay' => true,
-                    'type' => Link::class,
+                    'displayRule' => true,
+                    'type' => 'link',
                 ],
                 'submenu' => [
                     'view' => 'menu::elements.submenu',
@@ -65,7 +65,7 @@ class BuilderTest extends TestCase
                         'class' => 'active',
                     ],
                     'linkAttributes' => [],
-                    'canDisplay' => true,
+                    'displayRule' => true,
                     'builder' => [
                         'type' => 'ul',
                         'view' => 'menu::view',
@@ -79,8 +79,8 @@ class BuilderTest extends TestCase
                                 'attributes' => [],
                                 'activeAttributes' => [],
                                 'linkAttributes' => [],
-                                'canDisplay' => true,
-                                'type' => Link::class,
+                                'displayRule' => true,
+                                'type' => 'link',
                             ],
                             'item_2' => [
                                 'view' => 'menu::elements.link',
@@ -89,8 +89,8 @@ class BuilderTest extends TestCase
                                 'attributes' => [],
                                 'activeAttributes' => [],
                                 'linkAttributes' => [],
-                                'canDisplay' => true,
-                                'type' => Link::class,
+                                'displayRule' => true,
+                                'type' => 'link',
                             ],
                             'item_3' => [
                                 'view' => 'menu::elements.link',
@@ -99,12 +99,12 @@ class BuilderTest extends TestCase
                                 'attributes' => [],
                                 'activeAttributes' => [],
                                 'linkAttributes' => [],
-                                'canDisplay' => true,
-                                'type' => Link::class,
+                                'displayRule' => true,
+                                'type' => 'link',
                             ],
                         ],
                     ],
-                    'type' => SubMenu::class,
+                    'type' => 'submenu',
                 ],
             ],
         ];
@@ -391,7 +391,7 @@ class BuilderTest extends TestCase
         // Error: 'C:20:"Malezha\Menu\Builder":4...;}}}}}' does not match expected type "object". 
     }
     
-    public function testToArray()
+    public function testArray()
     {
         $builder = $this->builderFactory();
         $builder->create('index', Link::class, function(LinkFactory $factory) {
@@ -408,5 +408,8 @@ class BuilderTest extends TestCase
         });
         
         $this->assertEquals($this->toArrayStub(), $builder->toArray());
+
+        $builderFormArray = $builder->fromArray($builder->toArray());
+        $this->assertEquals($builder, $builderFormArray);
     }
 }

@@ -33,7 +33,7 @@ class TextTest extends TestCase
             'attributes' => [
                 'class' => 'arrayable',
             ],
-            'canDisplay' => true
+            'displayRule' => true
         ];
     }
     

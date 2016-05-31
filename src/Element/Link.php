@@ -12,7 +12,6 @@ use Malezha\Menu\Support\MergeAttributes;
 use Malezha\Menu\Traits\DisplayRule;
 use Malezha\Menu\Traits\HasActiveAttributes;
 use Malezha\Menu\Traits\HasAttributes;
-use Opis\Closure\SerializableClosure;
 
 /**
  * Class Link
@@ -147,7 +146,7 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
             'attributes' => $this->attributes->toArray(),
             'activeAttributes' => $this->activeAttributes->toArray(),
             'linkAttributes' => $this->linkAttributes->toArray(),
-            'canDisplay' => $this->canDisplay(),
+            'displayRule' => $this->canDisplay(),
         ]);
     }
 
@@ -169,7 +168,7 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
             'attributes' => $this->attributes,
             'activeAttributes' => $this->activeAttributes,
             'linkAttributes' => $this->linkAttributes,
-            'rule' => $this->serializeRule(),
+            'displayRule' => $this->serializeRule(),
         ]);
     }
 }

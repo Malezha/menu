@@ -20,6 +20,12 @@ return [
         ],
     ],
     
+    'alias' => [
+        'link' => \Malezha\Menu\Element\Link::class,
+        'submenu' => \Malezha\Menu\Element\SubMenu::class,
+        'text' => \Malezha\Menu\Element\Text::class,
+    ],
+    
     /**
      * If you use laravel or illuminate\view set 'illuminate' template render.
      * You can also use a simple embedded template render - 'basic'

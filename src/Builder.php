@@ -8,6 +8,7 @@ use Malezha\Menu\Contracts\Builder as BuilderContract;
 use Malezha\Menu\Contracts\Element;
 use Malezha\Menu\Contracts\ElementFactory;
 use Malezha\Menu\Contracts\HasActiveAttributes;
+use Malezha\Menu\Contracts\HasBuilder;
 use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Traits\HasActiveAttributes as TraitHasActiveAttributes;
 use Malezha\Menu\Traits\HasAttributes;
@@ -369,16 +370,17 @@ class Builder implements BuilderContract
      */
     public function toArray()
     {
+        $this->view = $this->getRenderView($this->view);
         $elements = [];
         
         foreach ($this->elements as $key => $element) {
             $elements[$key] = $element->toArray();
-            $elements[$key]['type'] = get_class($element);
+            $elements[$key]['type'] = array_search(get_class($element), $this->config['alias']);
         }
         
         return [
             'type' => $this->type,
-            'view' => $this->getRenderView(),
+            'view' => $this->view,
             'attributes' => $this->attributes->toArray(),
             'activeAttributes' => $this->activeAttributes->toArray(),
             'elements' => $elements,
@@ -449,5 +451,43 @@ class Builder implements BuilderContract
         }
         
         $this->rebuildIndexesArray();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    static public function fromArray(array $builder)
+    {
+        $app = \Illuminate\Container\Container::getInstance();
+        $config = $app->make(Repository::class)->get('menu');
+        
+        /** @var self $builderObject */
+        $builderObject = $app->make(self::class, [
+            'attributes' => $app->make(AttributesContract::class, ['attributes' => $builder['attributes']]),
+            'activeAttributes' => $app->make(AttributesContract::class, ['attributes' => $builder['activeAttributes']]),
+            'view' => $builder['view'],
+            'type' => $builder['type'],
+        ]);
+        
+        foreach ($builder['elements'] as $key => $element) {
+            $class = $config['alias'][$element['type']];
+            
+            $builderObject->create($key, $class, function(ElementFactory $factory) use ($class, $element, $app) {
+                $reflection = new \ReflectionClass($class);
+                if ($reflection->implementsInterface(HasBuilder::class)) {
+                    $element['builder'] = self::fromArray($element['builder']);
+                }
+
+                $attributes = preg_grep("/.*(attributes)/i", array_keys($element));
+
+                foreach ($attributes as $key) {
+                    $element[$key] = $app->make(AttributesContract::class, ['attributes' => $element[$key]]);
+                }
+                
+                return $factory->build($element);
+            });
+        }
+        
+        return $builderObject;
     }
 }

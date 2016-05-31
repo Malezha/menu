@@ -11,7 +11,7 @@ trait DisplayRule
     /**
      * @var bool|\Closure
      */
-    protected $rule = true;
+    protected $displayRule = true;
 
     /**
      * Set boolean or callback, witch return boolean to determine whether to display or not this item.
@@ -21,7 +21,7 @@ trait DisplayRule
      */
     public function setDisplayRule($rule)
     {
-        $this->rule = $rule;
+        $this->displayRule = $rule;
     }
 
     /**
@@ -31,11 +31,11 @@ trait DisplayRule
      */
     public function canDisplay()
     {
-        if (is_callable($this->rule)) {
-            return (bool) call_user_func($this->rule);
+        if (is_callable($this->displayRule)) {
+            return (bool) call_user_func($this->displayRule);
         }
         
-        return (bool) $this->rule;
+        return (bool) $this->displayRule;
     }
 
     /**
@@ -45,10 +45,10 @@ trait DisplayRule
      */
     protected function serializeRule()
     {
-        $displayRule = $this->rule;
+        $displayRule = $this->displayRule;
 
-        if ($this->rule instanceof \Closure) {
-            $displayRule = new SerializableClosure($this->rule);
+        if ($this->displayRule instanceof \Closure) {
+            $displayRule = new SerializableClosure($this->displayRule);
         }
         
         return serialize($displayRule);
@@ -65,6 +65,6 @@ trait DisplayRule
             $rule = $rule->getClosure();
         }
 
-        $this->rule = $rule;
+        $this->displayRule = $rule;
     }
 }

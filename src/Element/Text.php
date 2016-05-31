@@ -67,7 +67,7 @@ class Text extends AbstractElement implements DisplayRuleInterface, HasAttribute
         return array_merge(parent::propertiesForSerialization(), [
             'text' => $this->text,
             'attributes' => $this->attributes,
-            'rule' => $this->serializeRule(),
+            'displayRule' => $this->serializeRule(),
         ]);
     }
 
@@ -79,7 +79,7 @@ class Text extends AbstractElement implements DisplayRuleInterface, HasAttribute
         return array_merge(parent::toArray(), [
             'text' => $this->text,
             'attributes' => $this->attributes->toArray(),
-            'canDisplay' => $this->canDisplay(),
+            'displayRule' => $this->canDisplay(),
         ]);
     }
 }

@@ -14,7 +14,7 @@ use Malezha\Menu\Contracts\Builder as BuilderContract;
 class Menu implements MenuContract
 {
     /**
-     * @var array
+     * @var BuilderContract[]
      */
     protected $menuList = [];
 
@@ -34,7 +34,7 @@ class Menu implements MenuContract
     /**
      * @inheritDoc
      */
-    public function make($name, \Closure $callback, $type = Builder::UL, $attributes = [], $activeAttributes = [])
+    public function make($name, callable $callback, $type = Builder::UL, $attributes = [], $activeAttributes = [])
     {
         $menu = $this->container->make(BuilderContract::class, [
             'container' => $this->container, 
@@ -85,5 +85,35 @@ class Menu implements MenuContract
         if ($this->has($name)) {
             unset($this->menuList[$name]);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function fromArray($name, array $builder)
+    {
+        /** @var BuilderContract $menu */
+        $menu = $this->container->make(BuilderContract::class, [
+            'attributes' => $this->container->make(Attributes::class, ['attributes' => []]),
+            'activeAttributes' => $this->container->make(Attributes::class, ['attributes' => []]),
+        ]);
+        
+        $menu = $menu->fromArray($builder);
+
+        $this->menuList[$name] = $menu;
+        
+        return $menu;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray($name)
+    {
+        if (!$this->has($name)) {
+            throw new \RuntimeException("Menu not found");
+        }
+        
+        return $this->menuList[$name]->toArray();
     }
 }
