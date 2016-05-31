@@ -42,11 +42,6 @@ class Builder implements BuilderContract
     protected $type;
 
     /**
-     * @var AttributesContract
-     */
-    protected $activeAttributes;
-
-    /**
      * @var MenuRender
      */
     protected $viewFactory;
