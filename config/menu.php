@@ -58,4 +58,12 @@ return [
      */
     'minify' => true,
 
+    /**
+     * Ignore this urls when compared to the active menu item.
+     */
+    'skippedPaths' => [
+        '#',
+        'javascript:;'
+    ],
+
 ];

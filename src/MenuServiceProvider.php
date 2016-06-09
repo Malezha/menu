@@ -7,9 +7,11 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
+use Malezha\Menu\Contracts\ComparativeUrl as ComparativeUrlContract;
 use Malezha\Menu\Contracts\Menu as MenuContract;
 use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Support\Attributes;
+use Malezha\Menu\Support\ComparativeUrl;
 
 /**
  * Class MenuServiceProvider
@@ -47,7 +49,8 @@ class MenuServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
-        
+
+        $this->registerComparativeUrl();
         $this->registerRenderSystem();
         $this->registerAttributes();
         $this->registerBuilder();
@@ -88,6 +91,16 @@ class MenuServiceProvider extends ServiceProvider
             throw new \Exception('Can use template system: ' . $config['default']);
         });
         $this->app->alias('menu.render', MenuRender::class);
+    }
+
+    protected function registerComparativeUrl()
+    {
+        $this->app->singleton('menu.compare-url', function (Container $app) {
+            return $app->make(ComparativeUrl::class, [
+                'skippedPaths' => $app->make(Repository::class)->get('menu.skippedPaths'),
+            ]);
+        });
+        $this->app->alias('menu.compare-url', ComparativeUrlContract::class);
     }
 
     /**

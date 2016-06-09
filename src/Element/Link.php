@@ -4,6 +4,7 @@ namespace Malezha\Menu\Element;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
 use Malezha\Menu\Contracts\Attributes;
+use Malezha\Menu\Contracts\ComparativeUrl;
 use Malezha\Menu\Contracts\DisplayRule as DisplayRuleInterface;
 use Malezha\Menu\Contracts\HasAttributes as HasAttributesInterface;
 use Malezha\Menu\Contracts\HasActiveAttributes as HasActiveAttributesInterface;
@@ -44,9 +45,9 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
     protected $linkAttributes;
 
     /**
-     * @var string
+     * @var ComparativeUrl
      */
-    protected $currentUrl;
+    protected $comparativeUrl;
 
     /**
      * Link constructor.
@@ -56,11 +57,11 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
      * @param Attributes $activeAttributes
      * @param Attributes $linkAttributes
      * @param string $view
-     * @param string $currentUrl
+     * @param ComparativeUrl $comparativeUrl
      * @param MenuRender $render
      */
     public function __construct($title, $url, Attributes $attributes, Attributes $activeAttributes, 
-                                Attributes $linkAttributes, $view, $currentUrl, MenuRender $render)
+                                Attributes $linkAttributes, $view, ComparativeUrl $comparativeUrl, MenuRender $render)
     {
         $this->title = $title;
         $this->url = $url;
@@ -68,7 +69,7 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
         $this->activeAttributes = $activeAttributes;
         $this->linkAttributes = $linkAttributes;
         $this->view = $view;
-        $this->currentUrl = $currentUrl;
+        $this->comparativeUrl = $comparativeUrl;
         $this->render = $render;
     }
 
@@ -87,7 +88,7 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
      */
     public function buildAttributes($attributes = [])
     {
-        $attributes = $this->isUrlEqual($this->url, $this->currentUrl) ?
+        $attributes = $this->comparativeUrl->isEquals($this->url) ?
             (new MergeAttributes($this->activeAttributes->all(), $attributes))->merge() : $attributes;
 
         return $this->attributes->build($attributes);
@@ -106,35 +107,6 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
             'canDisplay' => $this->canDisplay(),
             'renderView' => null,
         ];
-    }
-
-    /**
-     * Check is two url equal
-     *
-     * @param string $first
-     * @param string $second
-     * @return bool
-     */
-    protected function isUrlEqual($first, $second)
-    {
-        $uriForTrim = [
-            '#',
-            '/index',
-            '/',
-        ];
-
-        foreach ($uriForTrim as $trim) {
-            $first = rtrim($first, $trim);
-            $second = rtrim($second, $trim);
-        }
-
-        return $first == $second;
-    }
-    
-    protected function wakeupCurrentUrl()
-    {
-        $app = Container::getInstance();
-        $this->currentUrl = $app->make(Request::class)->url();
     }
 
     /**
@@ -157,7 +129,7 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
      */
     public function unserialize($serialized)
     {
-        $this->wakeupCurrentUrl();
+        $this->comparativeUrl = Container::getInstance()->make(ComparativeUrl::class);
 
         parent::unserialize($serialized);
     }
