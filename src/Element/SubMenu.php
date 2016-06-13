@@ -3,6 +3,7 @@ namespace Malezha\Menu\Element;
 
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\Builder;
+use Malezha\Menu\Contracts\ComparativeUrl;
 use Malezha\Menu\Contracts\HasBuilder;
 use Malezha\Menu\Contracts\MenuRender;
 
@@ -29,14 +30,15 @@ class SubMenu extends Link implements HasBuilder
      * @param Attributes $activeAttributes
      * @param Attributes $linkAttributes
      * @param string $view
-     * @param string $currentUrl
+     * @param ComparativeUrl $comparativeUrl
      * @param MenuRender $render
      * @param Builder $builder
      */
     public function __construct($title, $url, Attributes $attributes, Attributes $activeAttributes,
-                                Attributes $linkAttributes, $view, $currentUrl, MenuRender $render, Builder $builder)
+                                Attributes $linkAttributes, $view, ComparativeUrl $comparativeUrl, 
+                                MenuRender $render, Builder $builder)
     {
-        parent::__construct($title, $url, $attributes, $activeAttributes, $linkAttributes, $view, $currentUrl, $render);
+        parent::__construct($title, $url, $attributes, $activeAttributes, $linkAttributes, $view, $comparativeUrl, $render);
         
         $this->builder = $builder;
     }

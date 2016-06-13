@@ -2,9 +2,7 @@
 namespace Malezha\Menu\Factory;
 
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Http\Request;
 use Malezha\Menu\Contracts\Attributes;
-use Malezha\Menu\Contracts\ComparativeUrl;
 use Malezha\Menu\Element\Link;
 
 /**
@@ -36,7 +34,6 @@ class LinkFactory extends AbstractElementFactory
             'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => []]),
             'linkAttributes' => $this->app->make(Attributes::class, ['attributes' => []]),
             'view' => $this->getElementConfig(Link::class)['view'],
-            'currentUrl' => $this->app->make(ComparativeUrl::class),
             'displayRule' => true,
         ];
     }

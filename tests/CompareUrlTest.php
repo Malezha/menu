@@ -15,6 +15,8 @@ class CompareUrlTest extends TestCase
         return new ComparativeUrl($mock, config('menu.skippedPaths'));
     }
     
+    
+    
     public function testSkipped()
     {
         $compare = $this->makeComparativeUrl(url('/'));

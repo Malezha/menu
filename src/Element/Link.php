@@ -2,7 +2,6 @@
 namespace Malezha\Menu\Element;
 
 use Illuminate\Container\Container;
-use Illuminate\Http\Request;
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\ComparativeUrl;
 use Malezha\Menu\Contracts\DisplayRule as DisplayRuleInterface;
