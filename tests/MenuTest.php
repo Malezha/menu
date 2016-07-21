@@ -110,7 +110,7 @@ class MenuTest extends TestCase
         $menu = $this->app->make(Menu::class);
         $menu->fromArray('from_array', $builder->toArray());
         
-        $this->assertEquals($builder, $menu->get('from_array'));
+        $this->assertEquals($builder->render(), $menu->get('from_array')->render());
         $this->assertEquals($builder->toArray(), $menu->toArray('from_array'));
     }
 }

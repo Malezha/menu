@@ -125,7 +125,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        /** @var Link $item */
+        /** @var LinkFactory $item */
         $item = $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Home';
             $factory->url = '/';
@@ -133,6 +133,9 @@ class BuilderTest extends TestCase
 
         $this->assertAttributeEquals(['index' => $item], 'elements', $builder);
         $this->assertAttributeEquals(['index' => 0], 'indexes', $builder);
+        $this->assertInstanceOf(LinkFactory::class, $item);
+
+        $item = $item->build();
         $this->assertInstanceOf(Link::class, $item);
         $this->assertAttributeEquals('Home', 'title', $item);
         $this->assertAttributeEquals('/', 'url', $item);
@@ -144,15 +147,18 @@ class BuilderTest extends TestCase
         
         $builder = $this->builderFactory();
 
-        $builder->create('index', Link::class);
-        $builder->create('index', SubMenu::class); // Duplicate
+        $builder->create('index', Link::class,
+            function (LinkFactory $factory) {});
+        $builder->create('index', SubMenu::class,
+            function (SubMenuFactory $factory) {}); // Duplicate
     }
     
     public function testGet()
     {
         $builder = $this->builderFactory();
         
-        $item = $builder->create('test', Link::class);
+        $item = $builder->create('test', Link::class,
+            function (LinkFactory $factory) {});
         
         $this->assertEquals($item, $builder->get('test'));
         $this->assertEquals(null, $builder->get('notFound'));
@@ -164,7 +170,8 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $item = $builder->create('test', Link::class);
+        $item = $builder->create('test', Link::class,
+            function (LinkFactory $factory) {});
 
         $this->assertEquals($item, $builder->getByIndex(0));
         $this->assertEquals(null, $builder->getByIndex(1));
@@ -194,7 +201,8 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
         
         $this->assertEquals([], $builder->all());
-        $item = $builder->create('test', Link::class);
+        $item = $builder->create('test', Link::class,
+            function (LinkFactory $factory) {});
         $this->assertEquals(['test' => $item], $builder->all());
     }
     
@@ -202,8 +210,10 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $builder->create('test', Link::class);
-        $builder->create('another', Text::class);
+        $builder->create('test', Link::class,
+            function (LinkFactory $factory) {});
+        $builder->create('another', Text::class,
+            function (TextFactory $factory) {});
         
         $this->assertTrue($builder->has('test'));
         $builder->forget('test');
@@ -312,6 +322,8 @@ class BuilderTest extends TestCase
                 $factory->title = 'One';
                 $factory->url = url('/one');
             });
+
+            return $factory->build();
         });
         
         $this->assertEquals($this->getStub('another_menu.html'), $builder->render('another'));
@@ -448,7 +460,7 @@ class BuilderTest extends TestCase
         $this->assertEquals($this->toArrayStub(), $builder->toArray());
 
         $builderFormArray = $builder->fromArray($builder->toArray());
-        $this->assertEquals($builder, $builderFormArray);
+        $this->assertEquals($builder->render(), $builderFormArray->render());
     }
     
     public function testSet()

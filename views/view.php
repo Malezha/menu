@@ -1,7 +1,8 @@
 <?php if ($menu) :?>
-    <<?php echo $menu->getType() . $menu->buildAttributes();?>>
+    <<?= $menu->getType() . $menu->buildAttributes();?>>
         <?php foreach ($menu->all() as $element) :?>
-            <?php echo $element->render($renderView);?>
+            <?php if ($element instanceof \Malezha\Menu\Contracts\ElementFactory) $element = $element->build(); ?>
+            <?= $element->render($renderView);?>
         <?php endforeach;?>
-    </<?php echo $menu->getType();?>>
+    </<?= $menu->getType();?>>
 <?php endif;?>

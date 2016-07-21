@@ -4,6 +4,7 @@ namespace Malezha\Menu\Factory;
 use Illuminate\Contracts\Container\Container;
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Element\Link;
+use Opis\Closure\SerializableClosure;
 
 /**
  * Class LinkFactory
@@ -54,6 +55,31 @@ class LinkFactory extends AbstractElementFactory
     {
         if (array_key_exists('displayRule', $this->parameters)) {
             $link->setDisplayRule($this->parameters['displayRule']);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function serialize()
+    {
+        $params = $this->parameters;
+        if ($params['displayRule'] instanceof \Closure) {
+            $params['displayRule'] = new SerializableClosure($params['displayRule']);
+        }
+
+        return serialize($params);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unserialize($serialized)
+    {
+        parent::unserialize($serialized);
+
+        if ($this->parameters['displayRule'] instanceof SerializableClosure) {
+            $this->parameters['displayRule'] = $this->parameters['displayRule']->getClosure();
         }
     }
 }

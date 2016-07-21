@@ -123,4 +123,29 @@ abstract class AbstractElementFactory implements ElementFactory
     {
         $this->unsetParameter($name);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function serialize()
+    {
+        return serialize($this->parameters);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function unserialize($serialized)
+    {
+        $this->app = \Illuminate\Container\Container::getInstance();
+        $this->parameters = unserialize($serialized);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function toArray()
+    {
+        return $this->build()->toArray();
+    }
 }

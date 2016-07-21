@@ -12,6 +12,7 @@ use Malezha\Menu\Contracts\HasBuilder;
 use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Traits\HasActiveAttributes as TraitHasActiveAttributes;
 use Malezha\Menu\Traits\HasAttributes;
+use Opis\Closure\SerializableClosure;
 
 /**
  * Class Builder
@@ -78,32 +79,22 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function create($name, $type, $callback = null)
+    public function create($name, $type, \Closure $callback)
     {
         if ($this->has($name)) {
             throw new \RuntimeException("Duplicate menu key \"${name}\"");
         }
 
         $factory = $this->getFactory($type);
-        $result = null;
 
         $reflection = new \ReflectionClass($type);
         if ($reflection->implementsInterface(HasActiveAttributes::class)) {
-            $factory->activeAttributes = clone $this->activeAttributes;
+            $factory->activeAttributes = clone $this->getActiveAttributes();
         }
-        
-        if (is_callable($callback)) {
-            $result = call_user_func($callback, $factory);
-            
-            if (empty($result)) {
-                $result = $factory;
-            }
-        }
-        
-        if ($result instanceof ElementFactory) {
-            $result = $result->build();
-        }
-        
+
+        $result = call_user_func($callback, $factory);
+        $result = is_null($result) ? $factory : $result;
+
         $this->saveItem($name, $result);
         
         return $result;
@@ -331,11 +322,16 @@ class Builder implements BuilderContract
         }
 
         $forInsert = $this->builderFactory('tmp', [], [], $callback)->all();
-        $diff = array_diff(array_keys(array_diff_key($this->elements, $forInsert)), array_keys($this->elements));
         $diff = array_intersect_key($this->elements, $forInsert);
 
         if (count($diff) > 0) {
             throw new \RuntimeException('Duplicated keys: ' . implode(', ', array_keys($diff)));
+        }
+
+        foreach ($forInsert as &$item) {
+            if ($item instanceof ElementFactory) {
+                $item = $item->build();
+            }
         }
         
         return $forInsert;
@@ -372,6 +368,10 @@ class Builder implements BuilderContract
         $elements = [];
         
         foreach ($this->elements as $key => $element) {
+            if ($element instanceof ElementFactory) {
+                $element = $element->build();
+            }
+
             $elements[$key] = $element->toArray();
             $elements[$key]['type'] = array_search(get_class($element), $this->config['alias']);
         }

@@ -2,12 +2,13 @@
 namespace Malezha\Menu\Contracts;
 
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Support\Arrayable;
 
 /**
  * Interface ElementFactory
  * @package Malezha\Menu\Contracts
  */
-interface ElementFactory
+interface ElementFactory extends \Serializable, Arrayable
 {
     /**
      * ElementFactory constructor.

@@ -19,7 +19,10 @@ return [
             'factory' => \Malezha\Menu\Factory\TextFactory::class,
         ],
     ],
-    
+
+    /**
+     * Elements aliases for array export|import
+     */
     'alias' => [
         'link' => \Malezha\Menu\Element\Link::class,
         'submenu' => \Malezha\Menu\Element\SubMenu::class,
@@ -34,6 +37,9 @@ return [
 
     /**
      * Available template renders.
+     *
+     * basic - simple render based on ob_start()
+     * illuminate - laravel view system, blade default
      */
     'renders' => [
         'basic' => \Malezha\Menu\Render\Basic::class,

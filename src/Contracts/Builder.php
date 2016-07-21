@@ -28,10 +28,10 @@ interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayA
     /**
      * @param string $name
      * @param string $type
-     * @param callable $callback
-     * @return Element
+     * @param \Closure $callback
+     * @return ElementFactory|Element
      */
-    public function create($name, $type, $callback = null);
+    public function create($name, $type, \Closure $callback);
 
     /**
      * Insert values before item
@@ -63,7 +63,7 @@ interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayA
      *
      * @param string $name
      * @param mixed|null $default
-     * @return Element|mixed
+     * @return ElementFactory|Element|mixed
      */
     public function get($name, $default = null);
 
@@ -72,7 +72,7 @@ interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayA
      *
      * @param int $index
      * @param mixed|null $default
-     * @return Element|mixed
+     * @return ElementFactory|Element|mixed
      */
     public function getByIndex($index, $default = null);
 
