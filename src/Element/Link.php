@@ -133,6 +133,9 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
         parent::unserialize($serialized);
     }
 
+    /**
+     * @return array
+     */
     protected function propertiesForSerialization()
     {
         return array_merge(parent::propertiesForSerialization(), [

@@ -3,7 +3,10 @@ namespace Malezha\Menu\Factory;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
+use Malezha\Menu\Contracts\Element;
 use Malezha\Menu\Contracts\ElementFactory;
+use Malezha\Menu\Traits\DisplayRule;
+use Opis\Closure\SerializableClosure;
 
 /**
  * Class AbstractElementFactory
@@ -129,7 +132,12 @@ abstract class AbstractElementFactory implements ElementFactory
      */
     public function serialize()
     {
-        return serialize($this->parameters);
+        $params = $this->parameters;
+        if ($params['displayRule'] instanceof \Closure) {
+            $params['displayRule'] = new SerializableClosure($params['displayRule']);
+        }
+
+        return serialize($params);
     }
 
     /**
@@ -139,6 +147,10 @@ abstract class AbstractElementFactory implements ElementFactory
     {
         $this->app = \Illuminate\Container\Container::getInstance();
         $this->parameters = unserialize($serialized);
+
+        if ($this->parameters['displayRule'] instanceof SerializableClosure) {
+            $this->parameters['displayRule'] = $this->parameters['displayRule']->getClosure();
+        }
     }
 
     /**
@@ -147,5 +159,15 @@ abstract class AbstractElementFactory implements ElementFactory
     public function toArray()
     {
         return $this->build()->toArray();
+    }
+
+    /**
+     * @param Element $element
+     */
+    protected function setDisplayRule(Element $element)
+    {
+        if (array_key_exists('displayRule', $this->parameters) && method_exists($element, 'setDisplayRule')) {
+            $element->setDisplayRule($this->parameters['displayRule']);
+        }
     }
 }

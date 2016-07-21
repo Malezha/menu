@@ -5,6 +5,10 @@ use Malezha\Menu\Element\Text;
 use Malezha\Menu\Factory\TextFactory;
 use Malezha\Menu\Tests\TestCase;
 
+/**
+ * Class TextTest
+ * @package Malezha\Menu\Tests\ElementTests
+ */
 class TextTest extends TestCase
 {
     /**

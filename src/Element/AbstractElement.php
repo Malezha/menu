@@ -43,6 +43,9 @@ abstract class AbstractElement implements Element
         }
     }
 
+    /**
+     * @return array
+     */
     protected function propertiesForSerialization()
     {
         return [

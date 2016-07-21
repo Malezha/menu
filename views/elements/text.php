@@ -1,3 +1,3 @@
 <?php if ($canDisplay) :?>
-<li<?php echo $attributes;?>><?php echo $text;?></li>
+<li<?=$attributes;?>><?=$text;?></li>
 <?php endif;?>
