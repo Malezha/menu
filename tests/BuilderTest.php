@@ -477,4 +477,14 @@ class BuilderTest extends TestCase
         $this->assertTrue($builder->has('element'));
         $this->assertFalse($builder->has('notElement'));
     }
+
+    public function testCreateCallbackException()
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $builder = $this->builderFactory();
+        $builder->create('test', Link::class, function(LinkFactory $factory) {
+            return 'string';
+        });
+    }
 }

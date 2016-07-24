@@ -95,6 +95,11 @@ class Builder implements BuilderContract
         $result = call_user_func($callback, $factory);
         $result = is_null($result) ? $factory : $result;
 
+        if (! $result instanceof ElementFactory && ! $result instanceof Element) {
+            throw new \RuntimeException("Result of callback must be [" . 
+                Element::class . "] or [" . ElementFactory::class . "]");
+        }
+
         $this->saveItem($name, $result);
         
         return $result;
@@ -233,7 +238,7 @@ class Builder implements BuilderContract
         $search = array(
             '/\>[^\S]+/s', // strip whitespaces after tags, except space
             '/[^\S]+\</s', // strip whitespaces before tags, except space
-            '/(\s)+/s'       // shorten multiple whitespace sequences
+            '/(\s)+/s'     // shorten multiple whitespace sequences
         );
 
         $replace = array(

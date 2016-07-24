@@ -130,8 +130,8 @@ $array = [
 ];
 
 $builder = Menu::fromArray('from-array', $array);
-$html = $builder->render; // Menu::render('from-array');
-// $builder->toArray === $array;
+$html = $builder->render(); // Menu::render('from-array');
+// $builder->toArray() === $array;
 ```
 
 ### Simple example
