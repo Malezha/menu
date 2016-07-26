@@ -15,8 +15,6 @@ class CompareUrlTest extends TestCase
         return new ComparativeUrl($mock, config('menu.skippedPaths'));
     }
     
-    
-    
     public function testSkipped()
     {
         $compare = $this->makeComparativeUrl(url('/'));
@@ -39,5 +37,14 @@ class CompareUrlTest extends TestCase
             $compare = $this->makeComparativeUrl($value);
             $this->assertTrue($compare->isEquals($value));
         }
+    }
+
+    public function testPaths()
+    {
+        $index = $this->makeComparativeUrl(url('/'));
+        $this->assertFalse($index->isEquals(url('profile')));
+
+        $profile = $this->makeComparativeUrl(url('profile'));
+        $this->assertFalse($profile->isEquals(url('/')));
     }
 }

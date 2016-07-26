@@ -49,19 +49,19 @@ class ComparativeUrl implements ComparativeUrlContract
 
         $parsedUrl = parse_url($this->buildUrl($url));
 
-        $counterMin = count(array_intersect($this->components, array_keys($parsedUrl)));
+        $counterMin = $this->getMinCounterValue($parsedUrl);
         $counter = 0;
-        
+
         foreach ($this->components as $component) {
             if ($this->checkComponent($component, $parsedUrl)) {
                 $counter++;
             }
         }
-        
+
         if ($counter >= $counterMin) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -81,13 +81,23 @@ class ComparativeUrl implements ComparativeUrlContract
      */
     protected function checkComponent($component, $parsedUrl)
     {
-        if (array_key_exists($component, $this->parsedCurrentUrl)) {
-            if (array_key_exists($component, $parsedUrl)
-                && $parsedUrl[$component] === $this->parsedCurrentUrl[$component]) {
-                    return true;
-            }
+        if (array_key_exists($component, $this->parsedCurrentUrl) &&
+            array_key_exists($component, $parsedUrl) &&
+            $parsedUrl[$component] === $this->parsedCurrentUrl[$component]
+        ) {
+            return true;
         }
 
         return false;
+    }
+
+    /**
+     * @param array $parsedUrl
+     * @return int
+     */
+    protected function getMinCounterValue($parsedUrl)
+    {
+        return max(count(array_intersect($this->components, array_keys($parsedUrl))),
+            count(array_intersect($this->components, array_keys($this->parsedCurrentUrl))));
     }
 }
