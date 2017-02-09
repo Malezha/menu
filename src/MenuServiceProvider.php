@@ -8,10 +8,12 @@ use Illuminate\Support\ServiceProvider;
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
 use Malezha\Menu\Contracts\ComparativeUrl as ComparativeUrlContract;
+use Malezha\Menu\Contracts\FromArrayBuilder as FromArrayBuilderContract;
 use Malezha\Menu\Contracts\Menu as MenuContract;
 use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Support\Attributes;
 use Malezha\Menu\Support\ComparativeUrl;
+use Malezha\Menu\Support\FromArrayBuilder;
 
 /**
  * Class MenuServiceProvider
@@ -50,6 +52,7 @@ class MenuServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/menu.php', 'menu');
 
+        $this->registerFromArrayBuilder();
         $this->registerComparativeUrl();
         $this->registerRenderSystem();
         $this->registerAttributes();
@@ -101,6 +104,16 @@ class MenuServiceProvider extends ServiceProvider
             ]);
         });
         $this->app->alias('menu.compare-url', ComparativeUrlContract::class);
+    }
+
+    protected function registerFromArrayBuilder()
+    {
+        $this->app->singleton('menu.from-array-builder', function (Container $app) {
+            return $app->make(FromArrayBuilder::class);
+        });
+        $this->app->alias('menu.from-array-builder', FromArrayBuilderContract::class);
+
+        FromArrayBuilder::setInstance($this->app->make(FromArrayBuilderContract::class));
     }
 
     /**

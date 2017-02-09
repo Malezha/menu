@@ -65,21 +65,6 @@ class TextTest extends TestCase
         $this->assertEquals($this->elementRender(), $element->render());
     }
     
-    public function testSerialization()
-    {
-        $tmp = 0;
-        $factory = $this->factory();
-        $factory->text = 'Serialize';
-        $factory->attributes->put('class', 'serialized');
-        $factory->displayRule = function () use ($tmp) {
-            return $tmp === 0;
-        };
-        $element = $factory->build();
-
-        $this->assertEquals($this->serializeStub(), serialize($element));
-        $this->assertEquals($element, unserialize($this->serializeStub()));
-    }
-    
     public function testToArray()
     {
         $factory = $this->factory();

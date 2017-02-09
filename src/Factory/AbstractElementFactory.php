@@ -5,8 +5,6 @@ use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Malezha\Menu\Contracts\Element;
 use Malezha\Menu\Contracts\ElementFactory;
-use Malezha\Menu\Traits\DisplayRule;
-use Opis\Closure\SerializableClosure;
 
 /**
  * Class AbstractElementFactory
@@ -125,32 +123,6 @@ abstract class AbstractElementFactory implements ElementFactory
     function __unset($name)
     {
         $this->unsetParameter($name);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function serialize()
-    {
-        $params = $this->parameters;
-        if ($params['displayRule'] instanceof \Closure) {
-            $params['displayRule'] = new SerializableClosure($params['displayRule']);
-        }
-
-        return serialize($params);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function unserialize($serialized)
-    {
-        $this->app = \Illuminate\Container\Container::getInstance();
-        $this->parameters = unserialize($serialized);
-
-        if ($this->parameters['displayRule'] instanceof SerializableClosure) {
-            $this->parameters['displayRule'] = $this->parameters['displayRule']->getClosure();
-        }
     }
 
     /**

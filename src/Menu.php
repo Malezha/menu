@@ -4,8 +4,8 @@ namespace Malezha\Menu;
 
 use Illuminate\Contracts\Container\Container;
 use Malezha\Menu\Contracts\Attributes;
-use Malezha\Menu\Contracts\Menu as MenuContract;
 use Malezha\Menu\Contracts\Builder as BuilderContract;
+use Malezha\Menu\Contracts\Menu as MenuContract;
 
 /**
  * Class Menu
@@ -34,7 +34,7 @@ class Menu implements MenuContract
     /**
      * @inheritDoc
      */
-    public function make($name, callable $callback, $type = Builder::UL, $attributes = [], $activeAttributes = [])
+    public function make($name, callable $callback = null, $type = Builder::UL, $attributes = [], $activeAttributes = [])
     {
         $menu = $this->container->make(BuilderContract::class, [
             'container' => $this->container, 
@@ -43,7 +43,9 @@ class Menu implements MenuContract
             'attributes' => $this->container->make(Attributes::class, ['attributes' => $attributes]), 
             'activeAttributes' => $this->container->make(Attributes::class, ['attributes' => $activeAttributes]),
         ]);
-        call_user_func($callback, $menu);
+
+        call_if_callable($callback, $menu);
+
         $this->menuList[$name] = $menu;
 
         return $menu;

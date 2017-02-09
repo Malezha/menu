@@ -83,11 +83,4 @@ class SubMenu extends Link implements HasBuilder
             'builder' => $this->builder->toArray(),
         ]);
     }
-
-    protected function propertiesForSerialization()
-    {
-        return array_merge(parent::propertiesForSerialization(), [
-            'builder' => $this->builder,
-        ]);
-    }
 }

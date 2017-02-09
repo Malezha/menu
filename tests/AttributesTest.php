@@ -122,13 +122,6 @@ class AttributesTest extends TestCase
         $this->assertEquals([], (new MergeAttributes())->merge());
     }
     
-    public function testSerialization()
-    {
-        $attributes = $this->attributeFactory();
-        $this->assertEquals($this->serializeStub(), serialize($attributes));
-        $this->assertEquals($attributes, unserialize($this->serializeStub()));
-    }
-    
     public function testToArray()
     {
         $attributes = $this->attributeFactory();

@@ -28,6 +28,8 @@ class MenuTest extends TestCase
             $builder->create('one', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'One';
                 $factory->url = '/one';
+
+                return $factory->build();
             });
         });
         
@@ -82,28 +84,45 @@ class MenuTest extends TestCase
             'attributes' => new Attributes(['class' => 'menu']),
             'activeAttributes' => new Attributes(['class' => 'active']),
         ]);
+
         $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Index';
             $factory->url = '/';
+
+            return $factory->build();
         });
+
         $builder->create('deliver_1', Text::class, function(TextFactory $factory) {
             $factory->text = null;
             $factory->attributes->put('class', 'deliver');
+
+            return $factory->build();
         });
+
         $builder->create('settings', SubMenu::class, function(SubMenuFactory $factory) {
             $factory->title = 'Index';
             $factory->builder->create('some', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'Some setting';
                 $factory->url = '/settings/some';
+
+                return $factory->build();
             });
+
+            return $factory->build();
         });
+
         $builder->create('deliver_2', Text::class, function(TextFactory $factory) {
             $factory->text = null;
             $factory->attributes->put('class', 'deliver');
+
+            return $factory->build();
         });
+
         $builder->create('logout', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Logout';
             $factory->url = '/logout';
+
+            return $factory->build();
         });
         
         /** @var Menu $menu */
@@ -112,5 +131,11 @@ class MenuTest extends TestCase
         
         $this->assertEquals($builder->render(), $menu->get('from_array')->render());
         $this->assertEquals($builder->toArray(), $menu->toArray('from_array'));
+    }
+
+    public function testHelper()
+    {
+        $this->assertInstanceOf(Menu::class, menu());
+        $this->assertInstanceOf(Builder::class, menu('test'));
     }
 }

@@ -125,17 +125,14 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        /** @var LinkFactory $item */
+        /** @var Link $item */
         $item = $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Home';
             $factory->url = '/';
+
+            return $factory->build();
         });
 
-        $this->assertAttributeEquals(['index' => $item], 'elements', $builder);
-        $this->assertAttributeEquals(['index' => 0], 'indexes', $builder);
-        $this->assertInstanceOf(LinkFactory::class, $item);
-
-        $item = $item->build();
         $this->assertInstanceOf(Link::class, $item);
         $this->assertAttributeEquals('Home', 'title', $item);
         $this->assertAttributeEquals('/', 'url', $item);
@@ -147,18 +144,22 @@ class BuilderTest extends TestCase
         
         $builder = $this->builderFactory();
 
-        $builder->create('index', Link::class,
-            function (LinkFactory $factory) {});
-        $builder->create('index', SubMenu::class,
-            function (SubMenuFactory $factory) {}); // Duplicate
+        $builder->create('index', Link::class, function (LinkFactory $factory) {
+            return $factory->build();
+        });
+
+        $builder->create('index', SubMenu::class, function (SubMenuFactory $factory) {
+            return $factory->build();
+        }); // Duplicate
     }
     
     public function testGet()
     {
         $builder = $this->builderFactory();
         
-        $item = $builder->create('test', Link::class,
-            function (LinkFactory $factory) {});
+        $item = $builder->create('test', Link::class, function (LinkFactory $factory) {
+            return $factory->build();
+        });
         
         $this->assertEquals($item, $builder->get('test'));
         $this->assertEquals(null, $builder->get('notFound'));
@@ -170,8 +171,9 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $item = $builder->create('test', Link::class,
-            function (LinkFactory $factory) {});
+        $item = $builder->create('test', Link::class, function (LinkFactory $factory) {
+            return $factory->build();
+        });
 
         $this->assertEquals($item, $builder->getByIndex(0));
         $this->assertEquals(null, $builder->getByIndex(1));
@@ -201,8 +203,11 @@ class BuilderTest extends TestCase
         $builder = $this->builderFactory();
         
         $this->assertEquals([], $builder->all());
-        $item = $builder->create('test', Link::class,
-            function (LinkFactory $factory) {});
+
+        $item = $builder->create('test', Link::class, function (LinkFactory $factory) {
+            return $factory->build();
+        });
+
         $this->assertEquals(['test' => $item], $builder->all());
     }
     
@@ -210,10 +215,12 @@ class BuilderTest extends TestCase
     {
         $builder = $this->builderFactory();
 
-        $builder->create('test', Link::class,
-            function (LinkFactory $factory) {});
-        $builder->create('another', Text::class,
-            function (TextFactory $factory) {});
+        $builder->create('test', Link::class, function (LinkFactory $factory) {
+            return $factory->build();
+        });
+        $builder->create('another', Text::class, function (TextFactory $factory) {
+            return $factory->build();
+        });
         
         $this->assertTrue($builder->has('test'));
         $builder->forget('test');
@@ -248,6 +255,8 @@ class BuilderTest extends TestCase
             $factory->title = 'Index Page';
             $factory->url = url('/');
             $factory->linkAttributes->push(['class' => 'menu-link']);
+
+            return $factory->build();
         });
         
         $builder->create('orders', SubMenu::class, function(SubMenuFactory $factory) {
@@ -258,17 +267,27 @@ class BuilderTest extends TestCase
             $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'All';
                 $factory->url = url('/orders/all');
+
+                return $factory->build();
             });
+
             $factory->builder->create('type_1', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'Type 1';
                 $factory->url = url('/orders/1');
                 $factory->linkAttributes->push(['class' => 'text-color-red']);
+
+                return $factory->build();
             });
+
             $factory->builder->create('type_2', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'Type 2';
                 $factory->url = url('/orders/2');
                 $factory->linkAttributes->push(['data-attribute' => 'value']);
+
+                return $factory->build();
             });
+
+            return $factory->build();
         });
         
         $html = $builder->render();
@@ -283,23 +302,34 @@ class BuilderTest extends TestCase
         $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Index Page';
             $factory->url = url('/');
+
+            return $factory->build();
         });
+
         $builder->create('login', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Login';
             $factory->url = url('/login');
             $factory->displayRule = function() {
                 return true;
             };
+
+            return $factory->build();
         });
+
         $builder->create('admin', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Admin';
             $factory->url = url('/admin');
             $factory->displayRule = false;
+
+            return $factory->build();
         });
+
         $builder->create('logout', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Logout';
             $factory->url = url('/logout');
             $factory->displayRule = null;
+
+            return $factory->build();
         });
 
         $html = $builder->render();
@@ -316,11 +346,16 @@ class BuilderTest extends TestCase
         $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Index Page';
             $factory->url = url('/');
+
+            return $factory->build();
         });
+
         $builder->create('group', SubMenu::class, function(SubMenuFactory $factory) {
             $factory->builder->create('one', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'One';
                 $factory->url = url('/one');
+
+                return $factory->build();
             });
 
             return $factory->build();
@@ -339,19 +374,27 @@ class BuilderTest extends TestCase
     public function testInsert()
     {
         $builder = $this->builderFactory();
+
         $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Index Page';
             $factory->url = url('/');
+
+            return $factory->build();
         });
+
         $builder->create('logout', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Logout';
             $factory->url = url('logout');
+
+            return $factory->build();
         });
         
         $builder->insertAfter('index', function (Builder $builder) {
             $builder->create('users', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'Users';
                 $factory->url = url('users');
+
+                return $factory->build();
             });
         });
         
@@ -359,6 +402,8 @@ class BuilderTest extends TestCase
             $builder->create('profile', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'Profile';
                 $factory->url = url('profile');
+
+                return $factory->build();
             });
         });
 
@@ -378,83 +423,51 @@ class BuilderTest extends TestCase
         $this->expectException(\RuntimeException::class);
 
         $builder = $this->builderFactory();
+
         $builder->create('home', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Home';
             $factory->url = '/';
+
+            return $factory->build();
         });
+
         $builder->create('some', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Some';
             $factory->url = '/';
+
+            return $factory->build();
         });
+
         $builder->insertAfter('home', function (Builder $builder) {
             $builder->create('some', Text::class, function(TextFactory $factory) {
                 $factory->text = 'Duplicate some';
-            });
-        });
-    }
-    
-    public function testSerialization()
-    {
-        $builder = $this->builderFactory();
-        $builder->create('index', Link::class, function(LinkFactory $factory) {
-            $factory->title = 'Index';
-            $factory->url = url('/');
-        });
-        $builder->create('users', SubMenu::class, function(SubMenuFactory $factory) {
-            $factory->title = 'Users';
-            $factory->builder->getAttributes()->put('class', 'menu');
-            $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
-                $factory->title = 'All';
-                $factory->url = url('/users');
-            });
-            $factory->builder->create('admins', Link::class, function(LinkFactory $factory) {
-                $factory->title = 'Admins';
-                $factory->url = url('/users', ['role' => 'admin']);
-                $factory->displayRule = false;
-            });
-            $factory->builder->create('create', SubMenu::class, function(SubMenuFactory $factory) {
-                $factory->title = 'Create';
-                $factory->builder->create('user', Link::class, function(LinkFactory $factory) {
-                    $factory->title = 'User';
-                    $factory->url = url('/users/create/user');
-                });
-                $factory->builder->create('role', Link::class, function(LinkFactory $factory) {
-                    $factory->title = 'Role';
-                    $factory->url = url('/users/create/role');
-                });
-            });
-        });
-        $builder->create('settings', Link::class, function(LinkFactory $factory) {
-            $factory->displayRule = function () {return false;};
-            $factory->title = 'Settings';
-            $factory->url = url('/settings');
-        });
-        $builder->create('deliver', Text::class, function(TextFactory $factory) {
-            $factory->text = '-';
-        });
-        $builder->create('logout', Link::class, function(LinkFactory $factory) {
-            $factory->title = 'Logout';
-            $factory->url = url('/logout');
-        });
 
-        $this->assertEquals($this->serializeStub(), serialize($builder));
-        $this->assertEquals($builder, unserialize($this->serializeStub()));
+                return $factory->build();
+            });
+        });
     }
-    
+
     public function testArray()
     {
         $builder = $this->builderFactory();
         $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Index';
             $factory->url = url('/');
+
+            return $factory->build();
         });
+
         $builder->create('submenu', SubMenu::class, function(SubMenuFactory $factory) {
             for ($i = 1; $i <= 3; ++$i) {
                 $factory->builder->create('item_' . $i, Link::class, function(LinkFactory $factory) use ($i) {
                     $factory->title = 'Item ' . $i;
                     $factory->url = url('/item', ['id' => $i]);
+
+                    return $factory->build();
                 });
             }
+
+            return $factory->build();
         });
         
         $this->assertEquals($this->toArrayStub(), $builder->toArray());
@@ -486,5 +499,13 @@ class BuilderTest extends TestCase
         $builder->create('test', Link::class, function(LinkFactory $factory) {
             return 'string';
         });
+    }
+
+    public function testCreateTypeWrongException()
+    {
+        $this->expectException(\RuntimeException::class);
+
+        $builder = $this->builderFactory();
+        $builder->create('test', \Exception::class);
     }
 }

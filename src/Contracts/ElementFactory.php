@@ -8,7 +8,7 @@ use Illuminate\Contracts\Support\Arrayable;
  * Interface ElementFactory
  * @package Malezha\Menu\Contracts
  */
-interface ElementFactory extends \Serializable, Arrayable
+interface ElementFactory extends Arrayable
 {
     /**
      * ElementFactory constructor.

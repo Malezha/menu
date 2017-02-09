@@ -45,6 +45,8 @@ Menu::make('main', function(Builder $builder) {
     // Create menu element
     $builder->create('element_name', ElementClass::class, function (ElementFactory $factory) {
         $factory->elementParameter;
+        
+        return $factory->build();
     });
 
     # Avaliable elements
@@ -59,6 +61,8 @@ Menu::make('main', function(Builder $builder) {
         $factory->activeAttributes->push(['class' => 'active-element']);
         $factory->linkAttributes->set(['id' => 'link']);
         $factory->displayRule = true; // Boolean or callable witch return boolean
+        
+        return $factory->build();
     });
 
     // Submenu. Html:
@@ -71,6 +75,8 @@ Menu::make('main', function(Builder $builder) {
     $builder->create('submenu', SubMenu::class, function (SubMenuFactory $factory) {
         // Submenu exdends Link so all parameters available
         $factory->builder->create(...); // Create submenu element
+        
+        return $factory->build();
     });
 
     // Text. Html:
@@ -81,6 +87,8 @@ Menu::make('main', function(Builder $builder) {
         $factory->text = 'Text';
         $factory->attributes->put('class', 'deliver');
         $factory->displayRule = true;
+        
+        return $factory->build();
     });
 });
 
@@ -149,6 +157,8 @@ Menu::make('main', function (Builder $builder) {
         $factory->title = 'Index Page';
         $factory->url = '/';
         $factory->linkAttributes->push(['class' => 'menu-link']);
+        
+        return $factory->build();
     });
 
     $builder->create('orders', SubMenu::class, function(SubMenuFactory $factory) {
@@ -159,17 +169,27 @@ Menu::make('main', function (Builder $builder) {
         $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
             $factory->title = 'All';
             $factory->url = '/orders/all';
+            
+            return $factory->build();
         });
+        
         $factory->builder->create('type_1', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Type 1';
             $factory->url = '/orders/1';
             $factory->linkAttributes->push(['class' => 'text-color-red']);
+            
+            return $factory->build();
         });
+        
         $factory->builder->create('type_2', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Type 2';
             $factory->url = '/orders/2';
             $factory->linkAttributes->push(['data-attribute' => 'value']);
+            
+            return $factory->build();
         });
+        
+        return $factory->build();
     });
 });
 ```

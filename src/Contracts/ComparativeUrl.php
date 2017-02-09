@@ -1,5 +1,6 @@
 <?php
 namespace Malezha\Menu\Contracts;
+
 use Illuminate\Contracts\Routing\UrlGenerator;
 
 /**

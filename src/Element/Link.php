@@ -1,12 +1,11 @@
 <?php
 namespace Malezha\Menu\Element;
 
-use Illuminate\Container\Container;
 use Malezha\Menu\Contracts\Attributes;
 use Malezha\Menu\Contracts\ComparativeUrl;
 use Malezha\Menu\Contracts\DisplayRule as DisplayRuleInterface;
-use Malezha\Menu\Contracts\HasAttributes as HasAttributesInterface;
 use Malezha\Menu\Contracts\HasActiveAttributes as HasActiveAttributesInterface;
+use Malezha\Menu\Contracts\HasAttributes as HasAttributesInterface;
 use Malezha\Menu\Contracts\MenuRender;
 use Malezha\Menu\Support\MergeAttributes;
 use Malezha\Menu\Traits\DisplayRule;
@@ -120,31 +119,6 @@ class Link extends AbstractElement implements DisplayRuleInterface, HasAttribute
             'activeAttributes' => $this->activeAttributes->toArray(),
             'linkAttributes' => $this->linkAttributes->toArray(),
             'displayRule' => $this->canDisplay(),
-        ]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function unserialize($serialized)
-    {
-        $this->comparativeUrl = Container::getInstance()->make(ComparativeUrl::class);
-
-        parent::unserialize($serialized);
-    }
-
-    /**
-     * @return array
-     */
-    protected function propertiesForSerialization()
-    {
-        return array_merge(parent::propertiesForSerialization(), [
-            'title' => $this->title,
-            'url' => $this->url,
-            'attributes' => $this->attributes,
-            'activeAttributes' => $this->activeAttributes,
-            'linkAttributes' => $this->linkAttributes,
-            'displayRule' => $this->serializeRule(),
         ]);
     }
 }

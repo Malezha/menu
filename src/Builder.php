@@ -8,11 +8,10 @@ use Malezha\Menu\Contracts\Builder as BuilderContract;
 use Malezha\Menu\Contracts\Element;
 use Malezha\Menu\Contracts\ElementFactory;
 use Malezha\Menu\Contracts\HasActiveAttributes;
-use Malezha\Menu\Contracts\HasBuilder;
 use Malezha\Menu\Contracts\MenuRender;
+use Malezha\Menu\Support\FromArrayBuilder;
 use Malezha\Menu\Traits\HasActiveAttributes as TraitHasActiveAttributes;
 use Malezha\Menu\Traits\HasAttributes;
-use Opis\Closure\SerializableClosure;
 
 /**
  * Class Builder
@@ -79,7 +78,7 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function create($name, $type, \Closure $callback)
+    public function create($name, $type, callable $callback = null)
     {
         if ($this->has($name)) {
             throw new \RuntimeException("Duplicate menu key \"${name}\"");
@@ -87,17 +86,14 @@ class Builder implements BuilderContract
 
         $factory = $this->getFactory($type);
 
-        $reflection = new \ReflectionClass($type);
-        if ($reflection->implementsInterface(HasActiveAttributes::class)) {
+        if ($this->hasActiveAttributes($type)) {
             $factory->activeAttributes = clone $this->getActiveAttributes();
         }
 
-        $result = call_user_func($callback, $factory);
-        $result = is_null($result) ? $factory : $result;
+        $result = call_if_callable($callback, $factory);
 
-        if (! $result instanceof ElementFactory && ! $result instanceof Element) {
-            throw new \RuntimeException("Result of callback must be [" . 
-                Element::class . "] or [" . ElementFactory::class . "]");
+        if (! $result instanceof Element) {
+            throw new \RuntimeException("Result of callback must be [" . Element::class . "]");
         }
 
         $this->saveItem($name, $result);
@@ -108,7 +104,7 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function insertBefore($name, \Closure $callback)
+    public function insertBefore($name, callable $callback)
     {
         $prepared = $this->prepareInsert($name, $callback);
         $this->insert($this->indexes[$name], $prepared);
@@ -117,7 +113,7 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function insertAfter($name, \Closure $callback)
+    public function insertAfter($name, callable $callback)
     {
         $prepared = $this->prepareInsert($name, $callback);
         $this->insert($this->indexes[$name] + 1, $prepared);
@@ -333,11 +329,11 @@ class Builder implements BuilderContract
             throw new \RuntimeException('Duplicated keys: ' . implode(', ', array_keys($diff)));
         }
 
-        foreach ($forInsert as &$item) {
-            if ($item instanceof ElementFactory) {
-                $item = $item->build();
-            }
-        }
+//        foreach ($forInsert as &$item) {
+//            if ($item instanceof ElementFactory) {
+//                $item = $item->build();
+//            }
+//        }
         
         return $forInsert;
     }
@@ -356,10 +352,15 @@ class Builder implements BuilderContract
     /**
      * @param $element
      * @return ElementFactory
+     * @throws \RuntimeException
      */
     protected function getFactory($element)
     {
-        $factoryClass = $this->app->make(Repository::class)->get('menu.elements')[$element]['factory'];
+        if (!array_key_exists($element, $this->config['elements'])) {
+            throw new \RuntimeException('Not found factory for element:' . $element);
+        }
+
+        $factoryClass = $this->config['elements'][$element]['factory'];
         
         return $this->app->make($factoryClass);
     }
@@ -373,9 +374,9 @@ class Builder implements BuilderContract
         $elements = [];
         
         foreach ($this->elements as $key => $element) {
-            if ($element instanceof ElementFactory) {
-                $element = $element->build();
-            }
+//            if ($element instanceof ElementFactory) {
+//                $element = $element->build();
+//            }
 
             $elements[$key] = $element->toArray();
             $elements[$key]['type'] = array_search(get_class($element), $this->config['alias']);
@@ -436,72 +437,19 @@ class Builder implements BuilderContract
     /**
      * @inheritDoc
      */
-    public function serialize()
-    {
-        return serialize([
-            'type' => $this->type,
-            'view' => $this->view,
-            'attributes' => $this->attributes,
-            'activeAttributes' => $this->activeAttributes,
-            'elements' => $this->elements,
-        ]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function unserialize($serialized)
-    {
-        $this->app = \Illuminate\Container\Container::getInstance();
-        $this->viewFactory = $this->app->make(MenuRender::class);
-        $this->config = $this->app->make(Repository::class)->get('menu');
-
-        $data = unserialize($serialized);
-
-        foreach ($data as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->{$key} = $value;
-            }
-        }
-        
-        $this->rebuildIndexesArray();
-    }
-
-    /**
-     * @inheritDoc
-     */
     static public function fromArray(array $builder)
     {
-        $app = \Illuminate\Container\Container::getInstance();
-        $config = $app->make(Repository::class)->get('menu');
-        
-        /** @var self $builderObject */
-        $builderObject = $app->make(self::class, [
-            'attributes' => $app->make(AttributesContract::class, ['attributes' => $builder['attributes']]),
-            'activeAttributes' => $app->make(AttributesContract::class, ['attributes' => $builder['activeAttributes']]),
-            'view' => $builder['view'],
-            'type' => $builder['type'],
-        ]);
-        
-        foreach ($builder['elements'] as $key => $element) {
-            $class = $config['alias'][$element['type']];
-            
-            $builderObject->create($key, $class, function(ElementFactory $factory) use ($class, $element, $app) {
-                $reflection = new \ReflectionClass($class);
-                if ($reflection->implementsInterface(HasBuilder::class)) {
-                    $element['builder'] = self::fromArray($element['builder']);
-                }
+        return FromArrayBuilder::getInstance()->build($builder);
+    }
 
-                $attributes = preg_grep("/.*(attributes)/i", array_keys($element));
+    /**
+     * @param string $type
+     * @return bool
+     */
+    protected function hasActiveAttributes($type)
+    {
+        $reflection = new \ReflectionClass($type);
 
-                foreach ($attributes as $key) {
-                    $element[$key] = $app->make(AttributesContract::class, ['attributes' => $element[$key]]);
-                }
-                
-                return $factory->build($element);
-            });
-        }
-        
-        return $builderObject;
+        return $reflection->implementsInterface(HasActiveAttributes::class);
     }
 }

@@ -62,15 +62,6 @@ class Text extends AbstractElement implements DisplayRuleInterface, HasAttribute
         ];
     }
 
-    protected function propertiesForSerialization()
-    {
-        return array_merge(parent::propertiesForSerialization(), [
-            'text' => $this->text,
-            'attributes' => $this->attributes,
-            'displayRule' => $this->serializeRule(),
-        ]);
-    }
-
     /**
      * @inheritDoc
      */

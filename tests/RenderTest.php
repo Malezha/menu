@@ -20,11 +20,15 @@ class RenderTest extends TestCase
             'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
             'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
+
         $builder->create('index', Link::class, function(LinkFactory $factory) {
             $factory->title = 'Index Page';
             $factory->url = url('/');
             $factory->linkAttributes->push(['class' => 'menu-link']);
+
+            return $factory->build();
         });
+
         $builder->create('orders', SubMenu::class, function(SubMenuFactory $factory) {
             $factory->attributes->push(['class' => 'child-menu']);
             $factory->title = 'Orders';
@@ -33,17 +37,27 @@ class RenderTest extends TestCase
             $factory->builder->create('all', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'All';
                 $factory->url = url('/orders/all');
+
+                return $factory->build();
             });
+
             $factory->builder->create('type_1', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'Type 1';
                 $factory->url = url('/orders/1');
                 $factory->linkAttributes->push(['class' => 'text-color-red']);
+
+                return $factory->build();
             });
+
             $factory->builder->create('type_2', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'Type 2';
                 $factory->url = url('/orders/2');
                 $factory->linkAttributes->push(['data-attribute' => 'value']);
+
+                return $factory->build();
             });
+
+            return $factory->build();
         });
 
         return $builder;

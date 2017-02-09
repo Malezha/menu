@@ -8,7 +8,7 @@ use Illuminate\Contracts\Support\Arrayable;
  * Interface Builder
  * @package Malezha\Menu\Contracts
  */
-interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayAccess, \Serializable
+interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayAccess
 {
     const UL = 'ul';
 
@@ -28,28 +28,28 @@ interface Builder extends HasAttributes, HasActiveAttributes, Arrayable, \ArrayA
     /**
      * @param string $name
      * @param string $type
-     * @param \Closure $callback
+     * @param callable|null $callback
      * @return ElementFactory|Element
      */
-    public function create($name, $type, \Closure $callback);
+    public function create($name, $type, callable $callback = null);
 
     /**
      * Insert values before item
      * 
      * @param string $name
-     * @param \Closure $callback
+     * @param callable $callback
      * @return Element
      */
-    public function insertBefore($name, \Closure $callback);
+    public function insertBefore($name, callable $callback);
 
     /**
      * Insert values after item
-     * 
+     *
      * @param string $name
-     * @param \Closure $callback
+     * @param callable $callback
      * @return mixed
      */
-    public function insertAfter($name, \Closure $callback);
+    public function insertAfter($name, callable $callback);
 
     /**
      * Check exits by name

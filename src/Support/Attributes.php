@@ -2,7 +2,6 @@
 namespace Malezha\Menu\Support;
 
 use Malezha\Menu\Contracts\Attributes as AttributesContract;
-use Malezha\Menu\Support\MergeAttributes;
 
 /**
  * Class Attributes
@@ -166,21 +165,5 @@ class Attributes implements AttributesContract
     public function offsetUnset($offset)
     {
         $this->forget($offset);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function serialize()
-    {
-        return serialize($this->attributes);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function unserialize($serialized)
-    {
-        $this->attributes = unserialize($serialized);
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Arrayable;
  * Interface Attributes
  * @package Malezha\Menu\Contracts
  */
-interface Attributes extends Arrayable, \ArrayAccess, \Serializable
+interface Attributes extends Arrayable, \ArrayAccess
 {
     /**
      * @param array $attributes
