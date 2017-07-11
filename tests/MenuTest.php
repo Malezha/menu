@@ -23,7 +23,7 @@ class MenuTest extends TestCase
     protected function menuFactory()
     {
         /** @var Menu $menu */
-        $menu = $this->app->make(Menu::class, ['container' => $this->app]);
+        $menu = $this->app->makeWith(Menu::class, ['container' => $this->app]);
         $menu->make('test', function(Builder $builder) {
             $builder->create('one', Link::class, function(LinkFactory $factory) {
                 $factory->title = 'One';
@@ -80,7 +80,7 @@ class MenuTest extends TestCase
     public function testFromArray()
     {
         /** @var Builder $builder */
-        $builder = $this->app->make(Builder::class, [
+        $builder = $this->app->makeWith(Builder::class, [
             'attributes' => new Attributes(['class' => 'menu']),
             'activeAttributes' => new Attributes(['class' => 'active']),
         ]);

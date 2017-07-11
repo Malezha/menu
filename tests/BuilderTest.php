@@ -21,9 +21,9 @@ class BuilderTest extends TestCase
      */
     protected function builderFactory()
     {
-        return $this->app->make(Builder::class, [
-            'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
-            'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
+        return $this->app->makeWith(Builder::class, [
+            'activeAttributes' => $this->app->makeWith(Attributes::class, ['attributes' => ['class' => 'active']]),
+            'attributes' => $this->app->makeWith(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
     }
     

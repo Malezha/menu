@@ -15,7 +15,7 @@ class AttributesTest extends TestCase
      */
     protected function attributeFactory()
     {
-        return $this->app->make(Attributes::class, [
+        return $this->app->makeWith(Attributes::class, [
             'attributes' => $this->attributesStub(),
         ]);
     }

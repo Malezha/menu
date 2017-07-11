@@ -13,7 +13,7 @@ class TraitsTest extends TestCase
     public function testGetAttributesCallback()
     {
         $factory = (new LinkFactory($this->app));
-        $factory->attributes = $this->app->make(Attributes::class, ['attributes' => [
+        $factory->attributes = $this->app->makeWith(Attributes::class, ['attributes' => [
             'class' => 'color-red',
         ]]);
         $link = $factory->build();

@@ -11,13 +11,13 @@
     ],
     "require": {
         "php": ">=5.6",
-        "illuminate/container": ">=5.1 <5.4",
-        "illuminate/config": ">=5.1 <5.4",
-        "illuminate/http": ">=5.1 <5.4",
+        "illuminate/container": "^5.4.16",
+        "illuminate/config": "^5.4.16",
+        "illuminate/http": "^5.4.16",
         "serafim/properties": "1.0.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.4",
+        "phpunit/phpunit": "~5.7",
         "orchestra/testbench": "~3.0"
     },
     "suggest": {
@@ -39,7 +39,7 @@
     "extra": {
         "branch-alias": {
             "dev-master": "4.0-dev",
-            "dev-old": "3.1-dev"
+            "dev-old": "3.2-dev"
         }
     }
 }

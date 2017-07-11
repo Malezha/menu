@@ -36,12 +36,12 @@ class Menu implements MenuContract
      */
     public function make($name, callable $callback = null, $type = Builder::UL, $attributes = [], $activeAttributes = [])
     {
-        $menu = $this->container->make(BuilderContract::class, [
+        $menu = $this->container->makeWith(BuilderContract::class, [
             'container' => $this->container, 
             'name' => $name, 
             'type' => $type, 
-            'attributes' => $this->container->make(Attributes::class, ['attributes' => $attributes]), 
-            'activeAttributes' => $this->container->make(Attributes::class, ['attributes' => $activeAttributes]),
+            'attributes' => $this->container->makeWith(Attributes::class, ['attributes' => $attributes]),
+            'activeAttributes' => $this->container->makeWith(Attributes::class, ['attributes' => $activeAttributes]),
         ]);
 
         call_if_callable($callback, $menu);
@@ -95,9 +95,9 @@ class Menu implements MenuContract
     public function fromArray($name, array $builder)
     {
         /** @var BuilderContract $menu */
-        $menu = $this->container->make(BuilderContract::class, [
-            'attributes' => $this->container->make(Attributes::class, ['attributes' => []]),
-            'activeAttributes' => $this->container->make(Attributes::class, ['attributes' => []]),
+        $menu = $this->container->makeWith(BuilderContract::class, [
+            'attributes' => $this->container->makeWith(Attributes::class, ['attributes' => []]),
+            'activeAttributes' => $this->container->makeWith(Attributes::class, ['attributes' => []]),
         ]);
         
         $menu = $menu->fromArray($builder);

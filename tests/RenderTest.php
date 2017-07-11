@@ -16,9 +16,9 @@ class RenderTest extends TestCase
     protected function getBuilder()
     {
         /** @var Builder $builder */
-        $builder = $this->app->make(Builder::class, [
-            'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'active']]),
-            'attributes' => $this->app->make(Attributes::class, ['attributes' => ['class' => 'menu']]),
+        $builder = $this->app->makeWith(Builder::class, [
+            'activeAttributes' => $this->app->makeWith(Attributes::class, ['attributes' => ['class' => 'active']]),
+            'attributes' => $this->app->makeWith(Attributes::class, ['attributes' => ['class' => 'menu']]),
         ]);
 
         $builder->create('index', Link::class, function(LinkFactory $factory) {

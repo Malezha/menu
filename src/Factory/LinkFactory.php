@@ -30,9 +30,9 @@ class LinkFactory extends AbstractElementFactory
         $this->parameters = [
             'title' => '',
             'url' => '#',
-            'attributes' => $this->app->make(Attributes::class, ['attributes' => []]),
-            'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => []]),
-            'linkAttributes' => $this->app->make(Attributes::class, ['attributes' => []]),
+            'attributes' => $this->app->makeWith(Attributes::class, ['attributes' => []]),
+            'activeAttributes' => $this->app->makeWith(Attributes::class, ['attributes' => []]),
+            'linkAttributes' => $this->app->makeWith(Attributes::class, ['attributes' => []]),
             'view' => $this->getElementConfig(Link::class)['view'],
             'displayRule' => true,
         ];
@@ -44,7 +44,7 @@ class LinkFactory extends AbstractElementFactory
      */
     public function build($parameters = [])
     {
-        $link = $this->app->make(Link::class, $this->mergeParameters($parameters));
+        $link = $this->app->makeWith(Link::class, $this->mergeParameters($parameters));
         $this->setDisplayRule($link);
         
         return $link;

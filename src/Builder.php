@@ -286,11 +286,13 @@ class Builder implements BuilderContract
      */
     protected function builderFactory($name, $attributes = [], $activeAttributes = [], $callback = null)
     {
-        $menu = $this->app->make(BuilderContract::class, [
+        $menu = $this->app->makeWith(BuilderContract::class, [
             'container' => $this->app,
             'name' => $name,
-            'activeAttributes' => $this->app->make(AttributesContract::class, ['attributes' => $activeAttributes]),
-            'attributes' => $this->app->make(AttributesContract::class, ['attributes' => $attributes]),
+            'activeAttributes' => $this->app->makeWith(AttributesContract::class,
+                ['attributes' => $activeAttributes]),
+            'attributes' => $this->app->makeWith(AttributesContract::class,
+                ['attributes' => $attributes]),
             'view' => $this->getView(),
         ]);
 

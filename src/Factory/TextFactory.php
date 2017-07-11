@@ -21,7 +21,7 @@ class TextFactory extends AbstractElementFactory
      */
     public function build($parameters = [])
     {
-        $text = $this->app->make(Text::class, $this->mergeParameters($parameters));
+        $text = $this->app->makeWith(Text::class, $this->mergeParameters($parameters));
         if (array_key_exists('displayRule', $this->parameters)) {
             $text->setDisplayRule($this->parameters['displayRule']);
         }
@@ -39,7 +39,7 @@ class TextFactory extends AbstractElementFactory
         $this->parameters = [
             'text' => null,
             'displayRule' => true,
-            'attributes' => $this->app->make(Attributes::class, ['attributes' => []]),
+            'attributes' => $this->app->makeWith(Attributes::class, ['attributes' => []]),
             'view' => $this->getElementConfig(Text::class)['view'],
         ];
     }

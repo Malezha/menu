@@ -19,11 +19,11 @@ class SubMenuFactory extends LinkFactory
     {
         parent::__construct($container);
 
-        $this->parameters['builder'] = $this->app->make(Builder::class, [
+        $this->parameters['builder'] = $this->app->makeWith(Builder::class, [
             'container' => $this->app,
             'name' => 'submenu-' . spl_object_hash($this),
-            'activeAttributes' => $this->app->make(Attributes::class, ['attributes' => []]),
-            'attributes' => $this->app->make(Attributes::class, ['attributes' => []]),
+            'activeAttributes' => $this->app->makeWith(Attributes::class, ['attributes' => []]),
+            'attributes' => $this->app->makeWith(Attributes::class, ['attributes' => []]),
         ]);
         $this->parameters['view'] = $this->getElementConfig(SubMenu::class)['view'];
     }
@@ -34,7 +34,7 @@ class SubMenuFactory extends LinkFactory
      */
     public function build($parameters = [])
     {
-        $subMenu = $this->app->make(SubMenu::class, $this->mergeParameters($parameters));
+        $subMenu = $this->app->makeWith(SubMenu::class, $this->mergeParameters($parameters));
         $this->setDisplayRule($subMenu);
         
         return $subMenu;

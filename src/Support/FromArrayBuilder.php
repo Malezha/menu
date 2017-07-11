@@ -59,9 +59,11 @@ class FromArrayBuilder implements FromArrayBuilderContract
         $aliases = $this->container->make(Repository::class)->get('menu.alias');
 
         /** @var Builder $builder */
-        $builder = $this->container->make(Builder::class, [
-            'attributes' => $this->container->make(Attributes::class, ['attributes' => $array['attributes']]),
-            'activeAttributes' => $this->container->make(Attributes::class, ['attributes' => $array['activeAttributes']]),
+        $builder = $this->container->makeWith(Builder::class, [
+            'attributes' => $this->container->makeWith(Attributes::class,
+                ['attributes' => $array['attributes']]),
+            'activeAttributes' => $this->container->makeWith(Attributes::class,
+                ['attributes' => $array['activeAttributes']]),
             'view' => $array['view'],
             'type' => $array['type'],
         ]);
@@ -78,7 +80,7 @@ class FromArrayBuilder implements FromArrayBuilderContract
                 $attributes = preg_grep("/.*(attributes)/i", array_keys($element));
 
                 foreach ($attributes as $key) {
-                    $element[$key] = $this->container->make(Attributes::class, ['attributes' => $element[$key]]);
+                    $element[$key] = $this->container->makeWith(Attributes::class, ['attributes' => $element[$key]]);
                 }
 
                 return $factory->build($element);
