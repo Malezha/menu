@@ -54,3 +54,6 @@ checks:
         spacing_of_function_arguments: true
 tools:
     external_code_coverage: true
+filter:
+    paths:
+        - src/
